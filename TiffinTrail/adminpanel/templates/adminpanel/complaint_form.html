@@ -1,0 +1,67 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Create Ticket | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}CUSTOMER SUPPORT{% endblock %}
+{% block page_heading %}Open Support Ticket{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title"> New Customer Grievance / Ticket</h5>
+        <a href="{% url 'adminpanel:complaints' %}" class="btn btn-sm btn-outline-secondary">← Back to Complaints</a>
+      </div>
+
+      <div class="tt-card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="tt-form-label">Customer *</label>
+              {{ form.customer }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Related Chef Kitchen</label>
+              {{ form.chef }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Related Order</label>
+              {{ form.order }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Category *</label>
+              {{ form.category }}
+            </div>
+
+            <div class="col-md-8">
+              <label class="tt-form-label">Subject *</label>
+              {{ form.subject }}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Priority Level *</label>
+              {{ form.priority }}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Grievance Description *</label>
+              {{ form.description }}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+            <a href="{% url 'adminpanel:complaints' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success px-4 fw-semibold">Open Ticket</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

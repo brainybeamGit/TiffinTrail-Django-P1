@@ -1,0 +1,108 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}Customer Reviews | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}CUSTOMER FEEDBACK & RATINGS{% endblock %}
+{% block page_heading %}Customer Reviews & Ratings{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <!-- Rating Score Overview -->
+  <div class="col-lg-4">
+    <div class="tt-card text-center p-4 h-100 d-flex flex-column justify-content-center">
+      <div class="display-3 fw-bold text-dark">{{ avg_rating }}</div>
+      <div class="tt-stars fs-4 my-2">
+        ★★★★★
+      </div>
+      <p class="text-muted mb-0">Based on <strong>{{ total_reviews }}</strong> genuine customer reviews</p>
+      <div class="mt-3">
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+          {% if avg_rating >= 4.5 %} Top Rated Kitchen{% elif avg_rating >= 4.0 %} Highly Rated{% else %} Developing Kitchen{% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Star Rating Breakdown Progress Bars -->
+  <div class="col-lg-8">
+    <div class="tt-card p-4 h-100">
+      <h5 class="tt-card-title mb-3">★ Rating Distribution</h5>
+      <div class="d-flex flex-column gap-2">
+        {% for star, data in star_breakdown.items %}
+          <div class="d-flex align-items-center gap-3">
+            <span class="small fw-semibold text-muted" style="width: 55px;">{{ star }} Star</span>
+            <div class="progress flex-grow-1" style="height: 10px;">
+              <div class="progress-bar bg-warning" role="progressbar" style="width: {{ data.percent }}%;" aria-valuenow="{{ data.percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <span class="small text-muted" style="width: 65px; text-align: right;">{{ data.count }} ({{ data.percent }}%)</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reviews Filter & List -->
+<div class="tt-card">
+  <div class="tt-card-header d-flex justify-content-between align-items-center">
+    <h5 class="tt-card-title"> Diner Feedback</h5>
+    <!-- Filter by rating -->
+    <div class="d-flex align-items-center gap-2">
+      <span class="small text-muted">Filter:</span>
+      <div class="btn-group btn-group-sm">
+        <a href="{% url 'chef:reviews' %}" class="btn {% if not selected_rating %}btn-primary{% else %}btn-outline-secondary{% endif %}">All</a>
+        <a href="?rating=5" class="btn {% if selected_rating == '5' %}btn-primary{% else %}btn-outline-secondary{% endif %}">5 ★</a>
+        <a href="?rating=4" class="btn {% if selected_rating == '4' %}btn-primary{% else %}btn-outline-secondary{% endif %}">4 ★</a>
+        <a href="?rating=3" class="btn {% if selected_rating == '3' %}btn-primary{% else %}btn-outline-secondary{% endif %}">3 ★</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="tt-card-body p-0">
+    <div class="d-flex flex-column">
+      {% for rev in page_obj %}
+        <div class="p-4 border-bottom">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <strong class="d-block text-dark">{{ rev.user.get_full_name|default:rev.user.username }}</strong>
+              {% if rev.meal %}
+                <span class="badge bg-light text-secondary border small mt-1">Dish: {{ rev.meal.name }}</span>
+              {% else %}
+                <span class="badge bg-light text-secondary border small mt-1">General Kitchen Review</span>
+              {% endif %}
+            </div>
+            <div class="text-end">
+              <div class="text-warning fw-bold">
+                {% if rev.rating == 5 %}★★★★★{% elif rev.rating == 4 %}★★★★☆{% elif rev.rating == 3 %}★★★☆☆{% elif rev.rating == 2 %}★★☆☆☆{% else %}★☆☆☆☆{% endif %}
+              </div>
+              <span class="text-muted small">{{ rev.created_at|date:"d M Y" }}</span>
+            </div>
+          </div>
+          <p class="mb-0 text-secondary">{{ rev.comment }}</p>
+        </div>
+      {% empty %}
+        <div class="text-center py-5 text-muted">
+          <h5>No reviews found for this filter.</h5>
+          <p class="small mb-0">Customer ratings and testimonials will appear here when submitted.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <div class="p-3 border-top d-flex justify-content-between align-items-center">
+        <span class="text-muted small">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_rating %}&rating={{ selected_rating }}{% endif %}">Previous</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_rating %}&rating={{ selected_rating }}{% endif %}">Next</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

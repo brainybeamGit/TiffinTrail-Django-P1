@@ -1,0 +1,131 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Customer Management | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}USER DIRECTORY & ACCOUNTS{% endblock %}
+{% block page_heading %}Customer Management{% endblock %}
+
+{% block content %}
+<!-- Search & Status Filter Bar -->
+<div class="tt-card mb-4">
+  <div class="tt-card-body p-3">
+    <form method="get" class="row g-2 align-items-center">
+      <div class="col-md-7">
+        <div class="input-group">
+          <span class="input-group-text bg-white"></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by Diner Name, Username, or Email...">
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <select name="status" class="form-select" onchange="this.form.submit()">
+          <option value="">All Account Statuses</option>
+          <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Accounts</option>
+          <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Deactivated / Suspended</option>
+        </select>
+      </div>
+
+      <div class="col-md-2 d-flex gap-1">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+        {% if search_query or status_filter %}
+          <a href="{% url 'adminpanel:customers' %}" class="btn btn-outline-secondary" title="Reset">✕</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Customers Table -->
+<div class="tt-card">
+  <div class="tt-card-header d-flex justify-content-between align-items-center">
+    <h5 class="tt-card-title"> Registered Diners ({{ total_count }})</h5>
+  </div>
+  <div class="tt-card-body p-0">
+    <div class="tt-table-responsive">
+      <table class="tt-table">
+        <thead>
+          <tr>
+            <th>Diner ID & Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Registered Date</th>
+            <th>Orders (Done/Total)</th>
+            <th>Total Spending</th>
+            <th>Active Subs</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in page_obj %}
+            <tr>
+              <td>
+                <a href="{% url 'adminpanel:customer_detail' row.user.id %}" class="fw-bold text-dark text-decoration-none">
+                  #{{ row.user.id }} · {{ row.user.get_full_name|default:row.user.username }}
+                </a>
+                <div class="text-muted small">@{{ row.user.username }}</div>
+              </td>
+              <td>{{ row.user.email|default:"—" }}</td>
+              <td>{{ row.phone }}</td>
+              <td>{{ row.user.date_joined|date:"d M Y" }}</td>
+              <td>
+                <span class="badge bg-light text-dark border">
+                  <strong>{{ row.completed_orders }}</strong> / {{ row.total_orders }}
+                </span>
+              </td>
+              <td>
+                <strong class="text-success">₹{{ row.total_spent }}</strong>
+              </td>
+              <td>
+                {% if row.active_subs > 0 %}
+                  <span class="badge bg-success-subtle text-success border border-success-subtle">
+                    {{ row.active_subs }} Active
+                  </span>
+                {% else %}
+                  <span class="text-muted small">None</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if row.user.is_active %}
+                  <span class="badge bg-success">Active</span>
+                {% else %}
+                  <span class="badge bg-danger">Deactivated</span>
+                {% endif %}
+              </td>
+              <td class="text-end tt-actions-cell">
+                <div class="tt-actions-group">
+                  <a href="{% url 'adminpanel:customer_detail' row.user.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
+                    <i class="bi bi-person-lines-fill"></i> Profile & History
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="9" class="text-center py-5 text-muted">
+                <h5>No customers found matching this filter.</h5>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <div class="p-3 border-top d-flex justify-content-between align-items-center">
+        <span class="text-muted small">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

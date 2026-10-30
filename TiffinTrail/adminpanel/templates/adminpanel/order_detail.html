@@ -1,0 +1,164 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.order_number }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}ORDER SUPERVISION & DETAILS{% endblock %}
+{% block page_heading %}Order {{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <a href="{% url 'adminpanel:orders' %}" class="btn btn-sm btn-outline-secondary">← Back to Orders</a>
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-muted small">Status:</span>
+    <span class="tt-badge tt-badge-{{ order.status }} fs-6 px-3 py-1">
+      {{ order.get_status_display }}
+    </span>
+    <span class="badge {% if order.payment_status == 'paid' %}bg-success{% else %}bg-warning text-dark{% endif %} px-3 py-2">
+      {{ order.get_payment_status_display }}
+    </span>
+    <form method="post" action="{% url 'adminpanel:order_delete' order.id %}" class="d-inline ms-2" onsubmit="return confirm('DHYAN DEIN: Kya aap sach me Order #{{ order.order_number }} ko permanently delete karna chahte hain? Yeh wapas nahi aayega.');">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-danger px-3 py-1.5 shadow-sm">
+        🗑 Delete Order
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left Column: Ordered Items & Bill -->
+  <div class="col-lg-7">
+    <div class="tt-card mb-4">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title"> Ordered Meals ({{ items.count }})</h5>
+        <a href="{% url 'adminpanel:chef_detail' order.chef.id %}" class="small text-decoration-none">
+          Chef: {{ order.chef.business_name }}
+        </a>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+                <tr>
+                  <td>
+                    <strong>{{ item.meal_name }}</strong>
+                    {% if item.meal %}
+                      <div class="text-muted small">{{ item.meal.get_meal_type_display }}</div>
+                    {% endif %}
+                  </td>
+                  <td>₹{{ item.unit_price|floatformat:2 }}</td>
+                  <td>x {{ item.quantity }}</td>
+                  <td class="text-end fw-bold">₹{{ item.subtotal|floatformat:2 }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="p-3 bg-light border-top">
+          <div class="row justify-content-end">
+            <div class="col-sm-6">
+              <div class="d-flex justify-content-between py-1 small">
+                <span class="text-muted">Food Subtotal:</span>
+                <span>₹{{ order.total_amount|floatformat:2 }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 small">
+                <span class="text-muted">Delivery Fee:</span>
+                <span>₹{{ order.delivery_fee|floatformat:2 }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 small">
+                <span class="text-muted">Taxes (GST 5%):</span>
+                <span>₹{{ order.tax_amount|floatformat:2 }}</span>
+              </div>
+              {% if order.discount_amount > 0 %}
+                <div class="d-flex justify-content-between py-1 small text-success">
+                  <span>Coupon Discount:</span>
+                  <span>-₹{{ order.discount_amount|floatformat:2 }}</span>
+                </div>
+              {% endif %}
+              <div class="d-flex justify-content-between py-2 border-top border-dark mt-2 fw-bold fs-6">
+                <span>Final Order Amount:</span>
+                <span class="text-success">₹{{ order.final_amount|floatformat:2 }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Administrative Override & Delivery Info -->
+  <div class="col-lg-5">
+    <!-- Admin Status Override -->
+    <div class="tt-card mb-4 border-warning">
+      <div class="tt-card-header bg-warning-subtle">
+        <h5 class="tt-card-title text-dark"> Administrative Status Override</h5>
+      </div>
+      <div class="tt-card-body">
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="override_status">
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Override Order Status</label>
+            <select name="new_status" class="form-select">
+              <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+              <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+              <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>Cooking (In Prep)</option>
+              <option value="out_for_delivery" {% if order.status == 'out_for_delivery' %}selected{% endif %}>Out for Delivery</option>
+              <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+              <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Audit Reason / Justification</label>
+            <input type="text" name="reason" class="form-control" placeholder="e.g. Verified delivery partner delay" required>
+          </div>
+
+          <button type="submit" class="btn btn-warning w-100 fw-bold" data-confirm="Override order fulfillment status?">
+            Apply Status Override
+          </button>
+        </form>
+
+        {% if order.cancellation_reason %}
+          <div class="alert alert-danger mt-3 p-2 small mb-0">
+            <strong>Cancellation Note:</strong> {{ order.cancellation_reason }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Customer & Delivery Info -->
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Customer & Delivery</h5>
+      </div>
+      <div class="tt-card-body small">
+        <div class="mb-2"><strong>Diner Name:</strong> {{ order.recipient_name }}</div>
+        <div class="mb-2"><strong>Phone Number:</strong> {{ order.recipient_phone }}</div>
+        <div class="mb-2"><strong>Payment Method:</strong> {{ order.get_payment_method_display }}</div>
+        {% if order.payment_transaction_id %}
+          <div class="mb-2"><strong>Txn ID:</strong> <span class="font-monospace">{{ order.payment_transaction_id }}</span></div>
+        {% endif %}
+        <div class="mt-3 pt-2 border-top">
+          <div class="text-muted">Delivery Address:</div>
+          <div class="p-2 bg-light rounded mt-1 border">{{ order.delivery_address_text }}</div>
+        </div>
+        {% if order.delivery_notes %}
+          <div class="mt-2 text-danger-emphasis">Gate Notes: {{ order.delivery_notes }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

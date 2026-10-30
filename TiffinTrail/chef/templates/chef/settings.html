@@ -1,0 +1,127 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}Kitchen Settings | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}ACCOUNT & PREFERENCES{% endblock %}
+{% block page_heading %}Kitchen Settings{% endblock %}
+
+{% block content %}
+<div class="row g-4 justify-content-center">
+  <div class="col-lg-8">
+    <!-- Kitchen Availability Setting -->
+    <div class="tt-card mb-4">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title">🍳 Kitchen Operating State</h5>
+      </div>
+      <div class="tt-card-body">
+        <form method="post" id="kitchenToggleForm">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="toggle_orders">
+
+          <div class="tt-toggle-row {% if chef.is_accepting_orders %}is-on tt-toggle-row-warning{% else %}is-off{% endif %}">
+            <div class="tt-toggle-row-left">
+              <div class="tt-toggle-row-icon {% if chef.is_accepting_orders %}icon-amber{% else %}icon-red{% endif %}">
+                {% if chef.is_accepting_orders %}🟢{% else %}⏸️{% endif %}
+              </div>
+              <div>
+                <p class="tt-toggle-row-title">
+                  Accepting Orders
+                  {% if chef.is_accepting_orders %}
+                    <span class="tt-toggle-row-status status-warning-on">Live</span>
+                  {% else %}
+                    <span class="tt-toggle-row-status status-off">Paused</span>
+                  {% endif %}
+                </p>
+                <p class="tt-toggle-row-desc">
+                  {% if chef.is_accepting_orders %}
+                    Your kitchen is open — customers can place new orders right now.
+                  {% else %}
+                    Kitchen is paused — customers see you as temporarily closed.
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+            <label class="tt-toggle-switch tt-toggle-warning" for="kitchenToggle"
+              title="{% if chef.is_accepting_orders %}Click to pause ordering{% else %}Click to resume ordering{% endif %}">
+              <input type="checkbox" id="kitchenToggle"
+                {% if chef.is_accepting_orders %}checked{% endif %}
+                onchange="this.form.submit()">
+              <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
+            </label>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Security & Password Change -->
+    <div class="tt-card mb-4">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Change Account Password</h5>
+      </div>
+      <div class="tt-card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="action" value="change_password">
+
+          <div class="mb-3">
+            <label class="tt-form-label">Current Password *</label>
+            {{ password_form.old_password }}
+            {% if password_form.old_password.errors %}
+              <div class="text-danger small mt-1">{{ password_form.old_password.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">New Password *</label>
+            {{ password_form.new_password1 }}
+            {% if password_form.new_password1.errors %}
+              <div class="text-danger small mt-1">{{ password_form.new_password1.errors.0 }}</div>
+            {% endif %}
+            <div class="tt-help-text">Password must contain at least 8 characters.</div>
+          </div>
+
+          <div class="mb-4">
+            <label class="tt-form-label">Confirm New Password *</label>
+            {{ password_form.new_password2 }}
+            {% if password_form.new_password2.errors %}
+              <div class="text-danger small mt-1">{{ password_form.new_password2.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary fw-semibold">Update Password</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Bank Details & Settlement Notice -->
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Direct Bank Settlement Account</h5>
+      </div>
+      <div class="tt-card-body small">
+        <p class="text-muted">
+          Your weekly earnings are deposited into your registered bank account after platform fee deduction.
+        </p>
+        <div class="p-3 bg-light rounded border">
+          <div class="d-flex justify-content-between py-1 border-bottom">
+            <span class="text-muted">Account Holder:</span>
+            <strong>{{ chef.user.get_full_name|default:chef.business_name }}</strong>
+          </div>
+          <div class="d-flex justify-content-between py-1 border-bottom">
+            <span class="text-muted">FSSAI Registration:</span>
+            <strong>{{ chef.fssai_license }}</strong>
+          </div>
+          <div class="d-flex justify-content-between py-1">
+            <span class="text-muted">Platform Commission:</span>
+            <strong class="text-success">{{ chef.commission_rate }}%</strong>
+          </div>
+        </div>
+        <div class="text-muted mt-2 small">
+          To update your registered bank account or FSSAI documentation, please submit a verification ticket to platform support.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

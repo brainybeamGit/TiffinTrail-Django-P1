@@ -1,0 +1,165 @@
+/* ==========================================================================
+   TIFFINTRAIL ANIMATION SYSTEM
+   Smooth, purposeful micro-interactions and scroll-reveals
+   ========================================================================== */
+
+/* Fade & Slide Entrance Animations */
+@keyframes ttFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ttFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ttScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes ttSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes ttPulseSoft {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Scroll-Triggered Reveal Classes */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-fade {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+.reveal-fade.is-visible {
+  opacity: 1;
+}
+
+/* Stagger Delays for Grid Children */
+.stagger-1 { transition-delay: 0.08s; }
+.stagger-2 { transition-delay: 0.16s; }
+.stagger-3 { transition-delay: 0.24s; }
+.stagger-4 { transition-delay: 0.32s; }
+.stagger-5 { transition-delay: 0.40s; }
+
+/* Interactive Hover Effects */
+.hover-lift {
+  transition: transform var(--tt-transition-smooth), box-shadow var(--tt-transition-smooth);
+}
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--tt-shadow-lg) !important;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 8px 24px -2px rgba(20, 107, 58, 0.25) !important;
+}
+
+/* Image Zoom on Card Hover */
+.img-zoom-parent {
+  overflow: hidden;
+  position: relative;
+}
+.img-zoom-parent img,
+.img-zoom-parent .tt-meal-img,
+.img-zoom-parent .tt-chef-img {
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.hover-lift:hover .img-zoom-parent img,
+.hover-lift:hover img,
+.img-zoom-parent:hover img {
+  transform: scale(1.05);
+}
+
+/* Press Interaction */
+.btn:active,
+button:active {
+  transform: scale(0.98);
+}
+
+/* Micro-badge Pulse */
+.pulse-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pulse-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--tt-fresh-green);
+  animation: ttPulseSoft 2s infinite ease-in-out;
+}
+
+/* Floating Decorative Elements */
+.float-subtle {
+  animation: ttFloat 6s ease-in-out infinite;
+}
+.float-delayed {
+  animation: ttFloat 6s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+@keyframes ttFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Accessibility: Disable / minimize motion when preferred */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .hover-lift:hover {
+    transform: none !important;
+  }
+  .float-subtle,
+  .float-delayed {
+    animation: none !important;
+  }
+}

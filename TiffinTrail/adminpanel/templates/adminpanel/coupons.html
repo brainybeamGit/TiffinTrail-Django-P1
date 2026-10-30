@@ -1,0 +1,89 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Coupon Management | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}PROMOTIONS & DISCOUNTS{% endblock %}
+{% block page_heading %}Coupon Management{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <p class="text-muted mb-0">Total Active Promotions: <strong>{{ coupons.count }}</strong></p>
+  <a href="{% url 'adminpanel:coupon_add' %}" class="btn btn-success fw-semibold shadow-sm">
+     Create New Coupon
+  </a>
+</div>
+
+<!-- Coupons Table -->
+<div class="tt-card">
+  <div class="tt-card-body p-0">
+    <div class="tt-table-responsive">
+      <table class="tt-table">
+        <thead>
+          <tr>
+            <th>Coupon Code</th>
+            <th>Description</th>
+            <th>Discount Value</th>
+            <th>Min Order</th>
+            <th>Max Discount</th>
+            <th>Usage (Redeemed / Limit)</th>
+            <th>Expiry Date</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cpn in coupons %}
+            <tr>
+              <td>
+                <span class="badge bg-light text-dark border font-monospace fs-6 px-3 py-1">
+                  {{ cpn.code }}
+                </span>
+              </td>
+              <td>{{ cpn.description|default:"Standard promotional discount" }}</td>
+              <td>
+                <strong class="text-success fs-6">
+                  {{ cpn.discount_value }}{% if cpn.discount_type == 'percent' %}%{% else %}₹{% endif %} OFF
+                </strong>
+              </td>
+              <td>₹{{ cpn.min_order_amount }}</td>
+              <td>{% if cpn.max_discount_amount %}₹{{ cpn.max_discount_amount }}{% else %}No cap{% endif %}</td>
+              <td>
+                <span class="badge bg-light text-dark border">
+                  <strong>{{ cpn.times_used }}</strong> / {{ cpn.usage_limit }}
+                </span>
+              </td>
+              <td>
+                {% if cpn.valid_until %}
+                  <span class="small text-muted">{{ cpn.valid_until|date:"d M Y, H:i" }}</span>
+                {% else %}
+                  <span class="text-muted small">No Expiry</span>
+                {% endif %}
+              </td>
+              <td>
+                <form action="{% url 'adminpanel:coupon_toggle' cpn.id %}" method="post" class="d-inline">
+                  {% csrf_token %}
+                  <label class="tt-toggle-switch tt-toggle-sm" for="couponToggle{{ cpn.id }}" title="{% if cpn.is_active %}Deactivate coupon{% else %}Activate coupon{% endif %}">
+                    <input type="checkbox" id="couponToggle{{ cpn.id }}" {% if cpn.is_active %}checked{% endif %} onchange="this.form.submit()">
+                    <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
+                    <span class="tt-toggle-label" style="font-size:0.78rem;">{% if cpn.is_active %}Active{% else %}Inactive{% endif %}</span>
+                  </label>
+                </form>
+              </td>
+
+              <td class="text-end">
+                <a href="{% url 'adminpanel:coupon_edit' cpn.id %}" class="btn btn-sm btn-outline-primary">
+                   Edit
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="9" class="text-center py-5 text-muted">No coupons configured yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

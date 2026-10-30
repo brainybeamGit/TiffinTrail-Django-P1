@@ -1,0 +1,367 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart | TiffinTrail{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom bg-white">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:menu' %}" class="text-decoration-none" style="color: var(--tt-primary);">Menu</a></li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">Cart</li>
+      </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-text-main);">Your Meal Cart</h1>
+        <p class="text-muted small mb-0">Fresh homemade delicacies curated from certified home kitchens.</p>
+      </div>
+      {% if items %}
+      <form action="{% url 'customer:cart_clear' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1" onclick="return confirm('Clear all items from your cart?');">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Clear Cart
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  {% if unavailable_items %}
+  <div class="alert alert-warning mb-4 shadow-sm border-0 d-flex align-items-center gap-3 rounded-3" role="alert" style="background-color: #fff9e6; border-left: 4px solid var(--tt-accent) !important;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <div>
+      <strong class="text-dark">Kitchen Notice:</strong> The following items are currently sold out or paused: <em class="text-dark">{{ unavailable_items|join:", " }}</em>. Please remove them before checkout.
+    </div>
+  </div>
+  {% endif %}
+
+  {% if items %}
+  <div class="row g-4">
+    <!-- Left Column: Cart Items -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border: 1px solid var(--tt-border) !important;">
+        <div class="table-responsive tt-cart-table">
+          <table class="table align-middle mb-0">
+            <thead style="background-color: #fbfdfa; border-bottom: 1px solid var(--tt-border);">
+              <tr>
+                <th class="py-3 px-4 text-muted fw-semibold small text-uppercase">Dish Details</th>
+                <th class="py-3 text-center text-muted fw-semibold small text-uppercase">Price</th>
+                <th class="py-3 text-center text-muted fw-semibold small text-uppercase">Quantity</th>
+                <th class="py-3 text-end text-muted fw-semibold small text-uppercase">Subtotal</th>
+                <th class="py-3 px-4 text-center text-muted fw-semibold small text-uppercase">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr style="border-bottom: 1px solid #f0f4f0;">
+                <td class="py-3 px-4">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-3 overflow-hidden flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 64px; height: 64px; background-color: var(--tt-cream); border: 1px solid var(--tt-border);">
+                      {% if item.meal.image %}
+                      <img src="{{ item.meal.image.url }}" alt="{{ item.meal.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                      {% else %}
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--tt-primary)" stroke-width="1.7"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+                      {% endif %}
+                    </div>
+                    <div>
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="tt-diet-indicator {% if item.meal.is_veg %}veg{% else %}non-veg{% endif %}">
+                          <span class="dot"></span>
+                        </span>
+                        <strong class="text-dark fs-6">{{ item.meal.name }}</strong>
+                      </div>
+                      <div class="text-muted small d-flex align-items-center gap-1">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span>Chef {{ item.meal.chef.business_name }}</span>
+                        {% if not item.meal.is_available %}
+                        <span class="badge bg-danger-subtle text-danger ms-2 px-2 py-0.5 rounded-pill">Unavailable</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="py-3 text-center fw-semibold text-muted">
+                  ₹{{ item.meal.price|floatformat:0 }}
+                </td>
+
+                <td class="py-3 text-center">
+                  <div class="d-inline-flex align-items-center rounded-3 bg-light p-1" style="border: 1px solid var(--tt-border);">
+                    <form action="{% url 'customer:cart_update' item.pk %}" method="post" class="m-0">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="decrement">
+                      <button type="submit" class="btn btn-sm btn-white bg-white text-dark shadow-xs border-0 px-2 py-0 fw-bold rounded-2" style="width: 28px; height: 28px; line-height: 1;">-</button>
+                    </form>
+
+                    <span class="px-3 fw-bold small text-dark">{{ item.quantity }}</span>
+
+                    <form action="{% url 'customer:cart_update' item.pk %}" method="post" class="m-0">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="increment">
+                      <button type="submit" class="btn btn-sm btn-white bg-white text-dark shadow-xs border-0 px-2 py-0 fw-bold rounded-2" style="width: 28px; height: 28px; line-height: 1;">+</button>
+                    </form>
+                  </div>
+                </td>
+
+                <td class="py-3 text-end fw-bold" style="color: var(--tt-primary);">
+                  ₹{{ item.subtotal|floatformat:2 }}
+                </td>
+
+                <td class="py-3 px-4 text-center">
+                  <form action="{% url 'customer:cart_remove' item.pk %}" method="post" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-light text-danger border-0 rounded-circle p-2" title="Remove Item" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <a href="{% url 'customer:menu' %}" class="btn btn-tt-outline d-inline-flex align-items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Continue Browsing Dishes
+        </a>
+        <a href="{% url 'customer:plans' %}" class="btn btn-light border d-inline-flex align-items-center gap-2 text-dark">
+          <span>View Subscription Meal Plans</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Coupon & Order Calculations -->
+    <div class="col-lg-4">
+      <!-- Coupon Code Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tt-primary, #253746)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><circle cx="7" cy="7" r="1"></circle></svg>
+            <span>Have a Discount Coupon?</span>
+          </h6>
+          {% if available_coupons %}
+          <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fw-bold" style="color: #253746;" data-bs-toggle="modal" data-bs-target="#cartCouponsModal">
+            View All ({{ available_coupons.count }})
+          </button>
+          {% endif %}
+        </div>
+
+        {% if cart.coupon %}
+        <!-- Applied Coupon Summary -->
+        <div class="tt-coupon-applied-box mt-2">
+          <div class="d-flex align-items-start justify-content-between gap-2">
+            <div>
+              <div class="d-flex align-items-center gap-1.5 text-success fw-bold font-monospace">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>{{ cart.coupon.code }} Applied</span>
+              </div>
+              {% if cart.coupon.description %}
+              <div class="tt-coupon-promo-desc mb-1" style="font-size: 0.9rem; color: #253746;">
+                "{{ cart.coupon.description }}"
+              </div>
+              {% endif %}
+              <small class="text-success fw-semibold d-block">You saved ₹{{ cart.discount_amount|floatformat:2 }}</small>
+            </div>
+            <form action="{% url 'customer:cart_remove_coupon' %}" method="post" class="m-0">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2 rounded-2" style="font-size: 0.78rem;">Remove</button>
+            </form>
+          </div>
+        </div>
+        {% else %}
+        <!-- Manual Promo Code Entry Form -->
+        <form action="{% url 'customer:cart_apply_coupon' %}" method="post" class="mt-2">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <div class="input-group">
+            <input type="text" name="coupon_code" class="form-control form-control-sm text-uppercase font-monospace rounded-start-3" placeholder="e.g. FESTIVE50, FIRST50" required>
+            <button type="submit" class="btn btn-sm btn-tt-coupon-apply rounded-end-3 px-3">Apply</button>
+          </div>
+        </form>
+
+        {% if available_coupons %}
+        <div class="mt-3">
+          <button type="button" class="btn btn-sm w-100 py-2.5 rounded-3 text-start d-flex align-items-center justify-content-between border shadow-xs" style="background-color: #F7F5F0; border-color: #E5E7EB !important; color: #253746; transition: all 0.2s;" data-bs-toggle="modal" data-bs-target="#cartCouponsModal">
+            <span class="small fw-semibold d-flex align-items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E6AD45" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><circle cx="7" cy="7" r="1"></circle></svg>
+              Available Coupons ({{ available_coupons.count }})
+            </span>
+            <span class="small fw-bold d-flex align-items-center gap-1" style="color: #253746;">
+              View Offers
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </span>
+          </button>
+        </div>
+        {% endif %}
+        {% endif %}
+      </div>
+
+      <!-- Price Breakdown Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: linear-gradient(180deg, #ffffff 0%, #fafcfa 100%);">
+        <h5 class="fw-bold fs-6 mb-3 pb-3 border-bottom text-dark">Bill Summary</h5>
+
+        <div class="d-flex justify-content-between py-2 small">
+          <span class="text-muted">Item Subtotal ({{ cart.items_count }} item{% if cart.items_count > 1 %}s{% endif %})</span>
+          <span class="fw-semibold text-dark">₹{{ cart.subtotal|floatformat:2 }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2 small">
+          <span class="text-muted">Delivery Partner Fee</span>
+          <span>
+            {% if cart.delivery_fee == 0 %}
+            <strong class="badge bg-success-subtle text-success px-2 py-1 rounded-pill">FREE DELIVERY</strong>
+            {% else %}
+            ₹{{ cart.delivery_fee|floatformat:2 }}
+            {% endif %}
+          </span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2 small">
+          <span class="text-muted">GST & Food Safety Packaging (5%)</span>
+          <span class="text-dark">₹{{ cart.tax_amount|floatformat:2 }}</span>
+        </div>
+
+        {% if cart.coupon %}
+        <div class="d-flex justify-content-between py-2 small fw-bold" style="color: var(--tt-primary, #253746);">
+          <div>
+            <span>Coupon Discount ({{ cart.coupon.code }})</span>
+            {% if cart.coupon.description %}
+            <small class="d-block text-muted fw-normal" style="font-size: 0.8rem;">{{ cart.coupon.description }}</small>
+            {% endif %}
+          </div>
+          <span class="text-success">- ₹{{ cart.discount_amount|floatformat:2 }}</span>
+        </div>
+        {% endif %}
+
+        <div class="d-flex justify-content-between py-3 my-2 border-top border-bottom fs-5 fw-bold text-dark">
+          <span>To Pay</span>
+          <span style="color: var(--tt-primary);">₹{{ cart.final_total|floatformat:2 }}</span>
+        </div>
+
+        <a href="{% url 'customer:checkout' %}" class="btn btn-tt-primary w-100 py-3 fs-6 rounded-3 mt-2 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+          <span>Proceed to Checkout</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </a>
+
+        <div class="text-center mt-3 small text-muted d-flex align-items-center justify-content-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tt-primary)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>Safe & Clean Thermal Box Packaging Guaranteed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="text-center py-5 bg-white rounded-4 border shadow-sm p-5 max-w-600 mx-auto" style="border-color: var(--tt-border) !important;">
+    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 80px; height: 80px; background-color: var(--tt-cream); color: var(--tt-primary);">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+    </div>
+    <h3 class="fw-bold mt-2 text-dark">Your Tiffin Cart is Empty</h3>
+    <p class="text-muted small mx-auto mb-4" style="max-width: 420px;">
+      You haven't added any homestyle meals to your cart yet. Explore today's freshly prepared kitchen menus from neighborhood home chefs.
+    </p>
+    <div class="d-flex justify-content-center flex-wrap gap-3">
+      <a href="{% url 'customer:menu' %}" class="btn btn-tt-primary px-4 py-2">Browse Daily Dishes</a>
+      <a href="{% url 'customer:plans' %}" class="btn btn-tt-outline px-4 py-2">Explore Meal Plans</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Available Coupons Modal on Cart Page -->
+<div class="modal fade" id="cartCouponsModal" tabindex="-1" aria-labelledby="cartCouponsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background: #F7F5F0;">
+      <div class="modal-header tt-coupon-modal-header">
+        <div>
+          <h5 class="modal-title fw-bold text-white fs-6 mb-0" id="cartCouponsModalLabel">Available Offers &amp; Coupons</h5>
+          <small class="text-white-50">Select and apply any promotional offer to your tiffin cart</small>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-3 p-md-4">
+        {% if available_coupons %}
+          <div class="coupon-list">
+            {% for cpn in available_coupons %}
+              <div class="tt-coupon-card {% if cart.coupon and cart.coupon.code == cpn.code %}is-applied{% endif %}">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                  <div class="tt-coupon-code-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                    <span>{{ cpn.code }}</span>
+                  </div>
+                  <div class="tt-coupon-discount-highlight">
+                    {% if cpn.discount_type == 'percent' %}
+                      {{ cpn.discount_value|floatformat:0 }}% OFF
+                    {% else %}
+                      ₹{{ cpn.discount_value|floatformat:0 }} FLAT OFF
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Promotional Description entered by Admin -->
+                <div class="tt-coupon-promo-desc">
+                  {% if cpn.description %}
+                    "{{ cpn.description }}"
+                  {% else %}
+                    Special promotional savings on your meal order.
+                  {% endif %}
+                </div>
+
+                <div class="tt-coupon-dashed-divider"></div>
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-1">
+                  <div class="tt-coupon-meta">
+                    <div>Min. order: <strong>₹{{ cpn.min_order_amount|floatformat:0 }}</strong></div>
+                    {% if cpn.discount_type == 'percent' and cpn.max_discount_amount %}
+                      <div>Max. discount: <strong>₹{{ cpn.max_discount_amount|floatformat:0 }}</strong></div>
+                    {% endif %}
+                    <div>
+                      {% if cpn.valid_until %}
+                        Expires: <strong>{{ cpn.valid_until|date:"d M Y" }}</strong>
+                      {% else %}
+                        <strong>No Expiry</strong>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div>
+                    {% if cart.coupon and cart.coupon.code == cpn.code %}
+                      <span class="btn-tt-coupon-applied">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Applied
+                      </span>
+                    {% else %}
+                      <form action="{% url 'customer:cart_apply_coupon' %}" method="post" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="coupon_code" value="{{ cpn.code }}">
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" class="btn btn-tt-coupon-apply">
+                          Apply Coupon
+                        </button>
+                      </form>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-4 text-muted">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5" class="mb-2"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            <p class="mb-0 fw-medium">No promotional coupons available at the moment.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

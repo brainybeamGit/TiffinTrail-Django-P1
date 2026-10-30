@@ -1,0 +1,87 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}Notifications | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}ALERTS & COMMUNICATIONS{% endblock %}
+{% block page_heading %}Notification Center{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title">
+           Kitchen Notifications
+          {% if chef_unread_count > 0 %}
+            <span class="badge bg-danger ms-2">{{ chef_unread_count }} Unread</span>
+          {% endif %}
+        </h5>
+
+        {% if chef_unread_count > 0 %}
+          <form action="{% url 'chef:notifications_mark_all_read' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Mark All as Read</button>
+          </form>
+        {% endif %}
+      </div>
+
+      <div class="tt-card-body p-0">
+        <div class="d-flex flex-column">
+          {% for notif in page_obj %}
+            <div class="p-3 border-bottom d-flex align-items-center justify-content-between {% if not notif.is_read %}bg-light border-start border-4 border-success{% endif %}">
+              <div class="d-flex align-items-start gap-3">
+                <div class="fs-4">
+                  {% if notif.notification_type == 'order' %}
+                  {% elif notif.notification_type == 'order_cancel' %}
+                  {% elif notif.notification_type == 'subscription' %}
+                  {% elif notif.notification_type == 'review' %}★
+                  {% else %}{% endif %}
+                </div>
+                <div>
+                  <h6 class="mb-1 fw-bold text-dark">{{ notif.title }}</h6>
+                  <p class="mb-1 text-secondary small">{{ notif.message }}</p>
+                  <span class="text-muted small">{{ notif.created_at|timesince }} ago</span>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                {% if notif.link %}
+                  <a href="{{ notif.link }}" class="btn btn-sm btn-outline-primary">View →</a>
+                {% endif %}
+                {% if not notif.is_read %}
+                  <form action="{% url 'chef:notification_mark_read' notif.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="Mark as read">✓</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+          {% empty %}
+            <div class="text-center py-5 text-muted">
+              <div class="fs-1 mb-2"></div>
+              <h5>No notifications yet.</h5>
+              <p class="small mb-0">Order alerts, subscription updates, and customer reviews will be notified here.</p>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+          <div class="p-3 border-top d-flex justify-content-between align-items-center">
+            <span class="text-muted small">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            <ul class="pagination pagination-sm mb-0">
+              {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+              {% endif %}
+              <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+              {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

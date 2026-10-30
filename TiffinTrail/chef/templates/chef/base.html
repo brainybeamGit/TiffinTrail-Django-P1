@@ -1,0 +1,293 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Chef Studio | TiffinTrail{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{% static 'css/design-system.css' %}?v=4.0">
+  <link rel="stylesheet" href="{% static 'css/animations.css' %}">
+  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=4.0">
+  <style>
+    /* Table Action Buttons & Cell Polish */
+    .tt-actions-cell {
+      white-space: nowrap !important;
+      text-align: right !important;
+      min-width: 155px !important;
+      padding-right: 20px !important;
+    }
+    .tt-actions-group {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 6px !important;
+      flex-wrap: nowrap !important;
+    }
+    .tt-btn-action {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 5px !important;
+      padding: 5px 12px !important;
+      font-size: 0.78rem !important;
+      font-weight: 600 !important;
+      line-height: 1.3 !important;
+      border-radius: 6px !important;
+      text-decoration: none !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease-in-out !important;
+      white-space: nowrap !important;
+      outline: none !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+    }
+    .tt-btn-action-primary {
+      background-color: #eff6ff !important;
+      color: #1d4ed8 !important;
+      border: 1px solid #bfdbfe !important;
+    }
+    .tt-btn-action-primary:hover {
+      background-color: #1d4ed8 !important;
+      color: #ffffff !important;
+      border-color: #1d4ed8 !important;
+      box-shadow: 0 2px 4px rgba(29, 78, 216, 0.25) !important;
+    }
+    .tt-btn-action-danger {
+      background-color: #fef2f2 !important;
+      color: #dc2626 !important;
+      border: 1px solid #fecaca !important;
+    }
+    .tt-btn-action-danger:hover {
+      background-color: #dc2626 !important;
+      color: #ffffff !important;
+      border-color: #dc2626 !important;
+      box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25) !important;
+    }
+    .tt-btn-action-secondary {
+      background-color: #f8fafc !important;
+      color: #475569 !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+    .tt-btn-action-secondary:hover {
+      background-color: #e2e8f0 !important;
+      color: #1e293b !important;
+    }
+
+    /* Drag-to-Scroll on Table Details */
+    .tt-table-responsive,
+    .table-responsive {
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .tt-table-responsive.tt-is-dragging,
+    .table-responsive.tt-is-dragging {
+      cursor: grabbing !important;
+    }
+    .tt-table-responsive.tt-is-dragging * {
+      cursor: grabbing !important;
+      user-select: none !important;
+    }
+    .tt-table-responsive a,
+    .tt-table-responsive button,
+    .tt-table-responsive input,
+    .tt-table-responsive select,
+    .tt-table-responsive .tt-btn-action {
+      cursor: pointer;
+      user-select: auto;
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="tt-chef-body">
+<div class="tt-layout">
+  <!-- Sidebar -->
+  <aside class="tt-sidebar" id="ttSidebar">
+    <!-- Brand -->
+    <a class="tt-brand" href="{% url 'chef:dashboard' %}">
+      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" class="tt-brand-logo" style="width: 42px; height: 42px; object-fit: contain; border-radius: 10px;">
+      <div class="tt-brand-text">
+        <span class="tt-brand-name">TiffinTrail</span>
+        <span class="tt-brand-subtitle">Chef Studio</span>
+      </div>
+    </a>
+
+    <!-- Chef Info Snippet -->
+    {% if current_chef %}
+    <div class="tt-chef-card">
+      {% if current_chef.profile_image %}
+        <img src="{{ current_chef.profile_image.url }}" alt="{{ current_chef.business_name }}" class="tt-chef-avatar">
+      {% else %}
+        <div class="tt-chef-avatar">{{ current_chef.business_name|slice:":1"|default:"C" }}</div>
+      {% endif %}
+      <div class="tt-chef-details">
+        <div class="tt-chef-biz" title="{{ current_chef.business_name }}">{{ current_chef.business_name }}</div>
+        <div class="tt-chef-badge">
+          {% if current_chef.is_accepting_orders %}
+            <span class="tt-status-dot"></span> Accepting Orders
+          {% else %}
+            <span class="tt-status-dot inactive"></span> Paused
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Navigation Menu -->
+    <div class="tt-nav-label">MAIN WORKSPACE</div>
+    <nav class="tt-nav">
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'chef:dashboard' %}">
+        <span>Dashboard Overview</span>
+      </a>
+      <a class="tt-nav-link {% if request.resolver_match.url_name in 'profile profile_edit' %}active{% endif %}" href="{% url 'chef:profile' %}">
+        <span>My Profile</span>
+      </a>
+      <a class="tt-nav-link {% if 'menu' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:daily_menu' %}">
+        <span>Daily Menu & Calendar</span>
+      </a>
+      <a class="tt-nav-link {% if 'meal' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:meals' %}">
+        <span>Manage Meals</span>
+      </a>
+      <a class="tt-nav-link {% if 'categories' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:categories' %}">
+        <span>Meal Categories</span>
+      </a>
+    </nav>
+
+    <div class="tt-nav-label">ORDERS & CUSTOMERS</div>
+    <nav class="tt-nav">
+      <a class="tt-nav-link {% if 'orders' in request.resolver_match.url_name or 'deliveries' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:orders' %}">
+        <span>Incoming Orders</span>
+      </a>
+      <a class="tt-nav-link {% if 'subscription' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:subscriptions' %}">
+        <span>Subscription Diners</span>
+      </a>
+      <a class="tt-nav-link {% if 'plan' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:plans' %}">
+        <span>Subscription Plans</span>
+      </a>
+    </nav>
+
+    <div class="tt-nav-label">FINANCE & FEEDBACK</div>
+    <nav class="tt-nav">
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'earnings' %}active{% endif %}" href="{% url 'chef:earnings' %}">
+        <span>Earnings & Payouts</span>
+      </a>
+      <a class="tt-nav-link {% if request.resolver_match.url_name in 'reviews feedback' %}active{% endif %}" href="{% url 'chef:reviews' %}">
+        <span>Reviews & Ratings</span>
+      </a>
+      <a class="tt-nav-link {% if 'notification' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:notifications' %}">
+        <span>Notifications</span>
+        {% if chef_unread_count > 0 %}
+          <span class="tt-badge-count">{{ chef_unread_count }}</span>
+        {% endif %}
+      </a>
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}" href="{% url 'chef:settings' %}">
+        <span>Kitchen Settings</span>
+      </a>
+    </nav>
+
+    <!-- Bottom Actions -->
+    <div class="tt-sidebar-bottom">
+      {% if current_chef %}
+      <a class="tt-sidebar-link-btn" href="{% url 'customer:chef_detail' current_chef.id %}" target="_blank">
+        <span>Preview Public Kitchen ↗</span>
+      </a>
+      {% endif %}
+      <a class="tt-sidebar-link-btn" href="{% url 'customer:home' %}">
+        <span>Switch to Diner Site</span>
+      </a>
+      <a class="tt-sidebar-link-btn text-danger" href="{% url 'chef:logout' %}">
+        <span>Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrap -->
+  <main class="tt-main">
+    <!-- Topbar -->
+    <header class="tt-topbar">
+      <div class="tt-topbar-left">
+        <button class="tt-menu-toggle" id="ttMenuToggle" type="button" aria-label="Toggle Navigation"></button>
+        <div>
+          <span class="tt-eyebrow">{% block eyebrow %}CHEF MANAGEMENT PORTAL{% endblock %}</span>
+          <h1 class="tt-page-title">{% block page_heading %}Dashboard{% endblock %}</h1>
+        </div>
+      </div>
+
+      <div class="tt-topbar-right">
+        <!-- Kitchen Status Badge -->
+        {% if current_chef %}
+          <div class="tt-status-pill d-none d-md-inline-flex">
+            {% if current_chef.is_accepting_orders %}
+              <span class="tt-status-dot"></span> Kitchen Open
+            {% else %}
+              <span class="tt-status-dot inactive"></span> Kitchen Paused
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <!-- Notification Bell -->
+        <a class="tt-topbar-notif" href="{% url 'chef:notifications' %}" title="Notifications">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          {% if chef_unread_count > 0 %}
+            <span class="tt-notif-dot">{{ chef_unread_count }}</span>
+          {% endif %}
+        </a>
+
+        <!-- Chef Profile Dropdown -->
+        <div class="dropdown">
+          <a class="tt-topbar-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {% if current_chef and current_chef.profile_image %}
+              <img src="{{ current_chef.profile_image.url }}" alt="Profile" class="tt-topbar-avatar">
+            {% else %}
+              <div class="tt-topbar-avatar">{{ request.user.first_name|slice:":1"|default:"C" }}</div>
+            {% endif %}
+            <span class="d-none d-sm-inline fw-semibold">{{ current_chef.business_name|default:request.user.username }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border">
+            <li><h6 class="dropdown-header">Chef Account</h6></li>
+            <li><a class="dropdown-item" href="{% url 'chef:profile' %}">My Kitchen Profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'chef:settings' %}">Kitchen Settings</a></li>
+            {% if current_chef %}
+            <li><a class="dropdown-item" href="{% url 'customer:chef_detail' current_chef.id %}" target="_blank">View Public Profile ↗</a></li>
+            {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{% url 'chef:logout' %}">Sign Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <section class="tt-content">
+      <!-- Flash Messages -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </section>
+
+    <!-- Footer -->
+    <footer class="tt-footer">
+      <div>© {% now "Y" %} <strong>TiffinTrail</strong> – Homemade Meals & Subscription Platform.</div>
+      <div>
+        <span class="badge bg-light text-muted border">FSSAI Compliant Platform</span>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/animations.js' %}"></script>
+<script src="{% static 'js/chef.js' %}?v=4.1"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

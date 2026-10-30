@@ -1,0 +1,99 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Contact & Support | TiffinTrail{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom bg-white">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">Contact Support</li>
+      </ol>
+    </nav>
+    <h1 class="h3 fw-bold mb-1" style="color: var(--tt-text-main);">We're Here to Help</h1>
+    <p class="text-muted small mb-0">Have a question about subscriptions, dietary needs, or becoming a chef partner? Reach out.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5" style="border: 1px solid var(--tt-border) !important;">
+        <h3 class="h4 fw-bold mb-3 text-dark">Send Us a Message</h3>
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold text-muted">Your Name</label>
+              <input type="text" name="name" class="form-control rounded-3" value="{{ request.user.get_full_name|default:request.user.username }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold text-muted">Email Address</label>
+              <input type="email" name="email" class="form-control rounded-3" value="{{ request.user.email }}" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-muted">Subject</label>
+            <input type="text" name="subject" class="form-control rounded-3" placeholder="e.g. Corporate Office Tiffin Query, Dietary Request" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-semibold text-muted">Message Details</label>
+            <textarea name="message" rows="5" class="form-control rounded-3" placeholder="Tell us how we can assist you..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-tt-primary px-4 py-2.5 rounded-3 shadow-sm">
+            Send Inquiry
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important;">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark">Direct Contact Channels</h5>
+        <div class="d-grid gap-4 small">
+          <div class="d-flex gap-3 align-items-start">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px; background-color: var(--tt-cream); color: var(--tt-primary); border: 1px solid var(--tt-border);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div>
+              <strong class="text-dark">Bengaluru Central Hub:</strong><br>
+              <span class="text-muted">12th Main Road, HAL 2nd Stage, Indiranagar, Bengaluru, Karnataka 560038</span>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 align-items-start">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px; background-color: var(--tt-cream); color: var(--tt-primary); border: 1px solid var(--tt-border);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </div>
+            <div>
+              <strong class="text-dark">Customer Support Helpline:</strong><br>
+              <span class="text-muted">+91 (800) 123-4567 (Mon – Sun: 8 AM to 9 PM)</span>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 align-items-start">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 40px; height: 40px; background-color: var(--tt-cream); color: var(--tt-primary); border: 1px solid var(--tt-border);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <div>
+              <strong class="text-dark">Email Inquiries:</strong><br>
+              <span class="text-muted">support@tiffintrail.com / chefs@tiffintrail.com</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, var(--tt-deep-green), var(--tt-primary)); color: white;">
+        <h5 class="fw-bold mb-2">Join as a Home Chef</h5>
+        <p class="small text-white-50 mb-3" style="line-height: 1.6;">Cook from the comfort of your home kitchen, choose your daily menu capacity, and earn a dignified livelihood doing what you love.</p>
+        <span class="badge bg-white text-success px-3 py-2 rounded-pill fw-bold">Inquire via email: chefs@tiffintrail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

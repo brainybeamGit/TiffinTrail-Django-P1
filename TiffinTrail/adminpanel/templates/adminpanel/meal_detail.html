@@ -1,0 +1,139 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Meal: {{ meal.name }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}DISH MODERATION & DETAILS{% endblock %}
+{% block page_heading %}{{ meal.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <a href="{% url 'adminpanel:meals' %}" class="btn btn-sm btn-outline-secondary">← Back to Meals</a>
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-muted small">Status:</span>
+    {% if meal.is_available %}
+      <span class="badge bg-success">Available for Order</span>
+    {% else %}
+      <span class="badge bg-secondary">Unavailable</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-4 justify-content-center">
+  <div class="col-lg-9">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title"> Edit Dish Details</h5>
+        <span class="badge bg-light text-muted border">Times Ordered: {{ orders_count }}</span>
+      </div>
+
+      <div class="tt-card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-8">
+              <label class="tt-form-label">Dish Name *</label>
+              {{ form.name }}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Home Chef *</label>
+              {{ form.chef }}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Category</label>
+              {{ form.category }}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Meal Slot</label>
+              {{ form.meal_type }}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Cuisine Style</label>
+              {{ form.cuisine }}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Price per Portion (₹) *</label>
+              {{ form.price }}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Available Portions</label>
+              {{ form.available_quantity }}
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-check p-3 bg-light rounded border mt-4">
+                {{ form.is_veg }}
+                <label class="form-check-label fw-semibold ms-2" for="{{ form.is_veg.id_for_label }}">
+                  Pure Vegetarian
+                </label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-check form-switch p-3 bg-light rounded border">
+                {{ form.is_available }}
+                <label class="form-check-label fw-bold ms-2" for="{{ form.is_available.id_for_label }}">
+                  Available on Customer Website
+                </label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-check form-switch p-3 bg-light rounded border">
+                {{ form.is_featured }}
+                <label class="form-check-label fw-bold ms-2" for="{{ form.is_featured.id_for_label }}">
+                  Featured Dish
+                </label>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Description</label>
+              {{ form.description }}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteMealModal">
+              Delete Dish
+            </button>
+            <div class="d-flex gap-2">
+              <a href="{% url 'adminpanel:meals' %}" class="btn btn-outline-secondary">Cancel</a>
+              <button type="submit" class="btn btn-success px-4 fw-semibold">Save Dish Changes</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Meal Modal -->
+<div class="modal fade" id="deleteMealModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form action="{% url 'adminpanel:meal_delete' meal.id %}" method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title fs-6 fw-bold text-danger">Confirm Dish Deletion</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-1">Are you sure you want to permanently delete <strong>"{{ meal.name }}"</strong>?</p>
+          <p class="text-muted small mb-0">This dish will be permanently removed from Chef {{ meal.chef.business_name }}'s menu.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sm btn-danger fw-semibold">Permanently Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

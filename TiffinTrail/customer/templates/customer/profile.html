@@ -1,0 +1,158 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}My Profile & Account | TiffinTrail{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom bg-white">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">My Profile</li>
+      </ol>
+    </nav>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+      <div class="d-flex align-items-center gap-3">
+        {% if profile.profile_image %}
+        <img src="{{ profile.profile_image.url }}" class="rounded-circle shadow-sm border border-3 border-white" style="width: 72px; height: 72px; object-fit: cover;" alt="Profile Picture">
+        {% else %}
+        <div class="tt-avatar-initials rounded-circle" style="width: 72px; height: 72px; font-size: 1.8rem; background-color: var(--tt-primary); color: white;">
+          {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
+        </div>
+        {% endif %}
+        <div>
+          <h1 class="h3 fw-bold mb-0 text-dark">{{ request.user.get_full_name|default:request.user.username }}</h1>
+          <div class="small text-muted">{{ request.user.email }} · {{ profile.phone|default:"No phone added" }}</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="{% url 'customer:edit_profile' %}" class="btn btn-sm btn-tt-primary rounded-3 px-3 py-2">Edit Profile</a>
+        <a href="{% url 'customer:change_password' %}" class="btn btn-sm btn-tt-outline rounded-3 px-3 py-2">Change Password</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Left Column: Shortcuts & Overview -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important;">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark">Quick Navigation</h5>
+        <div class="d-grid gap-2">
+          <a href="{% url 'customer:my_subscriptions' %}" class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center text-dark text-decoration-none border" style="border-color: var(--tt-border) !important;">
+            <div>
+              <strong class="d-block small text-dark">Active Subscriptions</strong>
+              <small class="text-muted">Manage recurring tiffins</small>
+            </div>
+            <span class="badge bg-success rounded-pill px-2.5 py-1">{{ active_subs.count }}</span>
+          </a>
+
+          <a href="{% url 'customer:order_history' %}" class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center text-dark text-decoration-none border" style="border-color: var(--tt-border) !important;">
+            <div>
+              <strong class="d-block small text-dark">Past Orders</strong>
+              <small class="text-muted">Tracking & reordering</small>
+            </div>
+            <span class="badge bg-secondary rounded-pill px-2.5 py-1">{{ recent_orders.count }}</span>
+          </a>
+
+          <a href="{% url 'customer:reviews' %}" class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center text-dark text-decoration-none border" style="border-color: var(--tt-border) !important;">
+            <div>
+              <strong class="d-block small text-dark">My Reviews</strong>
+              <small class="text-muted">Ratings for local chefs</small>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important;">
+        <h5 class="fw-bold fs-6 mb-2 text-dark">Account Security</h5>
+        <p class="small text-muted mb-3">Your personal delivery details and passwords are securely encrypted.</p>
+        <a href="{% url 'customer:logout' %}" class="btn btn-sm btn-outline-danger w-100 rounded-3 py-2">
+          Log Out of TiffinTrail
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Delivery Addresses Book -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important;">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+          <h5 class="fw-bold fs-6 mb-0 text-dark">Saved Delivery Addresses ({{ addresses.count }})</h5>
+          <a href="{% url 'customer:add_address' %}" class="btn btn-sm btn-tt-primary rounded-3 px-3">
+            + Add New Address
+          </a>
+        </div>
+
+        {% if addresses %}
+        <div class="row g-3">
+          {% for addr in addresses %}
+          <div class="col-md-6">
+            <div class="p-3 rounded-3 border h-100 d-flex flex-column {% if addr.is_default %}border-success bg-success-subtle bg-opacity-10{% endif %}" style="border-color: var(--tt-border) !important;">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <strong class="small text-dark">{{ addr.title }}</strong>
+                {% if addr.is_default %}
+                <span class="badge bg-success small px-2 py-0.5 rounded-pill">Default</span>
+                {% endif %}
+              </div>
+
+              <div class="small fw-semibold mb-1 text-dark">{{ addr.recipient_name }} · {{ addr.phone_number }}</div>
+              <p class="small text-muted mb-3 flex-grow-1">
+                {{ addr.formatted }}
+                {% if addr.delivery_notes %}
+                <span class="d-block mt-1 fst-italic">Note: {{ addr.delivery_notes }}</span>
+                {% endif %}
+              </p>
+
+              <div class="d-flex gap-2 pt-2 border-top mt-auto">
+                <a href="{% url 'customer:edit_address' addr.pk %}" class="btn btn-sm btn-light border py-1 px-2.5 rounded-2 small text-dark">
+                  Edit
+                </a>
+                <form action="{% url 'customer:delete_address' addr.pk %}" method="post" class="m-0">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2.5 rounded-2 small" onclick="return confirm('Delete this address?');">
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4 text-muted small">
+          <p class="mb-2">No saved delivery addresses found.</p>
+          <a href="{% url 'customer:add_address' %}" class="btn btn-sm btn-tt-outline rounded-3">Add Your First Address</a>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Recent Orders Shortcut -->
+      {% if recent_orders %}
+      <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important;">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+          <h5 class="fw-bold fs-6 mb-0 text-dark">Recent Order Activity</h5>
+          <a href="{% url 'customer:order_history' %}" class="small text-decoration-none fw-semibold" style="color: var(--tt-primary);">View All Orders →</a>
+        </div>
+        <div class="d-grid gap-2">
+          {% for ord in recent_orders %}
+          <div class="d-flex justify-content-between align-items-center p-2.5 rounded-3 bg-light small border" style="border-color: var(--tt-border) !important;">
+            <div>
+              <span class="font-monospace fw-bold text-dark">{{ ord.order_number }}</span>
+              <span class="text-muted ms-2">{{ ord.chef.business_name }}</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-light text-dark border px-2 py-1">{{ ord.get_status_display }}</span>
+              <a href="{% url 'customer:order_detail' ord.pk %}" class="btn btn-sm btn-tt-outline py-0.5 px-2 rounded-2">View</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

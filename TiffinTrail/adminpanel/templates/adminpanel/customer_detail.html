@@ -1,0 +1,214 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Customer #{{ customer.id }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}CUSTOMER PROFILE & RECORD{% endblock %}
+{% block page_heading %}{{ customer.get_full_name|default:customer.username }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <a href="{% url 'adminpanel:customers' %}" class="btn btn-sm btn-outline-secondary">← Back to Customers</a>
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-muted small">Account Status:</span>
+    {% if customer.is_active %}
+      <span class="badge bg-success px-3 py-1">Active Account</span>
+    {% else %}
+      <span class="badge bg-danger px-3 py-1">Deactivated Account</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <!-- Left Side: Profile Summary & Account Controls -->
+  <div class="col-lg-4">
+    <div class="tt-card mb-4 text-center p-4">
+      <div class="tt-topbar-avatar mx-auto mb-3" style="width: 70px; height: 70px; font-size: 1.75rem;">
+        {{ customer.first_name|slice:":1"|default:"U" }}
+      </div>
+      <h4 class="fw-bold mb-1">{{ customer.get_full_name|default:customer.username }}</h4>
+      <p class="text-muted small mb-3">@{{ customer.username }}</p>
+
+      <div class="border-top pt-3 text-start small">
+        <div class="mb-2"><strong>Email:</strong> {{ customer.email|default:"None" }}</div>
+        <div class="mb-2"><strong>Phone:</strong> {{ customer.customer_profile.phone|default:"None" }}</div>
+        <div class="mb-2"><strong>Joined Date:</strong> {{ customer.date_joined|date:"d M Y, H:i" }}</div>
+        <div><strong>Total Lifetime Spent:</strong> <span class="text-success fw-bold fs-6">₹{{ total_spent }}</span></div>
+      </div>
+
+      <!-- Account Activation / Deactivation -->
+      <div class="mt-4 pt-3 border-top">
+        <form action="{% url 'adminpanel:customer_toggle_status' customer.id %}" method="post">
+          {% csrf_token %}
+          <div class="tt-toggle-row {% if customer.is_active %}is-on{% else %}is-off tt-toggle-danger{% endif %}"
+            {% if customer.is_active %}onclick="if(!confirm('Deactivate this customer? They will not be able to log in.')) { event.preventDefault(); }"{% endif %}>
+            <div class="tt-toggle-row-left">
+              <div class="tt-toggle-row-icon {% if customer.is_active %}icon-green{% else %}icon-red{% endif %}">
+                {% if customer.is_active %}✅{% else %}🚫{% endif %}
+              </div>
+              <div>
+                <p class="tt-toggle-row-title">
+                  Account Status
+                  {% if customer.is_active %}
+                    <span class="tt-toggle-row-status status-on">Active</span>
+                  {% else %}
+                    <span class="tt-toggle-row-status status-off">Disabled</span>
+                  {% endif %}
+                </p>
+                <p class="tt-toggle-row-desc">
+                  {% if customer.is_active %}Customer can log in and place orders.{% else %}Account disabled — cannot log in.{% endif %}
+                </p>
+              </div>
+            </div>
+            <label class="tt-toggle-switch {% if not customer.is_active %}tt-toggle-danger{% endif %}" for="customerActiveToggle"
+              title="{% if customer.is_active %}Click to deactivate{% else %}Click to reactivate{% endif %}">
+              <input type="checkbox" id="customerActiveToggle"
+                {% if customer.is_active %}checked{% endif %}
+                onchange="this.form.submit()">
+              <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
+            </label>
+          </div>
+        </form>
+      </div>
+
+
+    </div>
+
+    <!-- Saved Addresses -->
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Saved Delivery Addresses</h5>
+      </div>
+      <div class="tt-card-body small">
+        {% for addr in addresses %}
+          <div class="p-2 mb-2 bg-light rounded border">
+            <strong>{{ addr.title }}</strong> · {{ addr.recipient_name }} ({{ addr.phone_number }})
+            <div class="text-secondary mt-1">{{ addr.street_address }}, {{ addr.area }}, {{ addr.city }} - {{ addr.pincode }}</div>
+          </div>
+        {% empty %}
+          <span class="text-muted">No saved addresses on file.</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Order History & Subscriptions -->
+  <div class="col-lg-8">
+    <!-- Orders History -->
+    <div class="tt-card mb-4">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title"> Order History ({{ orders.count }})</h5>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Chef</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ord in orders %}
+                <tr>
+                  <td><strong>{{ ord.order_number }}</strong></td>
+                  <td>{{ ord.chef.business_name }}</td>
+                  <td>{{ ord.created_at|date:"d M Y" }}</td>
+                  <td><strong>₹{{ ord.final_amount }}</strong></td>
+                  <td><span class="tt-badge tt-badge-{{ ord.status }}">{{ ord.get_status_display }}</span></td>
+                  <td><a href="{% url 'adminpanel:order_detail' ord.id %}" class="btn btn-xs btn-outline-primary">View</a></td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center py-3 text-muted small">No orders placed by this customer.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscriptions History -->
+    <div class="tt-card mb-4">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Subscriptions ({{ subscriptions.count }})</h5>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Subscription #</th>
+                <th>Chef & Plan</th>
+                <th>Term</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sub in subscriptions %}
+                <tr>
+                  <td><strong>{{ sub.subscription_number }}</strong></td>
+                  <td>{{ sub.chef.business_name }} · {{ sub.plan.name }}</td>
+                  <td>{{ sub.start_date|date:"d M" }} – {{ sub.end_date|date:"d M Y" }}</td>
+                  <td>₹{{ sub.total_amount }}</td>
+                  <td><span class="badge {% if sub.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">{{ sub.get_status_display }}</span></td>
+                  <td><a href="{% url 'adminpanel:subscription_detail' sub.id %}" class="btn btn-xs btn-outline-primary">View</a></td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center py-3 text-muted small">No subscriptions enrolled.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Complaints History -->
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Support Tickets / Complaints ({{ complaints.count }})</h5>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Ticket #</th>
+                <th>Subject</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cmp in complaints %}
+                <tr>
+                  <td><strong>{{ cmp.ticket_number }}</strong></td>
+                  <td>{{ cmp.subject }}</td>
+                  <td><span class="badge bg-light text-dark border">{{ cmp.get_category_display }}</span></td>
+                  <td><span class="badge {% if cmp.priority == 'urgent' %}bg-danger{% else %}bg-secondary{% endif %}">{{ cmp.get_priority_display }}</span></td>
+                  <td><span class="tt-badge tt-badge-{{ cmp.status }}">{{ cmp.get_status_display }}</span></td>
+                  <td><a href="{% url 'adminpanel:complaint_detail' cmp.id %}" class="btn btn-xs btn-outline-primary">Manage</a></td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center py-3 text-muted small">No complaints submitted by this customer.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

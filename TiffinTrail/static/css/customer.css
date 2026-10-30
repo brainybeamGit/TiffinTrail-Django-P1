@@ -1,0 +1,829 @@
+/* ==========================================================================
+   TiffinTrail - Customer Design System & Core Stylesheet
+   Theme:
+     - Charcoal Blue: #253746
+     - Golden Yellow: #E6AD45
+     - Warm Off-White: #F7F5F0
+     - Pure White: #FFFFFF
+     - Primary Text: #253746
+     - Secondary Text: #6B7280
+     - Border Color: #E5E7EB
+   ========================================================================== */
+
+:root {
+  --tt-cream-bg: #F7F5F0;
+  --tt-cream-surface: #FFFFFF;
+  --tt-cream-subtle: #f0ece3;
+  --tt-cream-border: #E5E7EB;
+
+  --tt-charcoal: #253746;
+  --tt-charcoal-dark: #192631;
+  --tt-charcoal-light: #344859;
+
+  --tt-gold: #E6AD45;
+  --tt-gold-hover: #d89f38;
+  --tt-gold-light: #fef8ee;
+
+  --tt-text-main: #253746;
+  --tt-text-muted: #6B7280;
+  --tt-text-light: #9CA3AF;
+
+  --tt-veg-green: #2E8B57;
+  --tt-nonveg-red: #DC3545;
+
+  --tt-font-sans: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --tt-radius-sm: 8px;
+  --tt-radius-md: 12px;
+  --tt-radius-lg: 18px;
+  --tt-radius-xl: 24px;
+  --tt-radius-full: 9999px;
+
+  --tt-shadow-sm: 0 2px 8px rgba(37, 55, 70, 0.06);
+  --tt-shadow-md: 0 8px 24px rgba(37, 55, 70, 0.08);
+  --tt-shadow-lg: 0 14px 32px rgba(37, 55, 70, 0.12);
+  --tt-shadow-hover: 0 16px 36px rgba(37, 55, 70, 0.14);
+
+  --tt-transition: all 0.22s ease;
+}
+
+/* Base & Global Elements */
+body.tt-customer-body {
+  background-color: var(--tt-cream-bg);
+  color: var(--tt-text-main);
+  font-family: var(--tt-font-sans);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+a {
+  color: var(--tt-charcoal);
+  text-decoration: none;
+  transition: var(--tt-transition);
+}
+a:hover {
+  color: var(--tt-gold);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--tt-charcoal);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   Navigation Bar
+   ========================================================================== */
+/* ==========================================================================
+   Navigation Bar
+   ========================================================================== */
+.tt-navbar {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid #ECEAE3;
+  padding: 0.65rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  box-shadow: 0 1px 6px rgba(37, 55, 70, 0.04);
+  transition: all 0.25s ease;
+}
+
+.tt-navbar.is-scrolled {
+  box-shadow: 0 4px 20px rgba(37, 55, 70, 0.08);
+  background: rgba(255, 255, 255, 0.99);
+  padding: 0.5rem 0;
+}
+
+.tt-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: var(--tt-charcoal) !important;
+  text-decoration: none;
+}
+
+.tt-brand-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  transition: transform var(--tt-transition);
+}
+.tt-brand:hover .tt-brand-logo {
+  transform: scale(1.04);
+}
+
+.tt-brand span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.tt-brand small {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--tt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+.tt-navbar .navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+@media (min-width: 1200px) {
+  .tt-navbar .navbar-nav {
+    gap: 0.45rem;
+  }
+}
+
+.tt-navbar .nav-link {
+  color: #4B5563 !important;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.85rem !important;
+  border-radius: var(--tt-radius-full);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tt-navbar .nav-link:hover {
+  color: var(--tt-charcoal) !important;
+  background-color: #F3F1EC;
+}
+
+/* Elegant, refined Active Nav Pill */
+.tt-navbar .nav-link.active {
+  color: #8C5B05 !important;
+  background-color: #FAF2E2 !important;
+  border: 1px solid rgba(230, 173, 69, 0.5);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(230, 173, 69, 0.12);
+}
+
+.tt-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tt-cart-badge-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--tt-radius-full);
+  background: #ffffff;
+  color: var(--tt-charcoal);
+  border: 1.5px solid #E5E7EB;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.tt-cart-badge-link:hover {
+  background: #ffffff;
+  color: var(--tt-charcoal);
+  border-color: var(--tt-charcoal);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 55, 70, 0.08);
+}
+
+.tt-cart-badge-link .badge-counter {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--tt-gold);
+  color: #253746;
+  font-size: 0.7rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: var(--tt-radius-full);
+  border: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modern User Dropdown Pill */
+.tt-user-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.32rem 0.9rem 0.32rem 0.45rem;
+  border-radius: var(--tt-radius-full);
+  border: 1.5px solid #E5E7EB;
+  background: #ffffff;
+  color: var(--tt-charcoal);
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.tt-user-menu-btn:hover,
+.tt-user-menu-btn:focus,
+.tt-user-menu-btn[aria-expanded="true"] {
+  border-color: var(--tt-charcoal);
+  background: #ffffff;
+  color: var(--tt-charcoal);
+  box-shadow: 0 4px 14px rgba(37, 55, 70, 0.1);
+  transform: translateY(-1px);
+}
+
+.tt-avatar-mini {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--tt-charcoal);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+
+.dropdown-menu {
+  border-radius: 14px !important;
+  border: 1px solid #ECEAE3 !important;
+  box-shadow: 0 12px 32px rgba(37, 55, 70, 0.12) !important;
+}
+
+.dropdown-item {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.15s ease;
+  border-radius: 8px;
+  margin: 0 4px;
+  width: calc(100% - 8px);
+}
+
+.dropdown-item:hover {
+  background-color: #F5F3ED;
+  color: var(--tt-charcoal);
+}
+
+/* ==========================================================================
+   Homepage Hero Section
+   ========================================================================== */
+.tt-hero-section {
+  padding: 4.5rem 0 3.5rem;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #FFFFFF 0%, var(--tt-cream-bg) 100%);
+}
+
+.tt-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  border: 1.5px solid var(--tt-cream-border);
+  border-radius: var(--tt-radius-full);
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tt-charcoal);
+  margin-bottom: 1.5rem;
+  box-shadow: var(--tt-shadow-sm);
+}
+
+.tt-hero-title {
+  font-size: 3.25rem;
+  font-weight: 800;
+  line-height: 1.18;
+  color: var(--tt-charcoal);
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.03em;
+}
+@media (max-width: 768px) {
+  .tt-hero-title {
+    font-size: 2.35rem;
+  }
+}
+
+.tt-hero-title .text-highlight {
+  color: var(--tt-gold);
+  position: relative;
+  display: inline-block;
+}
+
+.tt-hero-lead {
+  font-size: 1.15rem;
+  color: var(--tt-text-muted);
+  line-height: 1.7;
+  max-width: 580px;
+  margin-bottom: 2rem;
+}
+
+/* ==========================================================================
+   Cards: Meals, Chefs, Plans
+   ========================================================================== */
+.tt-chef-card,
+.tt-meal-card,
+.tt-plan-card {
+  background: #ffffff;
+  border: 1px solid var(--tt-cream-border);
+  border-radius: var(--tt-radius-lg);
+  overflow: hidden;
+  transition: var(--tt-transition);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: var(--tt-shadow-sm);
+}
+
+.tt-chef-card:hover,
+.tt-meal-card:hover,
+.tt-plan-card:hover {
+  transform: translateY(-4px);
+  border-color: #cbd5e1;
+  box-shadow: var(--tt-shadow-md);
+}
+
+.tt-card-cover {
+  position: relative;
+  height: 200px;
+  background: var(--tt-cream-subtle);
+  overflow: hidden;
+}
+
+.tt-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.tt-chef-card:hover .tt-card-cover img,
+.tt-meal-card:hover .tt-card-cover img {
+  transform: scale(1.05);
+}
+
+.tt-card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+}
+
+.tt-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--tt-charcoal);
+  margin-bottom: 0.35rem;
+}
+
+.tt-card-price {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--tt-charcoal);
+}
+
+/* Plan Card Highlight */
+.tt-plan-card.is-featured {
+  border: 2px solid var(--tt-gold) !important;
+  position: relative;
+  box-shadow: 0 10px 25px -5px rgba(229, 142, 38, 0.15), 0 4px 6px -2px rgba(229, 142, 38, 0.05);
+}
+.tt-plan-card.is-featured::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* ==========================================================================
+   Customer Footer (Charcoal Blue with Golden Yellow accents)
+   ========================================================================== */
+.tt-customer-footer {
+  background: var(--tt-charcoal);
+  color: #ffffff;
+  padding: 4.5rem 0 2rem;
+  margin-top: 5rem;
+}
+
+.tt-customer-footer h5 {
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.tt-customer-footer a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: var(--tt-transition);
+}
+.tt-customer-footer a:hover {
+  color: var(--tt-gold);
+}
+
+.tt-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 2rem;
+  margin-top: 3.5rem;
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+/* ==========================================================================
+   Customer Filter Pills (Categories & Status Bars)
+   ========================================================================== */
+.tt-filter-pill,
+.btn-outline-secondary.rounded-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  padding: 0.45rem 1.15rem !important;
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  border-radius: 999px !important;
+  color: #334155 !important;
+  background-color: #ffffff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  text-decoration: none !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  white-space: nowrap !important;
+  line-height: 1.35 !important;
+  cursor: pointer !important;
+}
+
+.tt-filter-pill:hover,
+.btn-outline-secondary.rounded-pill:hover {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  transform: translateY(-1.5px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.tt-filter-pill:active,
+.btn-outline-secondary.rounded-pill:active {
+  transform: translateY(0) !important;
+}
+
+.tt-filter-pill.active,
+.tt-filter-pill.is-active,
+.btn-tt-subtle.rounded-pill,
+.btn-tt-primary.rounded-pill.btn-sm {
+  background: linear-gradient(135deg, #253746, #162430) !important;
+  color: #ffffff !important;
+  border-color: #253746 !important;
+  box-shadow: 0 4px 14px rgba(37, 55, 70, 0.28) !important;
+  font-weight: 700 !important;
+}
+
+.tt-filter-pill.active:hover,
+.tt-filter-pill.is-active:hover,
+.btn-tt-subtle.rounded-pill:hover,
+.btn-tt-primary.rounded-pill.btn-sm:hover {
+  background: linear-gradient(135deg, #1c2b37, #0f1922) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 18px rgba(37, 55, 70, 0.35) !important;
+  transform: translateY(-1.5px) !important;
+}
+
+/* ==========================================================================
+   Order Tracking Stepper & Timeline System
+   ========================================================================== */
+.tt-live-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: #10b981;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: ttDotPulse 1.8s infinite;
+}
+
+.tt-timeline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  margin: 2.2rem 0 1.2rem;
+  padding: 0 0.5rem;
+}
+.tt-timeline::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 10%;
+  right: 10%;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  z-index: 1;
+}
+.tt-timeline-progress {
+  position: absolute;
+  top: 24px;
+  left: 10%;
+  height: 4px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 4px;
+  z-index: 2;
+  transition: width 0.4s ease;
+}
+
+.tt-timeline-step {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  padding: 0 0.25rem;
+}
+
+.tt-timeline-step .circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+  background: #ffffff;
+  border: 3px solid #cbd5e1;
+  color: #64748b;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.05);
+  margin-bottom: 0.75rem;
+}
+
+.tt-timeline-step .label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+  transition: color 0.2s ease;
+}
+.tt-timeline-step .sublabel {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  line-height: 1.3;
+  max-width: 140px;
+  margin: 0 auto;
+}
+
+.tt-timeline-step.completed .circle {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+}
+.tt-timeline-step.completed .label {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+.tt-timeline-step.active .circle {
+  background: linear-gradient(135deg, #253746, #162430) !important;
+  border-color: #253746 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 5px rgba(37, 55, 70, 0.18), 0 6px 18px rgba(37, 55, 70, 0.3) !important;
+  animation: ttStepPulse 2.2s infinite ease-in-out;
+}
+.tt-timeline-step.active .label {
+  color: #253746 !important;
+  font-weight: 700 !important;
+}
+.tt-timeline-step.active .sublabel {
+  color: #334155 !important;
+  font-weight: 600 !important;
+}
+
+@media (max-width: 767px) {
+  .tt-timeline {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 2.5rem;
+    margin: 1.5rem 0 1rem;
+  }
+  .tt-timeline::before {
+    top: 1rem;
+    bottom: 1rem;
+    left: 24px;
+    right: auto;
+    width: 4px;
+    height: auto;
+  }
+  .tt-timeline-progress {
+    top: 1rem;
+    left: 24px;
+    width: 4px !important;
+    transition: height 0.4s ease;
+  }
+  .tt-timeline-step {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 1.5rem;
+    padding: 0;
+    width: 100%;
+  }
+  .tt-timeline-step:last-child {
+    margin-bottom: 0;
+  }
+  .tt-timeline-step .circle {
+    margin-right: 1.15rem;
+    margin-bottom: 0;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    font-size: 0.92rem;
+  }
+  .tt-timeline-step .label {
+    font-size: 0.95rem;
+  }
+  .tt-timeline-step .sublabel {
+    max-width: 100%;
+    margin: 0;
+  }
+}
+
+/* ==========================================================================
+   TIFFINTRAIL DYNAMIC PROMOTIONAL COUPON COMPONENT
+   Palette:
+     - Charcoal Blue: #253746
+     - Golden Yellow: #E6AD45
+     - Background: #F7F5F0
+   ========================================================================== */
+.tt-coupon-card {
+  position: relative;
+  background: #FFFFFF;
+  border: 1.5px dashed #253746;
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 4px 12px rgba(37, 55, 70, 0.05);
+  overflow: hidden;
+}
+
+.tt-coupon-card:hover {
+  transform: translateY(-3px);
+  border-color: #E6AD45;
+  box-shadow: 0 8px 24px rgba(37, 55, 70, 0.12);
+}
+
+.tt-coupon-card.is-applied {
+  background: #F4F8F5;
+  border-color: #2E8B57;
+  border-style: solid;
+}
+
+.tt-coupon-code-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #F7F5F0;
+  color: #253746;
+  font-family: var(--font-family-mono, monospace);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.75px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.tt-coupon-discount-highlight {
+  display: inline-flex;
+  align-items: center;
+  background: #E6AD45;
+  color: #253746;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  box-shadow: 0 2px 6px rgba(230, 173, 69, 0.25);
+}
+
+.tt-coupon-promo-desc {
+  font-size: 0.96rem;
+  color: #253746;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.tt-coupon-dashed-divider {
+  border-top: 1.5px dashed #E5E7EB;
+  margin: 0.75rem 0;
+}
+
+.tt-coupon-meta {
+  font-size: 0.82rem;
+  color: #6B7280;
+  line-height: 1.45;
+}
+
+.tt-coupon-meta strong {
+  color: #253746;
+}
+
+.btn-tt-coupon-apply {
+  background: #E6AD45;
+  color: #253746;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.5rem 1.15rem;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 2px 6px rgba(230, 173, 69, 0.25);
+}
+
+.btn-tt-coupon-apply:hover {
+  background: #d89f38;
+  color: #253746;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(230, 173, 69, 0.38);
+}
+
+.btn-tt-coupon-applied {
+  background: #2E8B57;
+  color: #FFFFFF;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.tt-coupon-applied-box {
+  background: #F4F8F5;
+  border: 1.5px dashed #2E8B57;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.tt-coupon-modal-header {
+  background: #253746;
+  color: #FFFFFF;
+  border-bottom: none;
+  border-radius: 16px 16px 0 0;
+  padding: 1.25rem 1.5rem;
+}
+
+.tt-coupon-modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+@media (max-width: 576px) {
+  .tt-coupon-card {
+    padding: 1rem;
+  }
+  .tt-coupon-code-badge {
+    font-size: 0.95rem;
+    padding: 0.3rem 0.6rem;
+  }
+  .tt-coupon-promo-desc {
+    font-size: 0.9rem;
+  }
+  .btn-tt-coupon-apply {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+}
+
+

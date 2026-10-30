@@ -1,0 +1,56 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Admin Profile | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}ACCOUNT DETAILS{% endblock %}
+{% block page_heading %}Admin Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Administrator Profile Information</h5>
+      </div>
+      <div class="tt-card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="tt-form-label">Username</label>
+              <input type="text" class="form-control" value="{{ request.user.username }}" disabled>
+              <div class="tt-help-text">System login handle (cannot be altered).</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Administrative Role</label>
+              <input type="text" class="form-control" value="{% if request.user.is_superuser %}Platform Super-Administrator{% else %}Staff Administrator{% endif %}" disabled>
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">First Name *</label>
+              {{ form.first_name }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Last Name *</label>
+              {{ form.last_name }}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Email Address *</label>
+              {{ form.email }}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+            <a href="{% url 'adminpanel:settings' %}" class="btn btn-outline-secondary"> Change Password</a>
+            <button type="submit" class="btn btn-success fw-semibold px-4">Save Profile</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

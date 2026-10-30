@@ -1,0 +1,177 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Platform Analytics | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}ADVANCED ANALYTICS & CHARTS{% endblock %}
+{% block page_heading %}Platform Analytics & Charts{% endblock %}
+
+{% block content %}
+<!-- Timeframe Filter -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <p class="text-muted mb-0">Aggregated database analytics over selected timeframe.</p>
+  </div>
+  <div class="tt-filter-nav">
+    <a href="?days=7" class="tt-filter-btn {% if days_span == 7 %}active{% endif %}">Last 7 Days</a>
+    <a href="?days=14" class="tt-filter-btn {% if days_span == 14 %}active{% endif %}">Last 14 Days</a>
+    <a href="?days=30" class="tt-filter-btn {% if days_span == 30 %}active{% endif %}">Last 30 Days</a>
+    <a href="?days=90" class="tt-filter-btn {% if days_span == 90 %}active{% endif %}">Last 90 Days</a>
+  </div>
+</div>
+
+<!-- Growth Summary Tiles -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-md-3">
+    <div class="tt-stat-card">
+      <div class="tt-stat-header">
+        <span class="tt-stat-title">New Diners</span>
+      </div>
+      <div>
+        <h3 class="tt-stat-value">+{{ customers_growth }}</h3>
+        <div class="tt-stat-meta text-muted">Registered in timeframe</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-md-3">
+    <div class="tt-stat-card">
+      <div class="tt-stat-header">
+        <span class="tt-stat-title">Chef Kitchens Enrolled</span>
+      </div>
+      <div>
+        <h3 class="tt-stat-value text-success">+{{ chefs_growth }}</h3>
+        <div class="tt-stat-meta text-muted">Applied in timeframe</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-md-3">
+    <div class="tt-stat-card">
+      <div class="tt-stat-header">
+        <span class="tt-stat-title">Period Orders</span>
+      </div>
+      <div>
+        <h3 class="tt-stat-value">{{ total_orders_period }}</h3>
+        <div class="tt-stat-meta text-muted">Placed in period</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-md-3">
+    <div class="tt-stat-card border-success">
+      <div class="tt-stat-header">
+        <span class="tt-stat-title text-success">Delivered Volume</span>
+      </div>
+      <div>
+        <h3 class="tt-stat-value text-success">{{ delivered_period }}</h3>
+        <div class="tt-stat-meta text-muted">Successfully fulfilled</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Offline SVG Activity Trend Chart -->
+<div class="tt-card mb-4">
+  <div class="tt-card-header">
+    <h5 class="tt-card-title">Daily Order & Revenue Growth Trend</h5>
+    <span class="text-muted small">Daily activity over last {{ days_span }} days</span>
+  </div>
+  <div class="tt-card-body">
+    <div class="tt-chart-container">
+      <div class="tt-chart-bar-group" style="height: 220px;">
+        {% for day in order_trend %}
+          <div class="tt-chart-col" title="{{ day.date }}: {{ day.orders }} orders (₹{{ day.revenue }})">
+            <span class="tt-chart-bar-val">₹{{ day.revenue|floatformat:0 }}</span>
+            <div class="tt-chart-bar" style="height: {% if day.revenue > 0 %}{% widthratio day.revenue 1000 160 %}px{% else %}4px{% endif %};"></div>
+            <span class="tt-chart-label">{{ day.date }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Two Column Ranking Breakdown: Top Chefs & Top Meals -->
+<div class="row g-4">
+  <!-- Top Performing Chefs -->
+  <div class="col-lg-6">
+    <div class="tt-card h-100">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title">Highest Volume Home Chefs</h5>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Kitchen</th>
+                <th>Delivered Orders</th>
+                <th>Gross Volume</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in top_chefs %}
+                <tr>
+                  <td>
+                    <strong><a href="{% url 'adminpanel:chef_detail' c.id %}" class="text-dark">{{ c.business_name }}</a></strong>
+                    <div class="text-muted small">{{ c.cuisines|truncatechars:30 }}</div>
+                  </td>
+                  <td>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">{{ c.orders_count }} orders</span>
+                  </td>
+                  <td>
+                    <strong class="text-success">₹{{ c.total_rev|default:"0.00" }}</strong>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="3" class="text-center py-4 text-muted small">No order volume recorded yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Popular Meals -->
+  <div class="col-lg-6">
+    <div class="tt-card h-100">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title">Most Ordered Dishes</h5>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Dish Name</th>
+                <th>Portions Ordered</th>
+                <th>Total Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for m in top_meals %}
+                <tr>
+                  <td><strong>{{ m.meal_name }}</strong></td>
+                  <td>
+                    <span class="badge bg-light text-dark border">{{ m.total_qty }} portions</span>
+                  </td>
+                  <td>
+                    <strong class="text-success">₹{{ m.total_val }}</strong>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="3" class="text-center py-4 text-muted small">No meal orders in period.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

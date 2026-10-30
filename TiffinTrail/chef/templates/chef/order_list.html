@@ -1,0 +1,160 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}Incoming Orders | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}FULFILLMENT & KITCHEN ORDERS{% endblock %}
+{% block page_heading %}Incoming Orders{% endblock %}
+
+{% block content %}
+<!-- Status Filter Nav Tabs with Counts -->
+<div class="mb-4">
+  <div class="tt-filter-nav">
+    <a href="?status=all{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'all' %}active{% endif %}">
+      All ({{ status_counts.all }})
+    </a>
+    <a href="?status=pending{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'pending' %}active{% endif %}">
+       Pending ({{ status_counts.pending }})
+    </a>
+    <a href="?status=confirmed{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'confirmed' %}active{% endif %}">
+      ✓ Confirmed ({{ status_counts.confirmed }})
+    </a>
+    <a href="?status=preparing{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'preparing' %}active{% endif %}">
+       In Prep ({{ status_counts.preparing }})
+    </a>
+    <a href="?status=out_for_delivery{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'out_for_delivery' %}active{% endif %}">
+       Out for Delivery ({{ status_counts.out_for_delivery }})
+    </a>
+    <a href="?status=delivered{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'delivered' %}active{% endif %}">
+      ✓ Delivered ({{ status_counts.delivered }})
+    </a>
+    <a href="?status=cancelled{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'cancelled' %}active{% endif %}">
+      ✕ Cancelled ({{ status_counts.cancelled }})
+    </a>
+  </div>
+</div>
+
+<!-- Search & Date Filter Bar -->
+<div class="tt-card mb-4">
+  <div class="tt-card-body p-3">
+    <form method="get" class="row g-2 align-items-center">
+      {% if status_filter != 'all' %}
+        <input type="hidden" name="status" value="{{ status_filter }}">
+      {% endif %}
+
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white"></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by Order # or Diner Name / Phone...">
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <select name="date_range" class="form-select" onchange="this.form.submit()">
+          <option value="">All Dates</option>
+          <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Today's Orders</option>
+          <option value="7days" {% if date_filter == '7days' %}selected{% endif %}>Last 7 Days</option>
+          <option value="month" {% if date_filter == 'month' %}selected{% endif %}>This Month</option>
+        </select>
+      </div>
+
+      <div class="col-md-2 d-flex gap-1">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+        {% if search_query or date_filter %}
+          <a href="{% url 'chef:orders' %}?status={{ status_filter }}" class="btn btn-outline-secondary" title="Clear">✕</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Orders Table -->
+<div class="tt-card">
+  <div class="tt-card-body p-0">
+    <div class="tt-table-responsive">
+      <table class="tt-table">
+        <thead>
+          <tr>
+            <th>Order # & Time</th>
+            <th>Diner Contact</th>
+            <th>Dishes Ordered</th>
+            <th>Amount</th>
+            <th>Payment</th>
+            <th>Status</th>
+            <th class="text-end" style="min-width: 150px;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in page_obj %}
+            <tr>
+              <td>
+                <a href="{% url 'chef:order_detail' order.id %}" class="fw-bold text-decoration-none text-dark">
+                  {{ order.order_number }}
+                </a>
+                <div class="text-muted small">{{ order.created_at|date:"d M Y, h:i A" }}</div>
+              </td>
+              <td>
+                <div class="fw-semibold">{{ order.recipient_name }}</div>
+                <div class="text-muted small"><i class="bi bi-telephone me-1"></i>{{ order.recipient_phone }}</div>
+              </td>
+              <td>
+                <div class="small">
+                  {% for item in order.items.all %}
+                    <div><strong>{{ item.quantity }}x</strong> {{ item.meal_name }} <span class="text-muted">(₹{{ item.subtotal }})</span></div>
+                  {% endfor %}
+                </div>
+              </td>
+              <td>
+                <strong class="fs-6 text-dark text-nowrap">₹{{ order.final_amount }}</strong>
+              </td>
+              <td>
+                <span class="badge {% if order.payment_status == 'paid' %}bg-success-subtle text-success border border-success-subtle{% else %}bg-warning-subtle text-warning border border-warning-subtle{% endif %}">
+                  {{ order.get_payment_status_display }}
+                </span>
+                <div class="text-muted small mt-1">{{ order.get_payment_method_display }}</div>
+              </td>
+              <td>
+                <span class="tt-badge tt-badge-{{ order.status }}">
+                  {{ order.get_status_display }}
+                </span>
+              </td>
+              <td class="text-end tt-actions-cell">
+                <div class="tt-actions-group">
+                  <a href="{% url 'chef:order_detail' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
+                    <i class="bi bi-eye-fill"></i> View & Manage
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" class="text-center py-5 text-muted">
+                <h5>No orders found matching this filter.</h5>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <div class="p-3 border-top d-flex justify-content-between align-items-center">
+        <span class="text-muted small">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Previous</a>
+            </li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Next</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

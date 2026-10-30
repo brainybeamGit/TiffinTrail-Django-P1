@@ -1,0 +1,79 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>TiffinTrail Report: {{ report_type|upper }}</title>
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; padding: 30px; color: #1e293b; background: white; }
+    .tt-print-header { border-bottom: 2px solid #1b5e20; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .tt-print-title { font-size: 1.5rem; font-weight: 800; color: #1b5e20; margin: 0; }
+    .tt-summary-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px; }
+    table { font-size: 0.85rem; }
+    th { background-color: #f1f5f9 !important; text-transform: uppercase; font-size: 0.75rem; }
+    @media print {
+      .no-print { display: none !important; }
+      body { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="no-print mb-3 text-end">
+    <button onclick="window.print()" class="btn btn-primary btn-sm fw-bold"> Print or Save as PDF</button>
+    <button onclick="window.close()" class="btn btn-outline-secondary btn-sm">Close</button>
+  </div>
+
+  <div class="tt-print-header">
+    <div>
+      <h1 class="tt-print-title">TiffinTrail Enterprise Report</h1>
+      <div class="text-muted small">Category: <strong>{{ report_type|upper }}</strong> · Period: <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong></div>
+    </div>
+    <div class="text-end small text-muted">
+      Generated: {{ now|date:"d M Y, H:i" }}<br>
+      System: TiffinTrail Admin Console
+    </div>
+  </div>
+
+  <!-- Summary Box -->
+  <div class="tt-summary-box">
+    <h6 class="fw-bold mb-2">Executive Summary</h6>
+    <div class="row g-2 small">
+      <div class="col-3">Matching Records: <strong>{{ summary.records_count|default:0 }}</strong></div>
+      {% for key, val in summary.items %}
+        {% if key != 'records_count' %}
+          <div class="col-3">{{ key|title }}: <strong>{{ val }}</strong></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Records Table -->
+  <table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        {% for h in headers %}
+          <th>{{ h }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          {% for cell in row %}
+            <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="{{ headers|length|default:4 }}" class="text-center py-4 text-muted">No records found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mt-4 pt-3 border-top text-center small text-muted">
+    © {% now "Y" %} TiffinTrail · Confidential Platform Management Report
+  </div>
+</body>
+</html>

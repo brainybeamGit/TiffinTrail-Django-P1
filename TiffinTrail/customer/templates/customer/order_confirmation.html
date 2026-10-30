@@ -1,0 +1,84 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmed | TiffinTrail{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="text-center mb-4">
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: var(--tt-green-100); color: var(--tt-green-700); font-size: 2.5rem;">
+          ✓
+        </div>
+        <h1 class="fs-2 fw-bold text-dark">Order Confirmed!</h1>
+        <p class="text-muted">Thank you, <strong>{{ order.recipient_name }}</strong>. Your meal has been received by {{ order.chef.business_name }}.</p>
+        <span class="badge bg-light text-dark border font-monospace fs-6 px-3 py-2">
+          Order ID: {{ order.order_number }}
+        </span>
+      </div>
+
+      <div class="p-4 bg-white rounded-4 border shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-3">
+          <div>
+            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.72rem;">Home Chef Partner</small>
+            <h6 class="fw-bold mb-0">{{ order.chef.business_name }}</h6>
+          </div>
+          <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill small">
+             Order Received
+          </span>
+        </div>
+
+        <h6 class="fw-bold mb-3 small text-uppercase text-muted">Ordered Items</h6>
+        <div class="d-grid gap-2 mb-3">
+          {% for item in order.items.all %}
+          <div class="d-flex justify-content-between align-items-center small py-1">
+            <span>{{ item.quantity }}x {{ item.meal_name }}</span>
+            <span class="fw-bold">₹{{ item.subtotal|floatformat:2 }}</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="border-top pt-3 small">
+          <div class="d-flex justify-content-between mb-1">
+            <span class="text-muted">Item Subtotal:</span>
+            <span>₹{{ order.total_amount|floatformat:2 }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <span class="text-muted">Delivery Fee:</span>
+            <span>₹{{ order.delivery_fee|floatformat:2 }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1">
+            <span class="text-muted">Taxes (GST):</span>
+            <span>₹{{ order.tax_amount|floatformat:2 }}</span>
+          </div>
+          {% if order.discount_amount > 0 %}
+          <div class="d-flex justify-content-between mb-1 text-success fw-bold">
+            <span>Discount:</span>
+            <span>- ₹{{ order.discount_amount|floatformat:2 }}</span>
+          </div>
+          {% endif %}
+          <div class="d-flex justify-content-between fs-5 fw-bold pt-2 border-top">
+            <span>Total Amount:</span>
+            <span class="text-success">₹{{ order.final_amount|floatformat:2 }}</span>
+          </div>
+        </div>
+
+        <div class="mt-4 p-3 bg-light rounded-3 small">
+          <div class="mb-1"><strong>Delivering to:</strong> {{ order.delivery_address_text }}</div>
+          <div><strong>Payment Mode:</strong> {{ order.get_payment_method_display }} ({{ order.get_payment_status_display }})</div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 justify-content-center">
+        <a href="{% url 'customer:order_detail' order.pk %}" class="btn btn-tt-primary px-4">
+          Track Live Order Status →
+        </a>
+        <a href="{% url 'customer:home' %}" class="btn btn-tt-outline">
+          Back to Homepage
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

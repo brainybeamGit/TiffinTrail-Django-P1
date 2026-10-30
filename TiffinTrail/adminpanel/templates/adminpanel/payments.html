@@ -1,0 +1,159 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Payments Ledger | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}FINANCIAL AUDIT & PAYMENTS{% endblock %}
+{% block page_heading %}Payment Management{% endblock %}
+
+{% block content %}
+<!-- Financial Summary Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="tt-stat-card border-success">
+      <div class="tt-stat-header">
+        <span class="tt-stat-title text-success">Total Collected</span>
+        <div class="tt-stat-icon green">₹</div>
+      </div>
+      <div>
+        <h3 class="tt-stat-value text-success">₹{{ total_collected|floatformat:2 }}</h3>
+        <div class="tt-stat-meta text-muted">Paid Orders & Subscriptions</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-4">
+    <div class="tt-stat-card">
+      <div class="tt-stat-header">
+        <span class="tt-stat-title">Delivered Orders Paid</span>
+        <div class="tt-stat-icon blue"></div>
+      </div>
+      <div>
+        <h3 class="tt-stat-value">₹{{ total_paid_orders|floatformat:2 }}</h3>
+        <div class="tt-stat-meta text-muted">A la carte orders</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-4">
+    <div class="tt-stat-card">
+      <div class="tt-stat-header">
+        <span class="tt-stat-title">Subscription Revenues</span>
+        <div class="tt-stat-icon purple"></div>
+      </div>
+      <div>
+        <h3 class="tt-stat-value">₹{{ total_paid_subs|floatformat:2 }}</h3>
+        <div class="tt-stat-meta text-muted">Recurring meal packages</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Search & Status Filter Bar -->
+<div class="tt-card mb-4">
+  <div class="tt-card-body p-3">
+    <form method="get" class="row g-2 align-items-center">
+      <div class="col-md-7">
+        <div class="input-group">
+          <span class="input-group-text bg-white"></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by Order #, Diner Name, or Transaction ID...">
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <select name="status" class="form-select" onchange="this.form.submit()">
+          <option value="">All Payment Statuses</option>
+          <option value="paid" {% if status_filter == 'paid' %}selected{% endif %}>Paid (Settled)</option>
+          <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+          <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>Failed</option>
+          <option value="refunded" {% if status_filter == 'refunded' %}selected{% endif %}>Refunded</option>
+        </select>
+      </div>
+
+      <div class="col-md-2 d-flex gap-1">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+        {% if search_query or status_filter %}
+          <a href="{% url 'adminpanel:payments' %}" class="btn btn-outline-secondary" title="Reset">✕</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Payments Ledger Table -->
+<div class="tt-card">
+  <div class="tt-card-body p-0">
+    <div class="tt-table-responsive">
+      <table class="tt-table">
+        <thead>
+          <tr>
+            <th>Order Ref</th>
+            <th>Customer</th>
+            <th>Chef</th>
+            <th>Method</th>
+            <th>Txn Reference</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in page_obj %}
+            <tr>
+              <td>
+                <a href="{% url 'adminpanel:order_detail' order.id %}" class="fw-bold text-dark text-decoration-none">
+                  {{ order.order_number }}
+                </a>
+              </td>
+              <td>{{ order.recipient_name }}</td>
+              <td>{{ order.chef.business_name }}</td>
+              <td>
+                <span class="badge bg-light text-dark border">{{ order.get_payment_method_display }}</span>
+              </td>
+              <td>
+                <span class="font-monospace small text-muted">{{ order.payment_transaction_id|default:"Standard COD/Gateway" }}</span>
+              </td>
+              <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+              <td>
+                <strong class="text-success fs-6">₹{{ order.final_amount|floatformat:2 }}</strong>
+              </td>
+              <td>
+                <span class="badge {% if order.payment_status == 'paid' %}bg-success{% elif order.payment_status == 'pending' %}bg-warning text-dark{% elif order.payment_status == 'failed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                  {{ order.get_payment_status_display }}
+                </span>
+              </td>
+              <td class="text-end tt-actions-cell">
+                <div class="tt-actions-group">
+                  <a href="{% url 'adminpanel:payment_detail' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
+                    <i class="bi bi-receipt"></i> Ledger
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="9" class="text-center py-5 text-muted">No transactions found matching this filter.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <div class="p-3 border-top d-flex justify-content-between align-items-center">
+        <span class="text-muted small">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        <ul class="pagination pagination-sm mb-0">
+          {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">Previous</a></li>
+          {% endif %}
+          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">Next</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

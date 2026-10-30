@@ -1,0 +1,248 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register Kitchen | TiffinTrail Chef Studio</title>
+  <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/chef.css' %}">
+  <style>
+    body.tt-chef-reg-bg {
+      background: linear-gradient(135deg, #0a1f0d 0%, #153e19 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+    .tt-reg-box {
+      max-width: 680px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.35), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    .tt-form-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+    .tt-section-divider {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #166534;
+      background: #f0fdf4;
+      padding: 6px 12px;
+      border-radius: 6px;
+      margin-top: 18px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body class="tt-chef-reg-bg">
+  <div class="tt-reg-box">
+    <!-- Header -->
+    <div class="p-4 text-center" style="background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white;">
+      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" style="width: 56px; height: 56px; object-fit: contain; border-radius: 12px;" class="mx-auto mb-2 d-block">
+      <h3 class="fw-bold mb-1">Join TiffinTrail as a Home Chef</h3>
+      <p class="small text-white-50 mb-0">Share your culinary passion, reach hungry diners, and grow your subscription kitchen</p>
+    </div>
+
+    <!-- Form Body -->
+    <div class="p-4 p-md-5">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show small" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger small py-2">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <form method="post" action="{% url 'chef:register' %}" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <!-- Section 1: Kitchen Details -->
+        <div class="tt-section-divider">1. Kitchen & Brand Details</div>
+
+        <div class="mb-3">
+          <label class="tt-form-label">Kitchen / Business Name <span class="text-danger">*</span></label>
+          {{ form.business_name }}
+          {% if form.business_name.errors %}
+            <div class="text-danger small mt-1">{{ form.business_name.errors.0 }}</div>
+          {% endif %}
+          <div class="form-text small">e.g. Amrita's Punjabi Rasoi, Dakshin Delights, Aaji's Marathi Kitchen</div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="tt-form-label">Cuisines Offered <span class="text-danger">*</span></label>
+            {{ form.cuisines }}
+            {% if form.cuisines.errors %}
+              <div class="text-danger small mt-1">{{ form.cuisines.errors.0 }}</div>
+            {% endif %}
+            <div class="form-text small">e.g. North Indian, Punjabi, Jain</div>
+          </div>
+          <div class="col-md-6">
+            <label class="tt-form-label">Signature Specialties</label>
+            {{ form.specialties }}
+            {% if form.specialties.errors %}
+              <div class="text-danger small mt-1">{{ form.specialties.errors.0 }}</div>
+            {% endif %}
+            <div class="form-text small">e.g. Dal Makhani, Bajra Rotla</div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="tt-form-label">Kitchen Address & Locality <span class="text-danger">*</span></label>
+          {{ form.kitchen_address }}
+          {% if form.kitchen_address.errors %}
+            <div class="text-danger small mt-1">{{ form.kitchen_address.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label class="tt-form-label">Primary Service Areas</label>
+          {{ form.service_areas }}
+          {% if form.service_areas.errors %}
+            <div class="text-danger small mt-1">{{ form.service_areas.errors.0 }}</div>
+          {% endif %}
+          <div class="form-text small">Localities you can deliver to (e.g. Indiranagar, Koramangala, HSR Layout)</div>
+        </div>
+
+        <!-- Section 2: Chef Contact Details -->
+        <div class="tt-section-divider">2. Personal & Contact Information</div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="tt-form-label">First Name <span class="text-danger">*</span></label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+              <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="tt-form-label">Last Name <span class="text-danger">*</span></label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+              <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="tt-form-label">Email Address <span class="text-danger">*</span></label>
+            {{ form.email }}
+            {% if form.email.errors %}
+              <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="tt-form-label">Mobile Number <span class="text-danger">*</span></label>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+              <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Section 3: Account Security -->
+        <div class="tt-section-divider">3. Studio Login Credentials</div>
+
+        <div class="mb-3">
+          <label class="tt-form-label">Chef Username <span class="text-danger">*</span></label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+          {% endif %}
+          <div class="form-text small">Used to sign in to your Chef Studio console.</div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="tt-form-label">Password <span class="text-danger">*</span></label>
+            {{ form.password }}
+            {% if form.password.errors %}
+              <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <label class="tt-form-label">Confirm Password <span class="text-danger">*</span></label>
+            {{ form.confirm_password }}
+            {% if form.confirm_password.errors %}
+              <div class="text-danger small mt-1">{{ form.confirm_password.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Section 4: Kitchen Photos & Branding -->
+        <div class="tt-section-divider">4. Kitchen Photos & Branding (Optional)</div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="tt-form-label">Kitchen Cover Banner</label>
+            {{ form.cover_image }}
+            {% if form.cover_image.errors %}
+              <div class="text-danger small mt-1">{{ form.cover_image.errors.0 }}</div>
+            {% endif %}
+            <div class="form-text small">Horizontal banner displayed on your public kitchen card & profile (JPG, PNG).</div>
+          </div>
+          <div class="col-md-6">
+            <label class="tt-form-label">Chef Profile Photo / Logo</label>
+            {{ form.profile_image }}
+            {% if form.profile_image.errors %}
+              <div class="text-danger small mt-1">{{ form.profile_image.errors.0 }}</div>
+            {% endif %}
+            <div class="form-text small">Square photo or kitchen logo for your avatar badge.</div>
+          </div>
+        </div>
+
+        <!-- Section 5: Verification Document -->
+        <div class="tt-section-divider">5. Verification & Certification (Optional)</div>
+
+        <div class="mb-4">
+          <label class="tt-form-label">Govt ID / FSSAI / Kitchen Registration Certificate</label>
+          {{ form.verification_document }}
+          {% if form.verification_document.errors %}
+            <div class="text-danger small mt-1">{{ form.verification_document.errors.0 }}</div>
+          {% endif %}
+          <div class="form-text small">You may upload your FSSAI certificate or Govt ID for faster onboarding. Can also be submitted later from your profile.</div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success w-100 fw-bold py-3 shadow-sm mb-3 fs-6">
+          Register & Submit Kitchen for Verification →
+        </button>
+
+        <div class="text-center pt-2 border-top small">
+          <span class="text-muted">Already registered as a chef?</span>
+          <a href="{% url 'chef:login' %}" class="fw-bold text-success text-decoration-none ms-1">
+            Sign In to Chef Studio
+          </a>
+        </div>
+
+        <div class="text-center mt-3 small">
+          <a href="{% url 'customer:home' %}" class="text-decoration-none text-muted">
+            ← Return to Diner Website
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

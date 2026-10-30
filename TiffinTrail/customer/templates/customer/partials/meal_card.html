@@ -1,0 +1,71 @@
+{% load static %}
+<div class="tt-card tt-meal-card hover-lift h-100">
+  <div class="tt-card-media position-relative img-zoom-parent" style="background: linear-gradient(135deg, #FFF9F0, #f0f4ef); height: 180px;">
+    {% if meal.image %}
+    <img src="{{ meal.image.url }}" alt="{{ meal.name }}" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+    {% else %}
+    <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100 text-muted" style="background: radial-gradient(circle, #fbf5eb 20%, #f0f4ef 100%);">
+      <svg width="42" height="42" fill="none" stroke="#36A852" stroke-width="1.8" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3m0 0a8 8 0 018 8v2a1 1 0 01-1 1H5a1 1 0 01-1-1v-2a8 8 0 018-8zM4 19h16"/>
+      </svg>
+      <span class="small fw-semibold mt-1" style="font-size: 0.75rem;">Homestyle Dish</span>
+    </div>
+    {% endif %}
+
+    <div class="position-absolute top-0 start-0 m-2">
+      <span class="{% if meal.is_veg %}tt-badge-veg{% else %}tt-badge-nonveg{% endif %} shadow-sm">
+        <span class="{% if meal.is_veg %}tt-veg-icon{% else %}tt-nonveg-icon{% endif %}"></span>
+        <span>{{ meal.dietary_label }}</span>
+      </span>
+    </div>
+
+    <div class="position-absolute top-0 end-0 m-2 px-2 py-1 bg-white rounded-pill shadow-sm d-flex align-items-center gap-1 small fw-bold">
+      <span class="text-warning">★</span>
+      <span>{{ meal.rating }}</span>
+    </div>
+  </div>
+
+  <div class="tt-card-body d-flex flex-column flex-grow-1 p-3">
+    <div class="d-flex align-items-center justify-content-between text-muted small mb-1">
+      <span class="fw-semibold">{{ meal.cuisine }}</span>
+      <span class="d-flex align-items-center gap-1">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>
+        {{ meal.preparation_time }} mins
+      </span>
+    </div>
+
+    <h3 class="fs-6 fw-bold mb-1">
+      <a href="{% url 'customer:meal_detail' meal.pk %}" class="text-dark text-decoration-none">{{ meal.name }}</a>
+    </h3>
+
+    <div class="small text-muted mb-2">
+      <span>By <a href="{% url 'customer:chef_detail' meal.chef.pk %}" class="fw-semibold text-dark">{{ meal.chef.business_name }}</a></span>
+    </div>
+
+    <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.45;">
+      {{ meal.description|truncatechars:85 }}
+    </p>
+
+    <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
+      <div>
+        <span class="text-muted d-block" style="font-size: 0.7rem;">Price</span>
+        <span class="fw-bold text-success fs-5">₹{{ meal.price|floatformat:0 }}</span>
+      </div>
+
+      {% if meal.is_available %}
+      <form action="{% url 'customer:cart_add' meal.pk %}" method="post" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button type="submit" class="btn btn-sm btn-tt-primary">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+          </svg>
+          Add to Cart
+        </button>
+      </form>
+      {% else %}
+      <span class="badge bg-secondary py-2 px-3 rounded-pill">Sold Out</span>
+      {% endif %}
+    </div>
+  </div>
+</div>

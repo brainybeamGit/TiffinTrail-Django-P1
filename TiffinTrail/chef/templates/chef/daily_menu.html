@@ -1,0 +1,169 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}Daily Menu & Schedule | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}KITCHEN SCHEDULING CALENDAR{% endblock %}
+{% block page_heading %}Daily Menu & Availability{% endblock %}
+
+{% block content %}
+<!-- Next 7 Days Horizontal Date Scroller -->
+<div class="mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h6 class="text-muted fw-bold text-uppercase small mb-0">Select Date to Plan or View</h6>
+    <span class="small text-muted">Showing next 7 days schedule</span>
+  </div>
+  <div class="tt-date-scroller">
+    {% for item in next_7_days %}
+      <a href="?date={{ item.iso_date }}" class="tt-date-chip {% if item.is_selected %}active{% endif %}">
+        <span class="tt-date-chip-day">{{ item.day_name }}</span>
+        <span class="tt-date-chip-date">{{ item.date_str }}</span>
+        <span class="tt-date-chip-count">{{ item.count }} dishes scheduled</span>
+      </a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left Side: Scheduled Meals for Selected Date -->
+  <div class="col-lg-8">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="tt-card-title">
+             Menu for {{ selected_date|date:"l, d F Y" }}
+          </h5>
+          {% if selected_date == today %}
+            <span class="badge bg-success mt-1">Today's Kitchen Menu</span>
+          {% endif %}
+        </div>
+        <span class="text-muted small">{{ scheduled_menus.count }} meals scheduled</span>
+      </div>
+
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Dish</th>
+                <th>Slot</th>
+                <th>Portions</th>
+                <th>Availability</th>
+                <th>Notes</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for menu in scheduled_menus %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      {% if menu.meal.image %}
+                        <img src="{{ menu.meal.image.url }}" alt="{{ menu.meal.name }}" class="tt-meal-thumb rounded border" style="width: 40px; height: 40px;">
+                      {% else %}
+                        <div class="tt-meal-thumb rounded border" style="width: 40px; height: 40px;"></div>
+                      {% endif %}
+                      <div>
+                        <strong class="d-block">{{ menu.meal.name }}</strong>
+                        <span class="text-muted small">₹{{ menu.meal.price }} · {% if menu.meal.is_veg %}Veg{% else %}Non-veg{% endif %}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark border">{{ menu.get_slot_display }}</span>
+                  </td>
+                  <td>
+                    <strong>{{ menu.available_quantity }}</strong> <span class="text-muted small">portions</span>
+                  </td>
+                  <td>
+                    <form action="{% url 'chef:daily_menu_toggle' menu.id %}" method="post" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm {% if menu.is_available %}btn-outline-success{% else %}btn-outline-secondary{% endif %} py-1 px-2">
+                        {% if menu.is_available %}
+                          <span class="tt-status-dot me-1"></span> Available
+                        {% else %}
+                          <span class="tt-status-dot inactive me-1"></span> Sold Out
+                        {% endif %}
+                      </button>
+                    </form>
+                  </td>
+                  <td class="text-muted small">
+                    {{ menu.special_notes|default:"—" }}
+                  </td>
+                  <td class="text-end">
+                    <form action="{% url 'chef:daily_menu_delete' menu.id %}" method="post" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove from schedule" onclick="return confirm('Remove this dish from {{ menu.date }} menu?')">
+                        
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center py-5 text-muted">
+                    <h5>No meals scheduled for this day yet.</h5>
+                    <p class="small mb-0">Use the form on the right to schedule dishes for {{ selected_date|date:"d M Y" }}.</p>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Schedule Dish Form -->
+  <div class="col-lg-4">
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Schedule Dish</h5>
+      </div>
+      <div class="tt-card-body">
+        <form action="{% url 'chef:daily_menu_add' %}" method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="tt-form-label">Select Date *</label>
+            {{ form.date }}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Select Dish from Catalog *</label>
+            {{ form.meal }}
+            {% if form.meal.errors %}<div class="text-danger small mt-1">{{ form.meal.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Service Slot *</label>
+            {{ form.slot }}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Available Portions</label>
+            {{ form.available_quantity }}
+            <div class="tt-help-text">Max number of portions your kitchen will prepare.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Special Notes (Optional)</label>
+            {{ form.special_notes }}
+            <div class="tt-help-text">e.g. Cooked in pure desi ghee, seasonal mango kheer included</div>
+          </div>
+
+          <div class="mb-4">
+            <div class="form-check form-switch p-2 bg-light rounded border">
+              {{ form.is_available }}
+              <label class="form-check-label fw-semibold ms-2" for="{{ form.is_available.id_for_label }}">
+                Mark as Available
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 fw-semibold"> Schedule for Selected Day</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

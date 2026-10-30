@@ -1,0 +1,71 @@
+{% load static %}
+<div class="tt-card tt-chef-card hover-lift h-100">
+  <div class="tt-card-media position-relative img-zoom-parent" style="background: var(--color-background, #F7F5F0); height: 160px;">
+    {% if chef.cover_image %}
+    <img src="{{ chef.cover_image.url }}" alt="{{ chef.business_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+    {% else %}
+    <div class="d-flex align-items-center justify-content-center h-100 w-100 text-muted" style="background: var(--color-background, #F7F5F0);">
+      <svg width="48" height="48" fill="none" stroke="var(--color-primary, #253746)" stroke-width="1.8" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2a5 5 0 00-4.9 4A4.5 4.5 0 004 10.5C4 12.8 5.7 14.7 8 15h8c2.3-.3 4-2.2 4-4.5 0-2-1.4-3.7-3.1-4.3A5 5 0 0012 2zM8 15v4a1 1 0 001 1h6a1 1 0 001-1v-4"/>
+      </svg>
+    </div>
+    {% endif %}
+
+    <div class="tt-card-rating position-absolute top-0 end-0 m-2 px-2 py-1 bg-white rounded-pill shadow-sm d-flex align-items-center gap-1 small fw-bold">
+      <span class="text-warning">★</span>
+      <span>{{ chef.rating }}</span>
+      <small class="text-muted fw-normal">({{ chef.review_count }})</small>
+    </div>
+
+    <div class="position-absolute" style="bottom: -24px; left: 16px;">
+      {% if chef.profile_image %}
+      <img src="{{ chef.profile_image.url }}" class="rounded-circle border border-white shadow-sm" style="width: 54px; height: 54px; object-fit: cover;" alt="{{ chef.business_name }}">
+      {% else %}
+      <div class="tt-avatar-initials rounded-circle border border-white shadow-sm bg-success text-white fw-bold d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; font-size: 1.25rem;">
+        {{ chef.business_name|slice:":1"|upper }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="tt-card-body pt-4 mt-2 d-flex flex-column flex-grow-1 p-3">
+    <div class="d-flex align-items-start justify-content-between gap-1 mb-1">
+      <h3 class="fs-5 fw-bold mb-0">
+        <a href="{% url 'customer:chef_detail' chef.pk %}" class="text-dark text-decoration-none">{{ chef.business_name }}</a>
+      </h3>
+      {% if chef.is_approved %}
+      <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small d-inline-flex align-items-center gap-1" title="Verified & FSSAI Registered">
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        Verified
+      </span>
+      {% endif %}
+    </div>
+
+    <div class="text-muted small mb-2 d-flex align-items-center gap-1">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <span>{{ chef.service_areas|truncatechars:38 }}</span>
+    </div>
+
+    <div class="mb-2">
+      {% for cuisine in chef.get_cuisines_list %}
+      <span class="badge bg-light text-dark border me-1 mb-1" style="font-size: 0.72rem; font-weight: 500;">
+        {{ cuisine }}
+      </span>
+      {% endfor %}
+    </div>
+
+    <p class="text-secondary small mb-3 flex-grow-1">
+      {{ chef.bio|truncatechars:95 }}
+    </p>
+
+    <div class="d-flex align-items-center justify-content-between pt-2 border-top mt-auto">
+      <div>
+        <span class="text-muted d-block" style="font-size: 0.72rem;">Starting From</span>
+        <span class="fw-bold text-success fs-5">₹{{ chef.starting_price|floatformat:0 }}<small class="fs-6 text-muted fw-normal">/meal</small></span>
+      </div>
+      <a href="{% url 'customer:chef_detail' chef.pk %}" class="btn btn-sm btn-tt-outline">
+        View Kitchen →
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,122 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}My Reviews & Ratings | TiffinTrail{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom bg-white">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:profile' %}">Account</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Reviews</li>
+      </ol>
+    </nav>
+    <h1 class="fs-2 fw-bold mb-0">My Reviews & Chef Ratings</h1>
+    <p class="text-muted small mb-0">Help local home chefs thrive by rating the taste, freshness, and delivery punctuality.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Left Column: Add Review for past order -->
+    <div class="col-lg-5">
+      <div class="p-4 bg-white rounded-4 border shadow-sm">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2">Rate a Kitchen You Ordered From</h5>
+
+        {% if eligible_chefs %}
+        <form action="{% url 'customer:add_review' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Select Home Chef</label>
+            <select name="chef_id" class="form-select" required>
+              {% for ch in eligible_chefs %}
+              <option value="{{ ch.id }}">{{ ch.business_name }} ({{ ch.cuisines }})</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Star Rating</label>
+            <div class="tt-star-picker fs-3" style="cursor: pointer; color: #eab308;">
+              <span class="star-btn active" data-value="1">★</span>
+              <span class="star-btn active" data-value="2">★</span>
+              <span class="star-btn active" data-value="3">★</span>
+              <span class="star-btn active" data-value="4">★</span>
+              <span class="star-btn active" data-value="5">★</span>
+              <input type="hidden" name="rating" id="reviewStarInput" value="5">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Your Review</label>
+            <textarea name="comment" rows="4" class="form-control" placeholder="Share your authentic feedback about warmth, taste, and packaging..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-tt-primary w-100">
+            Publish Review
+          </button>
+        </form>
+        {% else %}
+        <p class="small text-muted mb-0">
+          You have reviewed all chefs you've currently ordered from! Order a new meal or subscription to rate additional home kitchens.
+        </p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right Column: List of Submitted Reviews -->
+    <div class="col-lg-7">
+      <h5 class="fw-bold fs-5 mb-3">Your Published Reviews ({{ user_reviews.count }})</h5>
+
+      {% if user_reviews %}
+      <div class="d-grid gap-3">
+        {% for rev in user_reviews %}
+        <div class="p-4 bg-white rounded-4 border shadow-sm">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h6 class="fw-bold mb-0">
+                <a href="{% url 'customer:chef_detail' rev.chef.pk %}" class="text-dark">{{ rev.chef.business_name }}</a>
+              </h6>
+              <small class="text-muted">{{ rev.created_at|date:"M d, Y" }}</small>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+              <div class="tt-star-rating fs-5">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= rev.rating %}★{% else %}☆{% endif %}
+                {% endfor %}
+              </div>
+
+              <form action="{% url 'customer:delete_review' rev.pk %}" method="post" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Delete this review?');" title="Delete Review">
+                  Delete
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <p class="small text-secondary mb-0">
+            "{{ rev.comment }}"
+          </p>
+          {% if rev.meal %}
+          <div class="mt-2 text-muted" style="font-size: 0.75rem;">
+            Specific dish: <strong>{{ rev.meal.name }}</strong>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-5 bg-white rounded-4 border p-4">
+        <p class="text-muted mb-0">You haven't submitted any reviews yet.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

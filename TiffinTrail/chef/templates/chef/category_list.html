@@ -1,0 +1,98 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}Meal Categories | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}MENU CLASSIFICATION{% endblock %}
+{% block page_heading %}Meal Categories{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Categories List -->
+  <div class="col-lg-8">
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Active Categories</h5>
+        <span class="text-muted small">{{ categories.count }} total classifications</span>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Slug</th>
+                <th>My Dishes In Category</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cat in categories %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="fs-5">{{ cat.icon|default:"" }}</span>
+                      <strong class="text-dark">{{ cat.name }}</strong>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-muted border font-monospace">{{ cat.slug }}</span>
+                  </td>
+                  <td>
+                    <a href="{% url 'chef:meals' %}?category={{ cat.slug }}" class="badge bg-success-subtle text-success border border-success-subtle text-decoration-none">
+                      {{ cat.meals_count }} dishes
+                    </a>
+                  </td>
+                  <td class="text-muted small">
+                    {{ cat.description|truncatechars:60|default:"Standard menu category" }}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center py-4 text-muted">No categories created yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create New Category -->
+  <div class="col-lg-4">
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Create Category</h5>
+      </div>
+      <div class="tt-card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="tt-form-label">Category Name *</label>
+            {{ form.name }}
+            {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Icon / Emoji</label>
+            {{ form.icon }}
+            <div class="tt-help-text">e.g. , , , </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Display Order</label>
+            {{ form.display_order }}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Description</label>
+            {{ form.description }}
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 fw-semibold">Save Category</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

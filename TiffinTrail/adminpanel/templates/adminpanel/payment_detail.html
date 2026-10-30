@@ -1,0 +1,88 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Payment #{{ order.order_number }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}TRANSACTION LEDGER & AUDIT{% endblock %}
+{% block page_heading %}Payment Details: {{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <a href="{% url 'adminpanel:payments' %}" class="btn btn-sm btn-outline-secondary">← Back to Payments</a>
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-muted small">Payment Status:</span>
+    <span class="badge {% if order.payment_status == 'paid' %}bg-success{% elif order.payment_status == 'pending' %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6 px-3 py-1">
+      {{ order.get_payment_status_display }}
+    </span>
+  </div>
+</div>
+
+<div class="row g-4 justify-content-center">
+  <div class="col-lg-8">
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Transaction Audit Ledger</h5>
+      </div>
+      <div class="tt-card-body">
+        <div class="p-3 bg-light rounded border mb-4">
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <div class="text-muted small">Associated Order:</div>
+              <strong><a href="{% url 'adminpanel:order_detail' order.id %}" class="text-dark">{{ order.order_number }}</a></strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted small">Transaction Date:</div>
+              <strong>{{ order.created_at|date:"d F Y, h:i A" }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted small">Paying Customer:</div>
+              <strong>{{ order.recipient_name }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted small">Recipient Chef Kitchen:</div>
+              <strong>{{ order.chef.business_name }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted small">Payment Gateway / Method:</div>
+              <strong>{{ order.get_payment_method_display }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <div class="text-muted small">Transaction ID:</div>
+              <span class="font-monospace small">{{ order.payment_transaction_id|default:"COD / System Generated" }}</span>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="fw-bold mb-3">Order Cost Accounting Breakdown</h6>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <tbody>
+              <tr>
+                <td class="text-muted">Food Meals Subtotal</td>
+                <td class="text-end">₹{{ order.total_amount|floatformat:2 }}</td>
+              </tr>
+              <tr>
+                <td class="text-muted">Delivery Charges</td>
+                <td class="text-end">₹{{ order.delivery_fee|floatformat:2 }}</td>
+              </tr>
+              <tr>
+                <td class="text-muted">Taxes (GST 5%)</td>
+                <td class="text-end">₹{{ order.tax_amount|floatformat:2 }}</td>
+              </tr>
+              {% if order.discount_amount > 0 %}
+                <tr class="text-success">
+                  <td>Promotional Discount</td>
+                  <td class="text-end">-₹{{ order.discount_amount|floatformat:2 }}</td>
+                </tr>
+              {% endif %}
+              <tr class="table-light fw-bold fs-6">
+                <td>Total Collected from Customer</td>
+                <td class="text-end text-success">₹{{ order.final_amount|floatformat:2 }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

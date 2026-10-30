@@ -1,0 +1,629 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}TiffinTrail | Home-Cooked Meal Subscription Platform{% endblock %}</title>
+  <meta name="description" content="Connect with verified local home chefs for fresh, hot, homestyle tiffin subscriptions and homemade meals.">
+  <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/design-system.css' %}?v=3.1">
+  <link rel="stylesheet" href="{% static 'css/animations.css' %}">
+  <link rel="stylesheet" href="{% static 'css/customer.css' %}?v=4.4">
+
+  <style>
+    /* Navbar Precision Overrides */
+    .tt-navbar {
+      background: rgba(255, 255, 255, 0.98) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border-bottom: 1px solid #ECEAE3 !important;
+      padding: 0.65rem 0 !important;
+      box-shadow: 0 1px 6px rgba(37, 55, 70, 0.04) !important;
+    }
+    .tt-navbar .navbar-nav {
+      gap: 0.25rem !important;
+    }
+
+    /* Premium Category & Filter Pills (Across Customer Side) */
+    .tt-filter-pill,
+    .btn-outline-secondary.rounded-pill {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 7px !important;
+      padding: 0.45rem 1.15rem !important;
+      font-size: 0.84rem !important;
+      font-weight: 600 !important;
+      border-radius: 999px !important;
+      color: #334155 !important;
+      background-color: #ffffff !important;
+      border: 1.5px solid #e2e8f0 !important;
+      text-decoration: none !important;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+      white-space: nowrap !important;
+      line-height: 1.35 !important;
+      cursor: pointer !important;
+    }
+    .tt-filter-pill:hover,
+    .btn-outline-secondary.rounded-pill:hover {
+      background-color: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+      transform: translateY(-1.5px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+    .tt-filter-pill:active,
+    .btn-outline-secondary.rounded-pill:active {
+      transform: translateY(0) !important;
+    }
+    .tt-filter-pill.active,
+    .tt-filter-pill.is-active,
+    .btn-tt-subtle.rounded-pill,
+    .btn-tt-primary.rounded-pill.btn-sm {
+      background: linear-gradient(135deg, #253746, #162430) !important;
+      color: #ffffff !important;
+      border-color: #253746 !important;
+      box-shadow: 0 4px 14px rgba(37, 55, 70, 0.28) !important;
+      font-weight: 700 !important;
+    }
+    .tt-filter-pill.active:hover,
+    .tt-filter-pill.is-active:hover,
+    .btn-tt-subtle.rounded-pill:hover,
+    .btn-tt-primary.rounded-pill.btn-sm:hover {
+      background: linear-gradient(135deg, #1c2b37, #0f1922) !important;
+      color: #ffffff !important;
+      box-shadow: 0 6px 18px rgba(37, 55, 70, 0.35) !important;
+      transform: translateY(-1.5px) !important;
+    }
+
+    /* ==========================================================================
+       Live Order Tracking Stepper & Timeline System
+       ========================================================================== */
+    .tt-live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background-color: #10b981;
+      display: inline-block;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: ttDotPulse 1.8s infinite;
+    }
+    @keyframes ttDotPulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    .tt-timeline {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+      margin: 2.2rem 0 1.2rem;
+      padding: 0 0.5rem;
+    }
+    .tt-timeline::before {
+      content: '';
+      position: absolute;
+      top: 24px;
+      left: 10%;
+      right: 10%;
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      z-index: 1;
+    }
+    .tt-timeline-progress {
+      position: absolute;
+      top: 24px;
+      left: 10%;
+      height: 4px;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border-radius: 4px;
+      z-index: 2;
+      transition: width 0.4s ease;
+    }
+
+    .tt-timeline-step {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex: 1;
+      padding: 0 0.25rem;
+    }
+
+    .tt-timeline-step .circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.05rem;
+      background: #ffffff;
+      border: 3px solid #cbd5e1;
+      color: #64748b;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.05);
+      margin-bottom: 0.75rem;
+    }
+
+    .tt-timeline-step .label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 0.25rem;
+      transition: color 0.2s ease;
+    }
+    .tt-timeline-step .sublabel {
+      font-size: 0.74rem;
+      color: #94a3b8;
+      line-height: 1.3;
+      max-width: 140px;
+      margin: 0 auto;
+    }
+
+    /* Completed Steps */
+    .tt-timeline-step.completed .circle {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      border-color: #10b981 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+    }
+    .tt-timeline-step.completed .label {
+      color: #0f172a !important;
+      font-weight: 700 !important;
+    }
+
+    /* Active Step */
+    .tt-timeline-step.active .circle {
+      background: linear-gradient(135deg, #253746, #162430) !important;
+      border-color: #253746 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 0 5px rgba(37, 55, 70, 0.18), 0 6px 18px rgba(37, 55, 70, 0.3) !important;
+      animation: ttStepPulse 2.2s infinite ease-in-out;
+    }
+    @keyframes ttStepPulse {
+      0%, 100% {
+        box-shadow: 0 0 0 5px rgba(37, 55, 70, 0.18), 0 6px 18px rgba(37, 55, 70, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 0 9px rgba(37, 55, 70, 0.08), 0 8px 24px rgba(37, 55, 70, 0.38);
+      }
+    }
+    .tt-timeline-step.active .label {
+      color: #253746 !important;
+      font-weight: 700 !important;
+    }
+    .tt-timeline-step.active .sublabel {
+      color: #334155 !important;
+      font-weight: 600 !important;
+    }
+
+    /* Mobile Timeline Layout */
+    @media (max-width: 767px) {
+      .tt-timeline {
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 2.5rem;
+        margin: 1.5rem 0 1rem;
+      }
+      .tt-timeline::before {
+        top: 1rem;
+        bottom: 1rem;
+        left: 24px;
+        right: auto;
+        width: 4px;
+        height: auto;
+      }
+      .tt-timeline-progress {
+        top: 1rem;
+        left: 24px;
+        width: 4px !important;
+        transition: height 0.4s ease;
+      }
+      .tt-timeline-step {
+        flex-direction: row;
+        align-items: flex-start;
+        text-align: left;
+        margin-bottom: 1.5rem;
+        padding: 0;
+        width: 100%;
+      }
+      .tt-timeline-step:last-child {
+        margin-bottom: 0;
+      }
+      .tt-timeline-step .circle {
+        margin-right: 1.15rem;
+        margin-bottom: 0;
+        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
+        font-size: 0.92rem;
+      }
+      .tt-timeline-step .label {
+        font-size: 0.95rem;
+      }
+      .tt-timeline-step .sublabel {
+        max-width: 100%;
+        margin: 0;
+      }
+    }
+    @media (min-width: 1200px) {
+      .tt-navbar .navbar-nav {
+        gap: 0.45rem !important;
+      }
+    }
+    .tt-navbar .nav-link {
+      color: #4B5563 !important;
+      font-weight: 500 !important;
+      font-size: 0.9rem !important;
+      padding: 0.42rem 0.85rem !important;
+      border-radius: 9999px !important;
+      white-space: nowrap !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      border: 1px solid transparent !important;
+      background: transparent !important;
+      text-decoration: none !important;
+      display: inline-flex !important;
+      align-items: center !important;
+    }
+    .tt-navbar .nav-link:hover {
+      color: #253746 !important;
+      background-color: #F3F1EC !important;
+    }
+    .tt-navbar .nav-link.active {
+      color: #8C5B05 !important;
+      background-color: #FAF2E2 !important;
+      border: 1px solid rgba(230, 173, 69, 0.5) !important;
+      font-weight: 600 !important;
+      box-shadow: 0 1px 3px rgba(230, 173, 69, 0.12) !important;
+    }
+    .tt-user-menu-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 0.55rem !important;
+      padding: 0.32rem 0.95rem 0.32rem 0.45rem !important;
+      border-radius: 9999px !important;
+      border: 1.5px solid #E5E7EB !important;
+      background: #ffffff !important;
+      color: #253746 !important;
+      font-weight: 600 !important;
+      font-size: 0.88rem !important;
+      transition: all 0.2s ease !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+      text-decoration: none !important;
+      cursor: pointer !important;
+      line-height: 1 !important;
+    }
+    .tt-user-menu-btn:hover,
+    .tt-user-menu-btn:focus,
+    .tt-user-menu-btn[aria-expanded="true"] {
+      border-color: #253746 !important;
+      background: #ffffff !important;
+      color: #253746 !important;
+      box-shadow: 0 4px 14px rgba(37, 55, 70, 0.1) !important;
+      transform: translateY(-1px);
+    }
+    .tt-avatar-mini {
+      width: 28px !important;
+      height: 28px !important;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, #253746, #3b5368) !important;
+      color: #ffffff !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-weight: 700 !important;
+      font-size: 0.8rem !important;
+      flex-shrink: 0 !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+    }
+    .tt-cart-badge-link {
+      position: relative !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 38px !important;
+      height: 38px !important;
+      border-radius: 9999px !important;
+      background: #ffffff !important;
+      color: #253746 !important;
+      border: 1.5px solid #E5E7EB !important;
+      transition: all 0.2s ease !important;
+      text-decoration: none !important;
+    }
+    .tt-cart-badge-link:hover {
+      background: #ffffff !important;
+      color: #253746 !important;
+      border-color: #253746 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 55, 70, 0.08) !important;
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="tt-customer-body">
+
+  <!-- Top Announcement Bar -->
+  <div class="py-1 px-3 text-center text-white" style="font-size: 0.82rem; font-weight: 600; background: var(--color-primary, #253746) !important;">
+    <span>Freshly cooked lunch & dinner subscriptions delivered in hot thermal tiffins · Zero preservatives</span>
+    <span class="d-none d-md-inline ms-3">Use code <strong style="color: var(--color-accent, #E6AD45);">FIRST50</strong> for 50% off your first order!</span>
+  </div>
+
+  <!-- Primary Navbar -->
+  <nav class="navbar navbar-expand-lg tt-navbar">
+    <div class="container">
+      <a class="navbar-brand tt-brand" href="{% url 'customer:home' %}">
+        <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" class="tt-brand-logo" style="width: 44px; height: 44px; object-fit: contain; border-radius: 10px;">
+        <span>
+          TiffinTrail
+          <small>Home-Cooked Meals</small>
+        </span>
+      </a>
+
+      <!-- Right mobile controls (Cart + Hamburger) -->
+      <div class="d-flex align-items-center gap-2 d-lg-none ms-auto me-2">
+        <a href="{% url 'customer:cart' %}" class="tt-cart-badge-link" aria-label="Shopping Cart">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          {% if cart_items_count > 0 %}
+          <span class="badge-counter">{{ cart_items_count }}</span>
+          {% endif %}
+        </a>
+        <button class="navbar-toggler border-0 p-1" type="button" data-bs-toggle="collapse" data-bs-target="#ttCustomerNav" aria-controls="ttCustomerNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+
+      <!-- Nav Links -->
+      <div class="collapse navbar-collapse" id="ttCustomerNav">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'customer:home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'chefs' or request.resolver_match.url_name == 'chef_detail' %}active{% endif %}" href="{% url 'customer:chefs' %}">Find Chefs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'menu' or request.resolver_match.url_name == 'meal_detail' %}active{% endif %}" href="{% url 'customer:menu' %}">Menu</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'plans' or request.resolver_match.url_name == 'subscribe' %}active{% endif %}" href="{% url 'customer:plans' %}">Meal Plans</a>
+          </li>
+          {% if request.user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'my_subscriptions' or request.resolver_match.url_name == 'subscription_detail' %}active{% endif %}" href="{% url 'customer:my_subscriptions' %}">
+              Subscriptions
+              {% if active_subscriptions_count > 0 %}
+              <span class="badge bg-success rounded-pill ms-1" style="font-size: 0.7rem;">{{ active_subscriptions_count }}</span>
+              {% endif %}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'order_history' or request.resolver_match.url_name == 'order_detail' %}active{% endif %}" href="{% url 'customer:order_history' %}">My Orders</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" href="{% url 'customer:about' %}">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}" href="{% url 'customer:contact' %}">Contact</a>
+          </li>
+        </ul>
+
+        <!-- Action Buttons (Desktop) -->
+        <div class="tt-nav-actions d-none d-lg-flex">
+          <a href="{% url 'customer:cart' %}" class="tt-cart-badge-link" title="View Cart">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            {% if cart_items_count > 0 %}
+            <span class="badge-counter">{{ cart_items_count }}</span>
+            {% endif %}
+          </a>
+
+          {% if request.user.is_authenticated %}
+          <div class="dropdown">
+            <button class="tt-user-menu-btn dropdown-toggle" type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="tt-avatar-mini">{{ request.user.first_name|default:request.user.username|slice:":1"|upper }}</span>
+              <span>{{ request.user.first_name|default:request.user.username }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-2 mt-2" aria-labelledby="userMenuBtn" style="border-radius: 14px; min-width: 220px; border: 1px solid #ECEAE3 !important; box-shadow: 0 12px 32px rgba(37,55,70,0.12) !important;">
+              <li class="px-3 py-2 border-bottom mb-1" style="background: #faf9f6; border-top-left-radius: 14px; border-top-right-radius: 14px;">
+                <small class="text-muted d-block" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Signed in as</small>
+                <div class="fw-bold text-dark text-truncate" style="font-size: 0.88rem;">{{ request.user.email|default:request.user.username }}</div>
+              </li>
+              <li>
+                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{% url 'customer:profile' %}">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                  <span>My Profile & Addresses</span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{% url 'customer:my_subscriptions' %}">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                  <span>Active Subscriptions</span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{% url 'customer:order_history' %}">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                  <span>Order History</span>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{% url 'customer:reviews' %}">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <span>My Reviews</span>
+                </a>
+              </li>
+              <li><hr class="dropdown-divider my-1"></li>
+              <li>
+                <a class="dropdown-item py-2 text-danger d-flex align-items-center gap-2" href="{% url 'customer:logout' %}">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                  <span>Log Out</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          {% else %}
+          <a class="btn btn-tt-outline" href="{% url 'customer:login' %}">Log in</a>
+          <a class="btn btn-tt-primary" href="{% url 'customer:register' %}">Get Started</a>
+          {% endif %}
+        </div>
+
+        <!-- Mobile User Links -->
+        <div class="d-lg-none mt-3 pt-3 border-top">
+          {% if request.user.is_authenticated %}
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <div class="tt-avatar-initials" style="width: 38px; height: 38px; font-size: 1rem;">
+              {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
+            </div>
+            <div>
+              <div class="fw-bold">{{ request.user.get_full_name|default:request.user.username }}</div>
+              <small class="text-muted">{{ request.user.email }}</small>
+            </div>
+          </div>
+          <div class="d-grid gap-2">
+            <a class="btn btn-tt-subtle text-start" href="{% url 'customer:profile' %}">My Profile</a>
+            <a class="btn btn-tt-subtle text-start" href="{% url 'customer:my_subscriptions' %}">My Subscriptions</a>
+            <a class="btn btn-tt-subtle text-start" href="{% url 'customer:order_history' %}">My Orders</a>
+            <a class="btn btn-outline-danger" href="{% url 'customer:logout' %}">Log out</a>
+          </div>
+          {% else %}
+          <div class="d-grid gap-2">
+            <a class="btn btn-tt-outline" href="{% url 'customer:login' %}">Log in</a>
+            <a class="btn btn-tt-primary" href="{% url 'customer:register' %}">Get Started</a>
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  {% if messages %}
+  <div class="container pt-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center gap-2" role="alert" style="border-radius: 12px;">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        {% if message.tags == 'success' %}
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        {% else %}
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        {% endif %}
+      </svg>
+      <div>{{ message }}</div>
+      <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Main Body Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Professional Footer -->
+  <footer class="tt-customer-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" style="width: 38px; height: 38px; object-fit: contain; border-radius: 8px;">
+            <span class="fs-4 fw-bold text-white">TiffinTrail</span>
+          </div>
+          <p class="text-secondary small mb-3">
+            TiffinTrail is India's premier home-cooked meal subscription platform. We empower passionate neighborhood chefs while bringing nostalgic, hygienic, and affordable home meals straight to your daily table.
+          </p>
+          <div class="d-flex gap-2 text-secondary small">
+            <span>FSSAI Certified Kitchens</span> · <span>100% Homemade</span>
+          </div>
+        </div>
+
+        <div class="col-lg-2 col-md-6 col-6">
+          <h5>Quick Links</h5>
+          <ul class="list-unstyled small d-grid gap-2">
+            <li><a href="{% url 'customer:home' %}">Home</a></li>
+            <li><a href="{% url 'customer:chefs' %}">Find Local Chefs</a></li>
+            <li><a href="{% url 'customer:menu' %}">Browse Food Menu</a></li>
+            <li><a href="{% url 'customer:plans' %}">Subscription Plans</a></li>
+            <li><a href="{% url 'customer:about' %}">Our Story & Mission</a></li>
+            <li><a href="{% url 'customer:contact' %}">Contact & Helpdesk</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-6">
+          <h5>Customer Corner</h5>
+          <ul class="list-unstyled small d-grid gap-2">
+            {% if request.user.is_authenticated %}
+            <li><a href="{% url 'customer:profile' %}">My Profile</a></li>
+            <li><a href="{% url 'customer:my_subscriptions' %}">Active Subscriptions</a></li>
+            <li><a href="{% url 'customer:order_history' %}">My Orders</a></li>
+            <li><a href="{% url 'customer:reviews' %}">Ratings & Feedback</a></li>
+            {% else %}
+            <li><a href="{% url 'customer:login' %}">Customer Login</a></li>
+            <li><a href="{% url 'customer:register' %}">Create Account</a></li>
+            {% endif %}
+            <li><a href="{% url 'customer:plans' %}">Weekly & Monthly Tiffins</a></li>
+            <li><a href="{% url 'customer:cart' %}">Shopping Cart</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <h5>Chef & Contact Support</h5>
+          <p class="small text-secondary mb-2">
+            Support: support@tiffintrail.com<br>
+            Helpline: +91 (800) 123-4567<br>
+            Timings: Mon – Sun (8:00 AM – 9:00 PM)
+          </p>
+          <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);">
+            <div class="text-white fw-bold small mb-1">Are you a Home Chef?</div>
+            <p class="text-secondary small mb-2">Partner with us and turn your passion for cooking into a flourishing home kitchen business.</p>
+            <div class="d-grid gap-2">
+              <a href="{% url 'chef:register' %}" class="btn btn-sm btn-success fw-semibold">Register as Chef Partner</a>
+              <a href="{% url 'chef:login' %}" class="btn btn-sm btn-outline-light">Chef Studio Login</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tt-footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div>
+          © {% now "Y" %} TiffinTrail Inc. All rights reserved. Crafted for homemade food lovers.
+        </div>
+        <div class="d-flex gap-3">
+          <a href="{% url 'customer:about' %}">Privacy Policy</a>
+          <a href="{% url 'customer:about' %}">Terms of Service</a>
+          <a href="{% url 'customer:contact' %}">Delivery FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/animations.js' %}"></script>
+  <script src="{% static 'js/customer.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

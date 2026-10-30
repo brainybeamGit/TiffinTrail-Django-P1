@@ -1,0 +1,230 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Subscription {{ sub.subscription_number }} | TiffinTrail{% endblock %}
+
+{% block content %}
+<div class="py-4 border-bottom bg-white">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:my_subscriptions' %}" class="text-decoration-none" style="color: var(--tt-primary);">Subscriptions</a></li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">{{ sub.subscription_number }}</li>
+      </ol>
+    </nav>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+      <div>
+        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-text-main);">Subscription: {{ sub.plan.name }}</h1>
+        <div class="small text-muted font-monospace">{{ sub.subscription_number }} · Created {{ sub.created_at|date:"M d, Y" }}</div>
+      </div>
+      <div>
+        {% if sub.status == 'active' %}
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-1.5">
+          <span class="rounded-circle" style="width: 6px; height: 6px; background-color: var(--tt-fresh-green);"></span>
+          Active Delivery
+        </span>
+        {% elif sub.status == 'paused' %}
+        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-1.5">
+          <span class="rounded-circle" style="width: 6px; height: 6px; background-color: var(--tt-accent);"></span>
+          Paused
+        </span>
+        {% elif sub.status == 'completed' %}
+        <span class="badge bg-secondary-subtle text-secondary px-3 py-1.5 rounded-pill small">
+          Completed
+        </span>
+        {% elif sub.status == 'cancelled' %}
+        <span class="badge bg-danger-subtle text-danger px-3 py-1.5 rounded-pill small">
+          Cancelled
+        </span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Main Left Details -->
+    <div class="col-lg-8">
+      <!-- Chef & Plan Summary -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important;">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark">Kitchen & Plan Details</h5>
+        <div class="d-flex align-items-center gap-3 mb-3 p-3 rounded-3" style="background-color: var(--tt-cream); border: 1px solid var(--tt-border);">
+          <div class="tt-avatar-initials rounded-circle" style="width: 50px; height: 50px; font-size: 1.2rem; background-color: var(--tt-primary); color: white;">
+            {{ sub.chef.business_name|slice:":1"|upper }}
+          </div>
+          <div>
+            <h6 class="fw-bold mb-0 text-dark">{{ sub.chef.business_name }}</h6>
+            <div class="small text-muted">{{ sub.chef.cuisines }} · FSSAI Certified Kitchen</div>
+            <a href="{% url 'customer:chef_detail' sub.chef.pk %}" class="small text-decoration-none fw-semibold" style="color: var(--tt-primary);">View Chef Profile →</a>
+          </div>
+        </div>
+
+        <div class="row g-3 small">
+          <div class="col-md-6">
+            <span class="text-muted d-block">Plan Package:</span>
+            <strong class="text-dark">{{ sub.plan.name }} ({{ sub.plan.duration_days }} Days)</strong>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted d-block">Total Meals:</span>
+            <strong class="text-dark">{{ sub.plan.total_meals }} Meals included</strong>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted d-block">Schedule / Delivery Window:</span>
+            <strong class="text-dark">{{ sub.plan.delivery_schedule }}</strong>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted d-block">Diet Preference:</span>
+            <strong class="text-dark">{{ sub.get_dietary_preference_display }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dates & Delivery Info -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important;">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark">Schedule & Delivery Instructions</h5>
+        <div class="row g-3 small mb-3">
+          <div class="col-md-6">
+            <span class="text-muted d-block">Start Date:</span>
+            <strong class="text-dark">{{ sub.start_date|date:"F d, Y" }}</strong>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted d-block">End / Expiry Date:</span>
+            <strong class="text-dark">{{ sub.end_date|date:"F d, Y" }}</strong>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted d-block">Delivery Slot:</span>
+            <strong class="text-dark">{{ sub.get_delivery_slot_display }}</strong>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted d-block">Recipient:</span>
+            <strong class="text-dark">{{ sub.recipient_name }} ({{ sub.recipient_phone }})</strong>
+          </div>
+        </div>
+
+        <div class="small mb-3">
+          <span class="text-muted d-block">Delivery Address:</span>
+          <strong class="text-dark">{{ sub.delivery_address_text }}</strong>
+        </div>
+
+        {% if sub.notes %}
+        <div class="p-3 bg-light rounded-3 small border" style="border-color: var(--tt-border) !important;">
+          <span class="text-muted d-block fw-semibold mb-1">Your Special Instructions:</span>
+          <em class="text-secondary">"{{ sub.notes }}"</em>
+        </div>
+        {% endif %}
+
+        {% if sub.cancellation_reason %}
+        <div class="alert alert-danger small mt-3 mb-0 rounded-3 border-0" style="background-color: #fee2e2; color: #991b1b;">
+          <strong>Cancellation Note:</strong> {{ sub.cancellation_reason }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Subscription Management Controls -->
+      {% if sub.can_pause or sub.can_resume or sub.can_cancel %}
+      <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important;">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark">Manage Subscription</h5>
+        <div class="d-flex flex-wrap gap-2">
+          {% if sub.can_pause %}
+          <form action="{% url 'customer:subscription_pause' sub.pk %}" method="post" class="d-inline m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-warning btn-sm rounded-3 d-inline-flex align-items-center gap-1.5" onclick="return confirm('Pause meals delivery? You can resume whenever you are ready.');">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+              <span>Pause Deliveries</span>
+            </button>
+          </form>
+          {% elif sub.can_resume %}
+          <form action="{% url 'customer:subscription_resume' sub.pk %}" method="post" class="d-inline m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-tt-primary btn-sm rounded-3 d-inline-flex align-items-center gap-1.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Resume Deliveries</span>
+            </button>
+          </form>
+          {% endif %}
+
+          {% if sub.can_cancel %}
+          <button type="button" class="btn btn-outline-danger btn-sm rounded-3 d-inline-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#cancelSubModal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <span>Cancel Subscription</span>
+          </button>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Right Column: Billing Summary -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: linear-gradient(180deg, #ffffff 0%, #fafcfa 100%);">
+        <h5 class="fw-bold fs-6 mb-3 pb-2 border-bottom text-dark">Payment Details</h5>
+
+        <div class="d-flex justify-content-between py-2 small">
+          <span class="text-muted">Subscription Total</span>
+          <span class="fw-semibold text-dark">₹{{ sub.total_amount|floatformat:2 }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2 small">
+          <span class="text-muted">Thermal Packaging & Delivery</span>
+          <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill">FREE</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2 small border-top">
+          <span class="text-muted">Payment Method</span>
+          <span class="text-dark">{{ sub.get_payment_method_display|default:sub.payment_method|upper }}</span>
+        </div>
+
+        <div class="d-flex justify-content-between py-2 small">
+          <span class="text-muted">Payment Status</span>
+          <span class="badge {% if sub.payment_status == 'paid' %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning-emphasis{% endif %} px-2 py-0.5 rounded-pill">
+            {{ sub.get_payment_status_display|default:sub.payment_status|upper }}
+          </span>
+        </div>
+
+        {% if sub.payment_transaction_id %}
+        <div class="small text-muted py-2 font-monospace" style="font-size: 0.72rem;">
+          Txn ID: {{ sub.payment_transaction_id }}
+        </div>
+        {% endif %}
+
+        <div class="d-flex justify-content-between py-3 my-2 border-top border-bottom fs-5 fw-bold text-dark">
+          <span>Amount Paid</span>
+          <span style="color: var(--tt-primary);">₹{{ sub.total_amount|floatformat:2 }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Subscription Modal -->
+{% if sub.can_cancel %}
+<div class="modal fade" id="cancelSubModal" tabindex="-1" aria-labelledby="cancelSubModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <form action="{% url 'customer:subscription_cancel' sub.pk %}" method="post">
+        {% csrf_token %}
+        <div class="modal-header border-bottom">
+          <h5 class="modal-title fw-bold text-dark" id="cancelSubModalLabel">Cancel Subscription?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="small text-muted mb-3">
+            Are you sure you want to cancel subscription <strong>{{ sub.subscription_number }}</strong>? Once cancelled, recurring tiffin deliveries will cease.
+          </p>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-muted">Please tell us the reason for cancelling:</label>
+            <textarea name="reason" rows="3" class="form-control form-control-sm rounded-3" placeholder="Moving away, dietary change, etc." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-top">
+          <button type="button" class="btn btn-sm btn-light border rounded-3" data-bs-dismiss="modal">Keep Subscription</button>
+          <button type="submit" class="btn btn-sm btn-danger rounded-3 px-3">Confirm Cancellation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

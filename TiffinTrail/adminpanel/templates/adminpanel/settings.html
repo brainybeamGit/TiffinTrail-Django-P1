@@ -1,0 +1,75 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Settings & Security | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}PLATFORM SECURITY & ACCESS{% endblock %}
+{% block page_heading %}Settings & Security{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center g-4">
+  <div class="col-lg-8">
+    <!-- Password Change Card -->
+    <div class="tt-card mb-4">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Change Admin Password</h5>
+      </div>
+      <div class="tt-card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="tt-form-label">Current Password *</label>
+            {{ password_form.old_password }}
+            {% if password_form.old_password.errors %}<div class="text-danger small mt-1">{{ password_form.old_password.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">New Password *</label>
+            {{ password_form.new_password1 }}
+            {% if password_form.new_password1.errors %}<div class="text-danger small mt-1">{{ password_form.new_password1.errors.0 }}</div>{% endif %}
+            <div class="tt-help-text">Must be at least 8 characters long.</div>
+          </div>
+
+          <div class="mb-4">
+            <label class="tt-form-label">Confirm New Password *</label>
+            {{ password_form.new_password2 }}
+            {% if password_form.new_password2.errors %}<div class="text-danger small mt-1">{{ password_form.new_password2.errors.0 }}</div>{% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary fw-semibold px-4">Update Administrator Password</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Security Information Card -->
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Security & Role Governance</h5>
+      </div>
+      <div class="tt-card-body small">
+        <div class="p-3 bg-light rounded border mb-3">
+          <div class="d-flex justify-content-between py-1 border-bottom">
+            <span class="text-muted">Account Type:</span>
+            <strong>{% if request.user.is_superuser %}Superuser (Full Authority){% else %}Staff (Operational Administrator){% endif %}</strong>
+          </div>
+          <div class="d-flex justify-content-between py-1 border-bottom">
+            <span class="text-muted">Authentication:</span>
+            <strong>Django PBKDF2 with SHA256</strong>
+          </div>
+          <div class="d-flex justify-content-between py-1 border-bottom">
+            <span class="text-muted">Session Isolation:</span>
+            <strong class="text-success">Active & Monitored</strong>
+          </div>
+          <div class="d-flex justify-content-between py-1">
+            <span class="text-muted">CSRF Protection:</span>
+            <strong class="text-success">Strict Token Validation</strong>
+          </div>
+        </div>
+        <div class="text-muted">
+          Only Superusers can create new administrative staff accounts via the Django root management interface.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

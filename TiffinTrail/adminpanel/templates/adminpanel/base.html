@@ -1,0 +1,279 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Admin Console | TiffinTrail{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{% static 'css/design-system.css' %}?v=4.0">
+  <link rel="stylesheet" href="{% static 'css/animations.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=4.0">
+  <style>
+    /* Table Action Buttons & Cell Polish */
+    .tt-actions-cell {
+      white-space: nowrap !important;
+      text-align: right !important;
+      min-width: 155px !important;
+      padding-right: 20px !important;
+    }
+    .tt-actions-group {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: flex-end !important;
+      gap: 6px !important;
+      flex-wrap: nowrap !important;
+    }
+    .tt-btn-action {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 5px !important;
+      padding: 5px 12px !important;
+      font-size: 0.78rem !important;
+      font-weight: 600 !important;
+      line-height: 1.3 !important;
+      border-radius: 6px !important;
+      text-decoration: none !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease-in-out !important;
+      white-space: nowrap !important;
+      outline: none !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+    }
+    .tt-btn-action-primary {
+      background-color: #eff6ff !important;
+      color: #1d4ed8 !important;
+      border: 1px solid #bfdbfe !important;
+    }
+    .tt-btn-action-primary:hover {
+      background-color: #1d4ed8 !important;
+      color: #ffffff !important;
+      border-color: #1d4ed8 !important;
+      box-shadow: 0 2px 4px rgba(29, 78, 216, 0.25) !important;
+    }
+    .tt-btn-action-danger {
+      background-color: #fef2f2 !important;
+      color: #dc2626 !important;
+      border: 1px solid #fecaca !important;
+    }
+    .tt-btn-action-danger:hover {
+      background-color: #dc2626 !important;
+      color: #ffffff !important;
+      border-color: #dc2626 !important;
+      box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25) !important;
+    }
+    .tt-btn-action-secondary {
+      background-color: #f8fafc !important;
+      color: #475569 !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+    .tt-btn-action-secondary:hover {
+      background-color: #e2e8f0 !important;
+      color: #1e293b !important;
+    }
+
+    /* Drag-to-Scroll on Table Details */
+    .tt-table-responsive,
+    .table-responsive {
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .tt-table-responsive.tt-is-dragging,
+    .table-responsive.tt-is-dragging {
+      cursor: grabbing !important;
+    }
+    .tt-table-responsive.tt-is-dragging * {
+      cursor: grabbing !important;
+      user-select: none !important;
+    }
+    .tt-table-responsive a,
+    .tt-table-responsive button,
+    .tt-table-responsive input,
+    .tt-table-responsive select,
+    .tt-table-responsive .tt-btn-action {
+      cursor: pointer;
+      user-select: auto;
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="tt-admin-body">
+<div class="tt-layout">
+  <!-- Sidebar Navigation -->
+  <aside class="tt-sidebar" id="ttSidebar">
+    <!-- Brand -->
+    <a class="tt-brand" href="{% url 'adminpanel:dashboard' %}">
+      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" class="tt-brand-logo" style="width: 42px; height: 42px; object-fit: contain; border-radius: 10px;">
+      <div class="tt-brand-text">
+        <span class="tt-brand-name">TiffinTrail</span>
+        <span class="tt-brand-subtitle">Platform Admin</span>
+      </div>
+    </a>
+
+    <!-- Navigation Labels & Links -->
+    <div class="tt-nav-label">OPERATIONS & WORKSPACE</div>
+    <nav class="tt-nav">
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'adminpanel:dashboard' %}">
+        <span>Dashboard Overview</span>
+      </a>
+      <a class="tt-nav-link {% if 'customer' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:customers' %}">
+        <span>Customer Management</span>
+      </a>
+      <a class="tt-nav-link {% if 'chef' in request.resolver_match.url_name and not request.GET.verification %}active{% endif %}" href="{% url 'adminpanel:chefs' %}">
+        <span>Chef Management</span>
+      </a>
+      <a class="tt-nav-link {% if request.GET.verification == 'pending' %}active{% endif %}" href="{% url 'adminpanel:chefs' %}?verification=pending">
+        <span>Chef Verification</span>
+        {% if admin_pending_verifications_count > 0 %}
+          <span class="tt-badge-amber">{{ admin_pending_verifications_count }}</span>
+        {% endif %}
+      </a>
+      <a class="tt-nav-link {% if 'meal' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:meals' %}">
+        <span>Meal Management</span>
+      </a>
+      <a class="tt-nav-link {% if 'plan' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:plans' %}">
+        <span>Meal Plans</span>
+      </a>
+    </nav>
+
+    <div class="tt-nav-label">ORDERS & COMMERCE</div>
+    <nav class="tt-nav">
+      <a class="tt-nav-link {% if 'subscription' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:subscriptions' %}">
+        <span>Subscriptions</span>
+      </a>
+      <a class="tt-nav-link {% if 'order' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:orders' %}">
+        <span>Orders Management</span>
+      </a>
+      <a class="tt-nav-link {% if 'payment' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:payments' %}">
+        <span>Payment & Ledger</span>
+      </a>
+      <a class="tt-nav-link {% if 'complaint' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:complaints' %}">
+        <span>Complaints & Support</span>
+        {% if admin_pending_complaints_count > 0 %}
+          <span class="tt-badge-count">{{ admin_pending_complaints_count }}</span>
+        {% endif %}
+      </a>
+      <a class="tt-nav-link {% if 'coupon' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:coupons' %}">
+        <span>Coupon Management</span>
+      </a>
+      <a class="tt-nav-link {% if 'review' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:reviews' %}">
+        <span>Reviews Moderation</span>
+      </a>
+    </nav>
+
+    <div class="tt-nav-label">ANALYTICS & REPORTS</div>
+    <nav class="tt-nav">
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}" href="{% url 'adminpanel:analytics' %}">
+        <span>Analytics & Charts</span>
+      </a>
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}" href="{% url 'adminpanel:reports' %}">
+        <span>Reports & Export</span>
+      </a>
+      <a class="tt-nav-link {% if 'notification' in request.resolver_match.url_name or 'notices' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:notifications' %}">
+        <span>Admin Notifications</span>
+        {% if admin_unread_count > 0 %}
+          <span class="tt-badge-count">{{ admin_unread_count }}</span>
+        {% endif %}
+      </a>
+    </nav>
+
+    <div class="tt-nav-label">SYSTEM</div>
+    <nav class="tt-nav">
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'adminpanel:profile' %}">
+        <span>Admin Profile</span>
+      </a>
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}" href="{% url 'adminpanel:settings' %}">
+        <span>Settings & Security</span>
+      </a>
+    </nav>
+
+    <!-- Bottom Actions -->
+    <div class="tt-sidebar-bottom">
+      <a class="tt-sidebar-link-btn" href="{% url 'customer:home' %}" target="_blank">
+        <span>View Customer Website ↗</span>
+      </a>
+      <a class="tt-sidebar-link-btn text-danger" href="{% url 'adminpanel:logout' %}">
+        <span>Sign Out</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrap -->
+  <main class="tt-main">
+    <!-- Topbar -->
+    <header class="tt-topbar">
+      <div class="tt-topbar-left">
+        <button class="tt-menu-toggle" id="ttMenuToggle" type="button" aria-label="Toggle Navigation"></button>
+        <div>
+          <span class="tt-eyebrow">{% block eyebrow %}TIFFINTRAIL ADMIN CONSOLE{% endblock %}</span>
+          <h1 class="tt-page-title">{% block page_heading %}Dashboard{% endblock %}</h1>
+        </div>
+      </div>
+
+      <div class="tt-topbar-right">
+        <!-- System Status Pill -->
+        <div class="tt-status-pill d-none d-md-inline-flex">
+          <span class="tt-status-dot"></span> System Live & Operational
+        </div>
+
+        <!-- Notification Bell -->
+        <a class="tt-topbar-notif" href="{% url 'adminpanel:notifications' %}" title="Admin Notifications">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          {% if admin_unread_count > 0 %}
+            <span class="tt-notif-dot">{{ admin_unread_count }}</span>
+          {% endif %}
+        </a>
+
+        <!-- Admin Profile Dropdown -->
+        <div class="dropdown">
+          <a class="tt-topbar-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="tt-topbar-avatar">{{ request.user.first_name|slice:":1"|default:"A" }}</div>
+            <span class="d-none d-sm-inline fw-semibold">{{ request.user.get_full_name|default:request.user.username }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border">
+            <li><h6 class="dropdown-header">Platform Administrator</h6></li>
+            <li><a class="dropdown-item" href="{% url 'adminpanel:profile' %}">Admin Profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'adminpanel:settings' %}">Change Password</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{% url 'adminpanel:logout' %}">Sign Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <section class="tt-content">
+      <!-- Flash Messages -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </section>
+
+    <!-- Footer -->
+    <footer class="tt-footer">
+      <div>© {% now "Y" %} <strong>TiffinTrail</strong> – Enterprise Administrative Control Center.</div>
+      <div>
+        <span class="badge bg-light text-muted border">Role: Platform Super-Administrator</span>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/animations.js' %}"></script>
+<script src="{% static 'js/admin.js' %}?v=4.1"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

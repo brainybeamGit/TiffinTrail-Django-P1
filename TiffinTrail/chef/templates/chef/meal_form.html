@@ -1,0 +1,155 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}KITCHEN CATALOG{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title"> Dish Details & Pricing</h5>
+        <a href="{% url 'chef:meals' %}" class="btn btn-sm btn-outline-secondary">← Back to Meals</a>
+      </div>
+
+      <div class="tt-card-body">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          <!-- Section 1: Basic Dish Info -->
+          <div class="row g-3 mb-4">
+            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">1. Dish Identity</h6></div>
+
+            <div class="col-md-8">
+              <label class="tt-form-label">Dish Name *</label>
+              {{ form.name }}
+              {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Category</label>
+              {{ form.category }}
+              {% if form.category.errors %}<div class="text-danger small mt-1">{{ form.category.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Meal Slot *</label>
+              {{ form.meal_type }}
+              {% if form.meal_type.errors %}<div class="text-danger small mt-1">{{ form.meal_type.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Cuisine Style</label>
+              {{ form.cuisine }}
+              {% if form.cuisine.errors %}<div class="text-danger small mt-1">{{ form.cuisine.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Dietary Classification</label>
+              <div class="form-check p-2 bg-light rounded border mt-1">
+                {{ form.is_veg }}
+                <label class="form-check-label fw-semibold ms-2" for="{{ form.is_veg.id_for_label }}">
+                   Pure Vegetarian
+                </label>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Dish Description *</label>
+              {{ form.description }}
+              <div class="tt-help-text">Describe the texture, flavors, accompaniments (e.g. served with 3 rotis, pickle & salad).</div>
+              {% if form.description.errors %}<div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          <!-- Section 2: Pricing, Quantities & Prep -->
+          <div class="row g-3 mb-4">
+            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">2. Pricing & Kitchen Preparation</h6></div>
+
+            <div class="col-md-3">
+              <label class="tt-form-label">Price per Portion (₹) *</label>
+              {{ form.price }}
+              {% if form.price.errors %}<div class="text-danger small mt-1">{{ form.price.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-3">
+              <label class="tt-form-label">Daily Available Portions</label>
+              {{ form.available_quantity }}
+              {% if form.available_quantity.errors %}<div class="text-danger small mt-1">{{ form.available_quantity.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-3">
+              <label class="tt-form-label">Prep Time (mins)</label>
+              {{ form.preparation_time }}
+              {% if form.preparation_time.errors %}<div class="text-danger small mt-1">{{ form.preparation_time.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-3">
+              <label class="tt-form-label">Approx Calories (kcal)</label>
+              {{ form.calories }}
+              {% if form.calories.errors %}<div class="text-danger small mt-1">{{ form.calories.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-check form-switch p-3 bg-light rounded border">
+                {{ form.is_available }}
+                <label class="form-check-label fw-bold ms-2" for="{{ form.is_available.id_for_label }}">
+                  Currently Available for Order
+                </label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-check form-switch p-3 bg-light rounded border">
+                {{ form.is_featured }}
+                <label class="form-check-label fw-bold ms-2" for="{{ form.is_featured.id_for_label }}">
+                  Feature as Kitchen Highlight
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Ingredients & Food Photo -->
+          <div class="row g-3 mb-4">
+            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">3. Ingredients & Food Photo</h6></div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Key Ingredients Used</label>
+              {{ form.ingredients }}
+              <div class="tt-help-text">e.g. Urad dal, fresh churned butter, whole wheat flour, rock salt</div>
+              {% if form.ingredients.errors %}<div class="text-danger small mt-1">{{ form.ingredients.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Allergen Information</label>
+              {{ form.allergen_info }}
+              <div class="tt-help-text">e.g. Contains dairy, peanuts, mustard oil</div>
+              {% if form.allergen_info.errors %}<div class="text-danger small mt-1">{{ form.allergen_info.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Meal Food Photo</label>
+              {{ form.image }}
+              <div class="tt-help-text">Upload a clear photo of your dish (JPG, PNG, WebP max 5MB).</div>
+              {% if is_edit and meal.image %}
+                <div class="mt-2">
+                  <span class="text-muted small d-block mb-1">Current Image:</span>
+                  <img src="{{ meal.image.url }}" alt="{{ meal.name }}" class="rounded border" style="width: 120px; height: 90px; object-fit: cover;">
+                </div>
+              {% endif %}
+              {% if form.image.errors %}<div class="text-danger small mt-1">{{ form.image.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+            <a href="{% url 'chef:meals' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success px-4 fw-semibold"> Save Dish</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

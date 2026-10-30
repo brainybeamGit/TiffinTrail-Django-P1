@@ -1,0 +1,156 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}PLAN CONFIGURATION{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="tt-card shadow-sm border">
+      <div class="tt-card-header d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+        <h5 class="tt-card-title mb-0 fs-6 fw-bold">Subscription Plan Details</h5>
+        <a href="{% url 'adminpanel:plans' %}" class="btn btn-sm btn-outline-secondary">← Back to Plans</a>
+      </div>
+
+      <div class="tt-card-body p-4">
+        {% if form.errors %}
+        <div class="alert alert-danger mb-4 rounded-3">
+          <strong class="d-block mb-1">Please correct the errors below:</strong>
+          <ul class="mb-0 small ps-3">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3 mb-4">
+            <!-- 1. Basic Information -->
+            <div class="col-12 border-bottom pb-2 mb-2">
+              <h6 class="fw-bold text-dark mb-0">1. Basic Plan Information</h6>
+            </div>
+
+            <div class="col-md-8">
+              <label class="tt-form-label fw-semibold small">Plan Name <span class="text-danger">*</span></label>
+              {{ form.name }}
+              {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label fw-semibold small">Attached Home Chef</label>
+              {{ form.chef }}
+              <div class="tt-help-text small text-muted">Select specific chef or leave blank for platform-wide.</div>
+              {% if form.chef.errors %}<div class="text-danger small mt-1">{{ form.chef.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label fw-semibold small">Plan Type <span class="text-danger">*</span></label>
+              {{ form.plan_type }}
+              {% if form.plan_type.errors %}<div class="text-danger small mt-1">{{ form.plan_type.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label fw-semibold small">Duration (Days) <span class="text-danger">*</span></label>
+              {{ form.duration_days }}
+              <div class="tt-help-text small text-muted">e.g. 7 for weekly, 30 for monthly</div>
+              {% if form.duration_days.errors %}<div class="text-danger small mt-1">{{ form.duration_days.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label fw-semibold small">Meals per Day <span class="text-danger">*</span></label>
+              {{ form.meals_per_day }}
+              <div class="tt-help-text small text-muted">1 = Lunch, 2 = Lunch &amp; Dinner</div>
+              {% if form.meals_per_day.errors %}<div class="text-danger small mt-1">{{ form.meals_per_day.errors.0 }}</div>{% endif %}
+            </div>
+
+            <!-- 2. Pricing & Status -->
+            <div class="col-12 border-bottom pb-2 mb-2 mt-4">
+              <h6 class="fw-bold text-dark mb-0">2. Pricing &amp; Visibility</h6>
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label fw-semibold small">Selling Price (₹) <span class="text-danger">*</span></label>
+              {{ form.price }}
+              {% if form.price.errors %}<div class="text-danger small mt-1">{{ form.price.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label fw-semibold small">Original Baseline Price (₹) (Optional)</label>
+              {{ form.original_price }}
+              <div class="tt-help-text small text-muted">Used to calculate and display discount badges.</div>
+              {% if form.original_price.errors %}<div class="text-danger small mt-1">{{ form.original_price.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-check p-3 bg-light rounded-3 border">
+                {{ form.is_veg }}
+                <label class="form-check-label fw-bold ms-2" for="{{ form.is_veg.id_for_label }}">
+                  Pure Vegetarian Meal Plan
+                </label>
+                <div class="small text-muted ms-2 mt-1">Check if all meals in this plan are vegetarian.</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-check p-3 bg-light rounded-3 border">
+                {{ form.is_active }}
+                <label class="form-check-label fw-bold ms-2 text-success" for="{{ form.is_active.id_for_label }}">
+                  Active (Published for Customers)
+                </label>
+                <div class="small text-muted ms-2 mt-1">When checked, customers can subscribe to this plan.</div>
+              </div>
+            </div>
+
+            <!-- 3. Details & Conditions -->
+            <div class="col-12 border-bottom pb-2 mb-2 mt-4">
+              <h6 class="fw-bold text-dark mb-0">3. Descriptions &amp; Inclusions</h6>
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label fw-semibold small">Short Description <span class="text-danger">*</span></label>
+              {{ form.description }}
+              {% if form.description.errors %}<div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label fw-semibold small">Features &amp; Inclusions <span class="text-danger">*</span></label>
+              {{ form.features }}
+              <div class="tt-help-text small text-muted">Enter each bullet feature on a new line.</div>
+              {% if form.features.errors %}<div class="text-danger small mt-1">{{ form.features.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label fw-semibold small">Delivery Schedule Terms</label>
+              {{ form.delivery_schedule }}
+              {% if form.delivery_schedule.errors %}<div class="text-danger small mt-1">{{ form.delivery_schedule.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label fw-semibold small">Service Conditions / Pause Policy</label>
+              {{ form.service_conditions }}
+              {% if form.service_conditions.errors %}<div class="text-danger small mt-1">{{ form.service_conditions.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+            <a href="{% url 'adminpanel:plans' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success px-4 fw-semibold shadow-sm">
+              {% if is_edit %}Save Changes{% else %}Create Meal Plan{% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,360 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Chef: {{ chef.business_name }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}CHEF PROFILE & VERIFICATION{% endblock %}
+{% block page_heading %}{{ chef.business_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+  <a href="{% url 'adminpanel:chefs' %}" class="btn btn-sm btn-outline-secondary">← Back to Chefs</a>
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-muted small">Verification Status:</span>
+    <span class="tt-badge tt-badge-{{ chef.verification_status }} fs-6 px-3 py-1">
+      {{ chef.get_verification_status_display }}
+    </span>
+    {% if chef.is_active %}
+      <span class="badge bg-success px-3 py-2">Active</span>
+    {% else %}
+      <span class="badge bg-danger px-3 py-2">Suspended</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <!-- Left Side: Chef Info & Verification Form -->
+  <div class="col-lg-5">
+    <!-- Verification Action Box -->
+    <div class="tt-card mb-4 border-primary">
+      <div class="tt-card-header bg-primary text-white">
+        <h5 class="tt-card-title text-white"> Chef Verification & Actions</h5>
+      </div>
+      <div class="tt-card-body">
+        <form action="{% url 'adminpanel:chef_verify_action' chef.id %}" method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Platform Commission Rate (%)</label>
+            <div class="input-group">
+              <input type="number" step="0.50" min="0" max="50" name="commission_rate" value="{{ chef.commission_rate }}" class="form-control">
+              <span class="input-group-text">%</span>
+            </div>
+            <div class="text-muted small mt-1">Platform fee deducted from completed orders.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Reviewer Notes / Rejection Reason</label>
+            <textarea name="rejection_reason" rows="3" class="form-control" placeholder="Required if rejecting or requesting resubmission...">{{ chef.rejection_reason }}</textarea>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" name="action" value="approve" class="btn btn-success fw-bold py-2">
+              ✓ Approve Chef Application
+            </button>
+            <div class="row g-2">
+              <div class="col-6">
+                <button type="submit" name="action" value="under_review" class="btn btn-outline-primary w-100 btn-sm">
+                   Under Review
+                </button>
+              </div>
+              <div class="col-6">
+                <button type="submit" name="action" value="resubmission" class="btn btn-outline-warning w-100 btn-sm">
+                   Request Info
+                </button>
+              </div>
+            </div>
+            <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm" onclick="return confirm('Reject this chef application?')">
+              ✕ Reject Application
+            </button>
+          </div>
+        </form>
+
+        <hr class="my-3">
+
+        <!-- Suspend / Reactivate -->
+        <form action="{% url 'adminpanel:chef_toggle_status' chef.id %}" method="post">
+          {% csrf_token %}
+          <div class="tt-toggle-row {% if chef.is_active %}is-on{% else %}is-off{% endif %}"
+            {% if chef.is_active %}onclick="if(!confirm('Suspend this chef kitchen? Diners will not see their meals.')) { event.preventDefault(); }"{% endif %}>
+            <div class="tt-toggle-row-left">
+              <div class="tt-toggle-row-icon {% if chef.is_active %}icon-green{% else %}icon-red{% endif %}">
+                {% if chef.is_active %}🍽️{% else %}🔒{% endif %}
+              </div>
+              <div>
+                <p class="tt-toggle-row-title">
+                  Kitchen Status
+                  {% if chef.is_active %}
+                    <span class="tt-toggle-row-status status-on">Live</span>
+                  {% else %}
+                    <span class="tt-toggle-row-status status-off">Suspended</span>
+                  {% endif %}
+                </p>
+                <p class="tt-toggle-row-desc">
+                  {% if chef.is_active %}Kitchen is live and visible to diners.{% else %}Kitchen is suspended — not visible to diners.{% endif %}
+                </p>
+              </div>
+            </div>
+            <label class="tt-toggle-switch {% if not chef.is_active %}tt-toggle-danger{% endif %}" for="chefActiveToggle"
+              title="{% if chef.is_active %}Click to suspend this chef{% else %}Click to reactivate this chef{% endif %}">
+              <input type="checkbox" id="chefActiveToggle"
+                {% if chef.is_active %}checked{% endif %}
+                onchange="this.form.submit()">
+              <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
+            </label>
+          </div>
+        </form>
+
+
+        <!-- Danger Zone: Permanent Deletion -->
+        <div class="mt-3 pt-3 border-top">
+          <label class="form-label small fw-bold text-danger d-block mb-1">Danger Zone</label>
+          <button type="button" class="btn btn-sm btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteChefModal">
+            🗑️ Delete Chef Permanently
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chef Kitchen Details -->
+    <div class="tt-card mb-4">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title">‍ Kitchen Details</h5>
+      </div>
+      <div class="tt-card-body small">
+        <div class="mb-2"><strong>Owner Name:</strong> {{ chef.user.get_full_name|default:chef.user.username }}</div>
+        <div class="mb-2"><strong>Email:</strong> {{ chef.user.email|default:"None" }}</div>
+        <div class="mb-2"><strong>Phone:</strong> {{ chef.phone|default:"None" }}</div>
+        <div class="mb-2"><strong>FSSAI License:</strong> <span class="font-monospace">{{ chef.fssai_license }}</span></div>
+        <div class="mb-2"><strong>Kitchen Address:</strong> {{ chef.kitchen_address }}</div>
+        <div class="mb-2"><strong>Service Areas:</strong> {{ chef.service_areas }}</div>
+        <div class="mb-2"><strong>Operating Days:</strong> {{ chef.working_days }} ({{ chef.working_hours }})</div>
+        <div class="mb-2"><strong>Specialties:</strong> {{ chef.specialties }}</div>
+        <div><strong>Bio:</strong> <span class="text-secondary">{{ chef.bio|default:"No bio provided" }}</span></div>
+
+        {% if chef.verification_document %}
+          <div class="mt-3 pt-3 border-top">
+            <strong>Verification Document:</strong>
+            <div class="mt-1">
+              <a href="{{ chef.verification_document.url }}" target="_blank" class="btn btn-xs btn-outline-secondary">
+                 View Uploaded Document ↗
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Kitchen Branding & Photos Management -->
+    <div class="tt-card mb-4">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title">📷 Kitchen Photos & Cover Banner</h5>
+      </div>
+      <div class="tt-card-body small">
+        <div class="mb-3">
+          <label class="form-label fw-bold d-block mb-1">Cover Banner (Card Header)</label>
+          {% if chef.cover_image %}
+            <div class="rounded overflow-hidden border mb-2" style="max-height: 120px;">
+              <img src="{{ chef.cover_image.url }}" alt="Cover" class="w-100" style="object-fit: cover; max-height: 120px;">
+            </div>
+          {% else %}
+            <div class="p-3 bg-light text-center text-muted rounded border mb-2">
+              No cover banner uploaded yet.
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold d-block mb-1">Profile Photo (Avatar Badge)</label>
+          {% if chef.profile_image %}
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <img src="{{ chef.profile_image.url }}" alt="Profile" class="rounded-circle border" style="width: 50px; height: 50px; object-fit: cover;">
+              <span class="text-muted small">Current avatar photo</span>
+            </div>
+          {% else %}
+            <div class="text-muted mb-2">No profile photo uploaded.</div>
+          {% endif %}
+        </div>
+
+        <form action="{% url 'adminpanel:chef_update_images' chef.id %}" method="post" enctype="multipart/form-data" class="pt-2 border-top">
+          {% csrf_token %}
+          <div class="mb-2">
+            <label class="form-label fw-semibold small">Upload / Replace Cover Banner</label>
+            <input type="file" name="cover_image" accept="image/*" class="form-control form-control-sm">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Upload / Replace Profile Photo</label>
+            <input type="file" name="profile_image" accept="image/*" class="form-control form-control-sm">
+          </div>
+          <button type="submit" class="btn btn-sm btn-primary w-100">
+            Upload & Save Images
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Verification Audit Log -->
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Verification History</h5>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="d-flex flex-column">
+          {% for log in verification_logs %}
+            <div class="p-3 border-bottom small">
+              <div class="d-flex justify-content-between">
+                <strong>{{ log.get_action_display }}</strong>
+                <span class="text-muted">{{ log.created_at|date:"d M Y, H:i" }}</span>
+              </div>
+              <div class="text-muted">By: {{ log.admin.username|default:"System" }}</div>
+              {% if log.notes %}
+                <div class="text-secondary mt-1 bg-light p-1 rounded">"{{ log.notes }}"</div>
+              {% endif %}
+            </div>
+          {% empty %}
+            <div class="p-3 text-center text-muted small">No verification actions recorded yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Performance, Meals, Orders -->
+  <div class="col-lg-7">
+    <!-- Financial Performance Overview -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-4">
+        <div class="p-3 bg-white rounded border text-center">
+          <div class="text-muted small">Gross Delivered Sales</div>
+          <div class="fs-5 fw-bold text-dark mt-1">₹{{ gross_sales|floatformat:2 }}</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="p-3 bg-white rounded border text-center">
+          <div class="text-muted small">Platform Fee ({{ chef.commission_rate|floatformat:2 }}%)</div>
+          <div class="fs-5 fw-bold text-danger mt-1">-₹{{ platform_fee|floatformat:2 }}</div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="p-3 bg-white rounded border text-center">
+          <div class="text-muted small">Net Chef Payout</div>
+          <div class="fs-5 fw-bold text-success mt-1">₹{{ net_earnings|floatformat:2 }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chef Dishes Catalog -->
+    <div class="tt-card mb-4">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title"> Homestyle Dishes ({{ meals.count }})</h5>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Dish</th>
+                <th>Slot</th>
+                <th>Price</th>
+                <th>Diet</th>
+                <th>Availability</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for meal in meals %}
+                <tr>
+                  <td><strong>{{ meal.name }}</strong></td>
+                  <td>{{ meal.get_meal_type_display }}</td>
+                  <td>₹{{ meal.price }}</td>
+                  <td>{% if meal.is_veg %}<span class="badge bg-success">Veg</span>{% else %}<span class="badge bg-danger">Non-Veg</span>{% endif %}</td>
+                  <td>
+                    {% if meal.is_available %}
+                      <span class="badge bg-success-subtle text-success">Available</span>
+                    {% else %}
+                      <span class="badge bg-secondary-subtle text-muted">Unavailable</span>
+                    {% endif %}
+                  </td>
+                  <td><a href="{% url 'adminpanel:meal_detail' meal.id %}" class="btn btn-xs btn-outline-primary">Manage</a></td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center py-3 text-muted small">No dishes added by this chef yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title"> Recent Orders (Total: {{ total_orders_count }})</h5>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table">
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Diner</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for ord in orders %}
+                <tr>
+                  <td><strong>{{ ord.order_number }}</strong></td>
+                  <td>{{ ord.recipient_name }}</td>
+                  <td>₹{{ ord.final_amount }}</td>
+                  <td><span class="tt-badge tt-badge-{{ ord.status }}">{{ ord.get_status_display }}</span></td>
+                  <td><a href="{% url 'adminpanel:order_detail' ord.id %}" class="btn btn-xs btn-outline-primary">View</a></td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center py-3 text-muted small">No orders for this kitchen yet.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Chef Confirmation Modal -->
+<div class="modal fade" id="deleteChefModal" tabindex="-1" aria-labelledby="deleteChefModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteChefModalLabel">⚠️ Confirm Chef Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{% url 'adminpanel:chef_delete' chef.id %}" method="post">
+        {% csrf_token %}
+        <div class="modal-body">
+          <p class="mb-2">Are you sure you want to permanently delete <strong>{{ chef.business_name }}</strong>?</p>
+          <div class="alert alert-warning small mb-3">
+            <strong>Warning:</strong> This will permanently delete:
+            <ul class="mb-0 mt-1 ps-3">
+              <li>Chef kitchen profile & account (<strong>{{ chef.user.username }}</strong>)</li>
+              <li>All homestyle dishes and menus created by this chef</li>
+              <li>Active & past meal schedules, subscriptions, and orders</li>
+            </ul>
+            This action <strong>cannot be undone</strong>.
+          </div>
+          <p class="small text-muted mb-0">Please click the button below to confirm permanent deletion.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger fw-bold">🗑️ Yes, Delete Chef Permanently</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

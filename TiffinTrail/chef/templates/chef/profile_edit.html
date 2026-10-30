@@ -1,0 +1,178 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}KITCHEN DETAILS & BRANDING{% endblock %}
+{% block page_heading %}Edit Kitchen Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title"> Update Kitchen Information</h5>
+        <a href="{% url 'chef:profile' %}" class="btn btn-sm btn-outline-secondary">← Back to Profile</a>
+      </div>
+
+      <div class="tt-card-body">
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          <!-- Account & Owner Name -->
+          <div class="row g-3 mb-4">
+            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">1. Chef & Business Identity</h6></div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Business / Kitchen Name *</label>
+              {{ form.business_name }}
+              {% if form.business_name.errors %}<div class="text-danger small mt-1">{{ form.business_name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Contact Phone *</label>
+              {{ form.phone }}
+              {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">First Name *</label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Last Name *</label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Email Address *</label>
+              {{ form.email }}
+              {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          <!-- Photos & Branding -->
+          <div class="row g-3 mb-4">
+            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">2. Kitchen Photos & Branding</h6></div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Profile Photo</label>
+              {{ form.profile_image }}
+              <div class="tt-help-text">Square photo recommended (JPG, PNG, WebP max 5MB).</div>
+              {% if chef.profile_image %}
+                <div class="mt-2">
+                  <img src="{{ chef.profile_image.url }}" alt="Current Photo" class="rounded border" style="width: 80px; height: 80px; object-fit: cover;">
+                </div>
+              {% endif %}
+              {% if form.profile_image.errors %}<div class="text-danger small mt-1">{{ form.profile_image.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Kitchen Cover Banner</label>
+              {{ form.cover_image }}
+              <div class="tt-help-text">Banner display on public profile (horizontal landscape).</div>
+              {% if chef.cover_image %}
+                <div class="mt-2">
+                  <img src="{{ chef.cover_image.url }}" alt="Current Cover" class="rounded border" style="width: 140px; height: 60px; object-fit: cover;">
+                </div>
+              {% endif %}
+              {% if form.cover_image.errors %}<div class="text-danger small mt-1">{{ form.cover_image.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          <!-- Culinary Details -->
+          <div class="row g-3 mb-4">
+            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">3. Culinary Specialities & Standards</h6></div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Cuisines Served (comma-separated)</label>
+              {{ form.cuisines }}
+              <div class="tt-help-text">e.g. North Indian, Punjabi, Mughlai, Gujarati</div>
+              {% if form.cuisines.errors %}<div class="text-danger small mt-1">{{ form.cuisines.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Specialties / Signature Dishes</label>
+              {{ form.specialties }}
+              <div class="tt-help-text">e.g. Dal Makhani, Phulka Thali, Gatte ki Sabzi</div>
+              {% if form.specialties.errors %}<div class="text-danger small mt-1">{{ form.specialties.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Years of Experience</label>
+              {{ form.experience_years }}
+              {% if form.experience_years.errors %}<div class="text-danger small mt-1">{{ form.experience_years.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Starting Price for Single Meals (₹)</label>
+              {{ form.starting_price }}
+              {% if form.starting_price.errors %}<div class="text-danger small mt-1">{{ form.starting_price.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Culinary Story / Bio</label>
+              {{ form.bio }}
+              <div class="tt-help-text">Share your culinary heritage, hygiene habits, and recipes with diners.</div>
+              {% if form.bio.errors %}<div class="text-danger small mt-1">{{ form.bio.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Food Preparation & Packaging Norms</label>
+              {{ form.preparation_preferences }}
+              {% if form.preparation_preferences.errors %}<div class="text-danger small mt-1">{{ form.preparation_preferences.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          <!-- Location & Timings -->
+          <div class="row g-3 mb-4">
+            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">4. Address, Schedule & Availability</h6></div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Kitchen Address</label>
+              {{ form.kitchen_address }}
+              {% if form.kitchen_address.errors %}<div class="text-danger small mt-1">{{ form.kitchen_address.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Delivery Service Areas (comma-separated)</label>
+              {{ form.service_areas }}
+              <div class="tt-help-text">Localities your kitchen delivers to (e.g. Indiranagar, Koramangala, Domlur)</div>
+              {% if form.service_areas.errors %}<div class="text-danger small mt-1">{{ form.service_areas.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Operating Days</label>
+              {{ form.working_days }}
+              {% if form.working_days.errors %}<div class="text-danger small mt-1">{{ form.working_days.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Operating Hours</label>
+              {{ form.working_hours }}
+              {% if form.working_hours.errors %}<div class="text-danger small mt-1">{{ form.working_hours.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <div class="form-check form-switch p-3 bg-light rounded border">
+                {{ form.is_accepting_orders }}
+                <label class="form-check-label fw-bold ms-2" for="{{ form.is_accepting_orders.id_for_label }}">
+                  Accepting Orders Currently
+                </label>
+                <div class="text-muted small ms-4">When turned off, diners will see your kitchen as temporarily paused.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+            <a href="{% url 'chef:profile' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-success px-4 fw-semibold"> Save Profile Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

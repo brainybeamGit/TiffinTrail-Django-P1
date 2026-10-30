@@ -1,0 +1,588 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}Platform Reports & Analytics | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}ANALYTICS & BUSINESS INTELLIGENCE{% endblock %}
+{% block page_heading %}Platform Reports & Analytics Engine{% endblock %}
+
+{% block content %}
+<style>
+  /* ==========================================================================
+     Executive Reports Page Styling
+     ========================================================================== */
+  .tt-report-nav {
+    background: #ffffff;
+    padding: 0.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  }
+  .tt-report-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.15rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    color: #475569;
+    background: transparent;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+  }
+  .tt-report-pill:hover {
+    color: #1e293b;
+    background: #f1f5f9;
+  }
+  .tt-report-pill.active {
+    background: #253746;
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(37, 55, 70, 0.22);
+  }
+
+  .tt-preset-btn {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    transition: all 0.15s ease;
+  }
+  .tt-preset-btn:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+  }
+
+  /* Stat Card Enhancements */
+  .tt-report-stat {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    transition: all 0.2s ease;
+  }
+  .tt-report-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+  .tt-report-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .tt-report-stat-icon.blue { background: #e0f2fe; color: #0284c7; }
+  .tt-report-stat-icon.green { background: #dcfce7; color: #16a34a; }
+  .tt-report-stat-icon.amber { background: #fef3c7; color: #d97706; }
+  .tt-report-stat-icon.purple { background: #f3e8ff; color: #9333ea; }
+  .tt-report-stat-icon.teal { background: #ccfbf1; color: #0d9488; }
+  .tt-report-stat-icon.red { background: #fee2e2; color: #dc2626; }
+
+  /* Table Customizations */
+  .tt-report-table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .tt-report-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+  .tt-report-table td {
+    padding: 0.85rem 1rem;
+    font-size: 0.86rem;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+  }
+  .tt-report-table tbody tr:hover {
+    background-color: #f8fafc;
+  }
+  .tt-report-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+</style>
+
+<!-- Top Category Pills Navigation -->
+<div class="tt-report-nav mb-4">
+  <div class="d-flex flex-wrap gap-1.5 align-items-center">
+    <a href="?report_type=orders&start_date={{ start_date }}&end_date={{ end_date }}" class="tt-report-pill {% if report_type == 'orders' %}active{% endif %}">
+      <i class="bi bi-box-seam"></i>
+      <span>Orders & Meals</span>
+    </a>
+    <a href="?report_type=revenue&start_date={{ start_date }}&end_date={{ end_date }}" class="tt-report-pill {% if report_type == 'revenue' %}active{% endif %}">
+      <i class="bi bi-cash-coin"></i>
+      <span>Revenue & Fees</span>
+    </a>
+    <a href="?report_type=subscriptions&start_date={{ start_date }}&end_date={{ end_date }}" class="tt-report-pill {% if report_type == 'subscriptions' %}active{% endif %}">
+      <i class="bi bi-calendar-check"></i>
+      <span>Subscriptions</span>
+    </a>
+    <a href="?report_type=customers&start_date={{ start_date }}&end_date={{ end_date }}" class="tt-report-pill {% if report_type == 'customers' %}active{% endif %}">
+      <i class="bi bi-people"></i>
+      <span>Customers</span>
+    </a>
+    <a href="?report_type=chefs&start_date={{ start_date }}&end_date={{ end_date }}" class="tt-report-pill {% if report_type == 'chefs' %}active{% endif %}">
+      <i class="bi bi-person-badge"></i>
+      <span>Home Chefs</span>
+    </a>
+    <a href="?report_type=complaints&start_date={{ start_date }}&end_date={{ end_date }}" class="tt-report-pill {% if report_type == 'complaints' %}active{% endif %}">
+      <i class="bi bi-chat-left-dots"></i>
+      <span>Complaints</span>
+    </a>
+    <a href="?report_type=coupons&start_date={{ start_date }}&end_date={{ end_date }}" class="tt-report-pill {% if report_type == 'coupons' %}active{% endif %}">
+      <i class="bi bi-tags"></i>
+      <span>Coupons</span>
+    </a>
+  </div>
+</div>
+
+<!-- Parameters & Date Range Control Card -->
+<div class="card border-0 shadow-sm rounded-4 mb-4" style="border: 1px solid #e2e8f0 !important; background: #ffffff;">
+  <div class="card-body p-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3 pb-3 border-bottom">
+      <div>
+        <h5 class="fw-bold fs-6 mb-1 text-dark d-flex align-items-center gap-2">
+          <i class="bi bi-sliders text-primary"></i>
+          <span>Report Parameters & Date Filter</span>
+        </h5>
+        <div class="small text-muted">
+          Active range: <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong>
+        </div>
+      </div>
+
+      <!-- Export Actions -->
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <a href="?report_type={{ report_type }}&start_date={{ start_date }}&end_date={{ end_date }}&export=csv" class="btn btn-sm btn-success fw-bold d-inline-flex align-items-center gap-1.5 px-3 py-2 rounded-3 shadow-xs">
+          <i class="bi bi-file-earmark-spreadsheet"></i>
+          <span>Download CSV</span>
+        </a>
+        <a href="?report_type={{ report_type }}&start_date={{ start_date }}&end_date={{ end_date }}&export=print" target="_blank" class="btn btn-sm btn-outline-secondary fw-semibold d-inline-flex align-items-center gap-1.5 px-3 py-2 rounded-3">
+          <i class="bi bi-printer"></i>
+          <span>Print / PDF View</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Date Shortcuts -->
+    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+      <span class="small text-muted fw-semibold me-1"><i class="bi bi-clock-history me-1"></i>Quick Presets:</span>
+      <button type="button" class="tt-preset-btn" onclick="setDatePreset(0)">Today</button>
+      <button type="button" class="tt-preset-btn" onclick="setDatePreset(7)">Last 7 Days</button>
+      <button type="button" class="tt-preset-btn" onclick="setDatePreset(30)">Last 30 Days</button>
+      <button type="button" class="tt-preset-btn" onclick="setDatePreset('month')">This Month</button>
+      <button type="button" class="tt-preset-btn" onclick="setDatePreset('year')">Year to Date (YTD)</button>
+    </div>
+
+    <form method="get" id="reportFilterForm" class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold text-muted mb-1">Report Category</label>
+        <select name="report_type" class="form-select rounded-3" onchange="this.form.submit()">
+          <option value="orders" {% if report_type == 'orders' %}selected{% endif %}>📦 Order & Fulfillment Report</option>
+          <option value="revenue" {% if report_type == 'revenue' %}selected{% endif %}>💰 Revenue & Commission Ledger</option>
+          <option value="subscriptions" {% if report_type == 'subscriptions' %}selected{% endif %}>📅 Subscriptions Report</option>
+          <option value="customers" {% if report_type == 'customers' %}selected{% endif %}>👥 Customer Registrations Report</option>
+          <option value="chefs" {% if report_type == 'chefs' %}selected{% endif %}>👨‍🍳 Chef Verifications Report</option>
+          <option value="complaints" {% if report_type == 'complaints' %}selected{% endif %}>💬 Complaints & Support Report</option>
+          <option value="coupons" {% if report_type == 'coupons' %}selected{% endif %}>🎟️ Coupon Performance Report</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold text-muted mb-1">Start Date</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-calendar3"></i></span>
+          <input type="date" name="start_date" id="startDateInput" value="{{ start_date }}" class="form-control border-start-0" required>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold text-muted mb-1">End Date</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-calendar3"></i></span>
+          <input type="date" name="end_date" id="endDateInput" value="{{ end_date }}" class="form-control border-start-0" required>
+        </div>
+      </div>
+
+      <div class="col-md-2 d-flex gap-1.5">
+        <button type="submit" class="btn btn-primary w-100 fw-semibold rounded-3 d-inline-flex align-items-center justify-content-center gap-1.5 py-2">
+          <i class="bi bi-funnel-fill"></i>
+          <span>Filter</span>
+        </button>
+        <a href="{% url 'adminpanel:reports' %}" class="btn btn-outline-secondary rounded-3 px-2.5 py-2" title="Reset Filters">
+          <i class="bi bi-arrow-counterclockwise"></i>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Report Summary Cards Grid -->
+<div class="row g-3 mb-4">
+  <!-- Record Count (Global) -->
+  <div class="col-sm-6 col-md-3">
+    <div class="tt-report-stat">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="small fw-bold text-uppercase text-muted" style="letter-spacing: 0.04em;">Matching Records</span>
+        <div class="tt-report-stat-icon blue">
+          <i class="bi bi-database"></i>
+        </div>
+      </div>
+      <div>
+        <h3 class="fw-bold mb-0 text-dark fs-3">{{ summary.records_count|default:0 }}</h3>
+        <div class="small text-muted mt-1">In selected date filter</div>
+      </div>
+    </div>
+  </div>
+
+  {% if report_type == 'orders' %}
+    <div class="col-sm-6 col-md-3">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Total Order Value</span>
+          <div class="tt-report-stat-icon green">
+            <i class="bi bi-currency-rupee"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.total_order_value|floatformat:2 }}</h3>
+          <div class="small text-muted mt-1">All orders in selected window</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Delivered Sales</span>
+          <div class="tt-report-stat-icon green">
+            <i class="bi bi-check2-circle"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.delivered_value|floatformat:2 }}</h3>
+          <div class="small text-muted mt-1">{{ summary.completed_count }} fulfilled orders</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-warning" style="letter-spacing: 0.04em;">Pending Orders</span>
+          <div class="tt-report-stat-icon amber">
+            <i class="bi bi-clock-history"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-warning fs-3">{{ summary.pending_count }}</h3>
+          <div class="small text-muted mt-1">Kitchen / Delivery awaiting</div>
+        </div>
+      </div>
+    </div>
+
+  {% elif report_type == 'revenue' %}
+    <div class="col-sm-6 col-md-3">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Gross Revenue</span>
+          <div class="tt-report-stat-icon green">
+            <i class="bi bi-currency-rupee"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.gross_revenue|floatformat:2 }}</h3>
+          <div class="small text-muted mt-1">Delivered & Paid Subscriptions</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-danger" style="letter-spacing: 0.04em;">Platform Fee (10%)</span>
+          <div class="tt-report-stat-icon amber">
+            <i class="bi bi-pie-chart"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-danger fs-3">₹{{ summary.platform_commission|floatformat:2 }}</h3>
+          <div class="small text-muted mt-1">Platform commissions retained</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-teal" style="letter-spacing: 0.04em;">Net Chef Payout</span>
+          <div class="tt-report-stat-icon teal">
+            <i class="bi bi-wallet2"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.chef_payout|floatformat:2 }}</h3>
+          <div class="small text-muted mt-1">Total home cook earnings</div>
+        </div>
+      </div>
+    </div>
+
+  {% elif report_type == 'subscriptions' %}
+    <div class="col-sm-6 col-md-4">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Subscribed Value</span>
+          <div class="tt-report-stat-icon green">
+            <i class="bi bi-currency-rupee"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.total_value|floatformat:2 }}</h3>
+          <div class="small text-muted mt-1">Subscription plans booked</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-primary" style="letter-spacing: 0.04em;">Active Diners</span>
+          <div class="tt-report-stat-icon purple">
+            <i class="bi bi-award"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-dark fs-3">{{ summary.active_count }}</h3>
+          <div class="small text-muted mt-1">Currently active subscription plans</div>
+        </div>
+      </div>
+    </div>
+
+  {% elif report_type == 'chefs' %}
+    <div class="col-sm-6 col-md-4">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Approved Kitchens</span>
+          <div class="tt-report-stat-icon green">
+            <i class="bi bi-patch-check"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-success fs-3">{{ summary.approved_count }}</h3>
+          <div class="small text-muted mt-1">FSSAI verified active partners</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-warning" style="letter-spacing: 0.04em;">Pending Review</span>
+          <div class="tt-report-stat-icon amber">
+            <i class="bi bi-hourglass-split"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-warning fs-3">{{ summary.pending_count }}</h3>
+          <div class="small text-muted mt-1">Awaiting admin document verification</div>
+        </div>
+      </div>
+    </div>
+
+  {% elif report_type == 'complaints' %}
+    <div class="col-sm-6 col-md-4">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Resolved Tickets</span>
+          <div class="tt-report-stat-icon green">
+            <i class="bi bi-check-circle"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-success fs-3">{{ summary.resolved_count }}</h3>
+          <div class="small text-muted mt-1">Successfully closed issues</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-4">
+      <div class="tt-report-stat">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <span class="small fw-bold text-uppercase text-danger" style="letter-spacing: 0.04em;">Open Tickets</span>
+          <div class="tt-report-stat-icon red">
+            <i class="bi bi-exclamation-triangle"></i>
+          </div>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0 text-danger fs-3">{{ summary.open_count }}</h3>
+          <div class="small text-muted mt-1">Action needed from support team</div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Report Table Container Card -->
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border: 1px solid #e2e8f0 !important; background: #ffffff;">
+  <!-- Table Header Bar -->
+  <div class="p-3.5 border-bottom bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <h5 class="fw-bold fs-6 mb-0 text-dark d-flex align-items-center gap-2">
+        <i class="bi bi-table text-primary"></i>
+        <span>Filtered Records: {{ report_type|upper }}</span>
+      </h5>
+      <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages|default:1 }} ({{ summary.records_count|default:page_obj.paginator.count }} total)
+      </span>
+    </div>
+
+    <!-- Live Client Filter -->
+    <div class="input-group input-group-sm" style="max-width: 280px;">
+      <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+      <input type="text" id="reportLiveSearch" class="form-control border-start-0" placeholder="Filter current page rows...">
+    </div>
+  </div>
+
+  <!-- Grab & Scroll Table View -->
+  <div class="tt-table-responsive tt-grab-scroll" style="overflow-x: auto; cursor: grab;">
+    <table class="tt-report-table" id="reportDataTable">
+      <thead>
+        <tr>
+          {% for h in headers %}
+            <th>{{ h }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page_obj %}
+          <tr class="report-data-row">
+            {% for cell in row %}
+              <td>
+                {% if cell == 'Delivered' or cell == 'Paid' or cell == 'Active' or cell == 'Approved' or cell == 'Resolved' %}
+                  <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill small fw-semibold">
+                    ✓ {{ cell }}
+                  </span>
+                {% elif cell == 'Pending' or cell == 'Under Review' or cell == 'In Prep' or cell == 'Cooking in Progress' or cell == 'Payment Pending' %}
+                  <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1 rounded-pill small fw-semibold">
+                    ⏳ {{ cell }}
+                  </span>
+                {% elif cell == 'Cancelled' or cell == 'Failed' or cell == 'Rejected' or cell == 'Open' or cell == 'Refunded' or cell == 'Inactive' %}
+                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1 rounded-pill small fw-semibold">
+                    ✕ {{ cell }}
+                  </span>
+                {% elif cell == 'Out for Delivery' %}
+                  <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2.5 py-1 rounded-pill small fw-semibold">
+                    🛵 {{ cell }}
+                  </span>
+                {% elif cell|slice:":3" == "TT-" %}
+                  <span class="font-monospace small fw-bold text-dark bg-light px-2 py-0.5 rounded border">
+                    {{ cell }}
+                  </span>
+                {% elif cell|slice:":1" == "₹" %}
+                  <strong class="text-success fw-bold">{{ cell }}</strong>
+                {% else %}
+                  {{ cell }}
+                {% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="{{ headers|length|default:6 }}" class="text-center py-5 text-muted">
+              <div class="py-4">
+                <i class="bi bi-inbox fs-1 d-block text-secondary mb-2 opacity-50"></i>
+                <h6 class="fw-bold text-dark mb-1">No Records Found</h6>
+                <p class="small text-muted mb-3">No matching events found for the selected date range.</p>
+                <a href="{% url 'adminpanel:reports' %}?report_type={{ report_type }}" class="btn btn-sm btn-outline-primary rounded-3">
+                  Reset Date Filter
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Bar -->
+  {% if page_obj.has_other_pages %}
+    <div class="p-3 border-top bg-light d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+      <span class="text-muted small">
+        Showing <strong>{{ page_obj.start_index }}</strong> to <strong>{{ page_obj.end_index }}</strong> of <strong>{{ page_obj.paginator.count }}</strong> entries
+      </span>
+      <ul class="pagination pagination-sm mb-0">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link rounded-start-2" href="?page={{ page_obj.previous_page_number }}&report_type={{ report_type }}&start_date={{ start_date }}&end_date={{ end_date }}">
+              ‹ Previous
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link rounded-start-2">‹ Previous</span></li>
+        {% endif %}
+
+        <li class="page-item active">
+          <span class="page-link fw-bold px-3">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link rounded-end-2" href="?page={{ page_obj.next_page_number }}&report_type={{ report_type }}&start_date={{ start_date }}&end_date={{ end_date }}">
+              Next ›
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link rounded-end-2">Next ›</span></li>
+        {% endif %}
+      </ul>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Quick Date Preset & Live Search Scripts -->
+<script>
+  function setDatePreset(days) {
+    const end = new Date();
+    const start = new Date();
+
+    if (days === 'month') {
+      start.setDate(1);
+    } else if (days === 'year') {
+      start.setMonth(0, 1);
+    } else if (days > 0) {
+      start.setDate(end.getDate() - days);
+    }
+
+    const fmt = d => d.toISOString().split('T')[0];
+    document.getElementById('startDateInput').value = fmt(start);
+    document.getElementById('endDateInput').value = fmt(end);
+    document.getElementById('reportFilterForm').submit();
+  }
+
+  // Live in-page filter
+  document.getElementById('reportLiveSearch')?.addEventListener('input', function(e) {
+    const q = e.target.value.toLowerCase().trim();
+    const rows = document.querySelectorAll('#reportDataTable tbody tr.report-data-row');
+    rows.forEach(r => {
+      const text = r.textContent.toLowerCase();
+      r.style.display = text.includes(q) ? '' : 'none';
+    });
+  });
+</script>
+{% endblock %}
+
