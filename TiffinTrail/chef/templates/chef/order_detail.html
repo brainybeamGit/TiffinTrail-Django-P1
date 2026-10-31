@@ -114,6 +114,30 @@
       </div>
     </div>
 
+    {% if order.has_review %}
+    <!-- Customer Rating & Feedback Card -->
+    <div class="tt-card border-warning mb-4">
+      <div class="tt-card-header bg-warning-subtle d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title text-dark mb-0 d-flex align-items-center gap-1.5">
+          <i class="bi bi-star-fill text-warning"></i> Customer Rating & Feedback
+        </h5>
+        <span class="badge bg-warning text-dark fw-bold">★ {{ order.customer_review.rating }} / 5 Stars</span>
+      </div>
+      <div class="tt-card-body">
+        <p class="mb-2 text-dark fs-6 fst-italic">&ldquo;{{ order.customer_review.comment }}&rdquo;</p>
+        <div class="small text-muted d-flex align-items-center gap-2 flex-wrap">
+          <span>By <strong>{{ order.recipient_name }}</strong></span>
+          <span>·</span>
+          <span>{{ order.customer_review.created_at|date:"d M Y · h:i A" }}</span>
+          {% if order.customer_review.meal %}
+          <span>·</span>
+          <span class="badge bg-light text-secondary border">Dish: {{ order.customer_review.meal.name }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Chef Net Payout Breakdown -->
     <div class="tt-card border-success">
       <div class="tt-card-header bg-success-subtle">

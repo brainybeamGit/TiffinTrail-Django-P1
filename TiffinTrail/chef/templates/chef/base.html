@@ -8,16 +8,15 @@
   <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="{% static 'css/design-system.css' %}?v=4.0">
+  <link rel="stylesheet" href="{% static 'css/design-system.css' %}?v=7.0">
   <link rel="stylesheet" href="{% static 'css/animations.css' %}">
-  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=4.0">
+  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=7.0">
   <style>
     /* Table Action Buttons & Cell Polish */
     .tt-actions-cell {
       white-space: nowrap !important;
       text-align: right !important;
-      min-width: 155px !important;
-      padding-right: 20px !important;
+      padding-right: 14px !important;
     }
     .tt-actions-group {
       display: inline-flex !important;
@@ -75,30 +74,215 @@
       color: #1e293b !important;
     }
 
-    /* Drag-to-Scroll on Table Details */
     .tt-table-responsive,
     .table-responsive {
-      cursor: grab;
-      user-select: none;
-      -webkit-user-select: none;
+      width: 100% !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: #94a3b8 #f1f5f9 !important;
+      cursor: default !important;
+      user-select: auto !important;
+      -webkit-user-select: auto !important;
+      padding-bottom: 6px !important;
     }
-    .tt-table-responsive.tt-is-dragging,
-    .table-responsive.tt-is-dragging {
-      cursor: grabbing !important;
+
+    /* Visible Horizontal Scrollbar at Bottom */
+    .tt-table-responsive::-webkit-scrollbar,
+    .table-responsive::-webkit-scrollbar {
+      display: block !important;
+      height: 8px !important;
     }
-    .tt-table-responsive.tt-is-dragging * {
-      cursor: grabbing !important;
-      user-select: none !important;
+    .tt-table-responsive::-webkit-scrollbar-track,
+    .table-responsive::-webkit-scrollbar-track {
+      background: #f1f5f9 !important;
+      border-radius: 4px !important;
+      border: 1px solid #e2e8f0 !important;
     }
-    .tt-table-responsive a,
-    .tt-table-responsive button,
-    .tt-table-responsive input,
-    .tt-table-responsive select,
-    .tt-table-responsive .tt-btn-action {
-      cursor: pointer;
-      user-select: auto;
+    .tt-table-responsive::-webkit-scrollbar-thumb,
+    .table-responsive::-webkit-scrollbar-thumb {
+      background: #94a3b8 !important;
+      border-radius: 4px !important;
     }
-  </style>
+    .tt-table-responsive::-webkit-scrollbar-thumb:hover,
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+      background: #64748b !important;
+    }
+    }
+  
+/* Status Badges with Circle Indicators */
+.tt-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 11px !important;
+  border-radius: 999px !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  border: 1px solid transparent !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+.tt-badge::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+}
+
+/* Cancelled / Rejected / Failed / Suspended */
+.tt-badge-cancelled,
+.tt-badge-rejected,
+.tt-badge-failed,
+.tt-badge-suspended,
+.tt-badge-danger {
+  background-color: #FEF2F2 !important;
+  color: #991B1B !important;
+  border-color: #FECACA !important;
+}
+.tt-badge-cancelled::before,
+.tt-badge-rejected::before,
+.tt-badge-failed::before,
+.tt-badge-suspended::before,
+.tt-badge-danger::before {
+  background-color: #DC2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+
+/* Delivered / Completed / Approved / Active / Paid / Resolved */
+.tt-badge-delivered,
+.tt-badge-completed,
+.tt-badge-approved,
+.tt-badge-active,
+.tt-badge-paid,
+.tt-badge-resolved,
+.tt-badge-success {
+  background-color: #F0FDF4 !important;
+  color: #166534 !important;
+  border-color: #BBF7D0 !important;
+}
+.tt-badge-delivered::before,
+.tt-badge-completed::before,
+.tt-badge-approved::before,
+.tt-badge-active::before,
+.tt-badge-paid::before,
+.tt-badge-resolved::before,
+.tt-badge-success::before {
+  background-color: #16A34A !important;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+}
+
+/* Pending / Order Received / Under Review / Resubmission */
+.tt-badge-pending,
+.tt-badge-under_review,
+.tt-badge-resubmission,
+.tt-badge-warning {
+  background-color: #FFFBEB !important;
+  color: #92400E !important;
+  border-color: #FDE68A !important;
+}
+.tt-badge-pending::before,
+.tt-badge-under_review::before,
+.tt-badge-resubmission::before,
+.tt-badge-warning::before {
+  background-color: #D97706 !important;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2) !important;
+}
+
+/* Confirmed / Preparing / Cooking / In Prep / In Progress */
+.tt-badge-confirmed,
+.tt-badge-preparing,
+.tt-badge-in_progress,
+.tt-badge-info {
+  background-color: #EFF6FF !important;
+  color: #1E40AF !important;
+  border-color: #BFDBFE !important;
+}
+.tt-badge-confirmed::before,
+.tt-badge-preparing::before,
+.tt-badge-in_progress::before,
+.tt-badge-info::before {
+  background-color: #2563EB !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Out for Delivery */
+.tt-badge-out_for_delivery {
+  background-color: #F0FDFA !important;
+  color: #115E59 !important;
+  border-color: #99F6E4 !important;
+}
+.tt-badge-out_for_delivery::before {
+  background-color: #0D9488 !important;
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
+}
+
+/* Open Complaint */
+.tt-badge-open {
+  background-color: #FEF2F2 !important;
+  color: #991B1B !important;
+  border-color: #FECACA !important;
+}
+.tt-badge-open::before {
+  background-color: #DC2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+
+/* Closed */
+.tt-badge-closed {
+  background-color: #F8FAFC !important;
+  color: #475569 !important;
+  border-color: #E2E8F0 !important;
+}
+.tt-badge-closed::before {
+  background-color: #94A3B8 !important;
+}
+
+/* Veg & Non-Veg */
+.tt-badge-veg {
+  background-color: #F0FDF4 !important;
+  color: #166534 !important;
+  border-color: #86EFAC !important;
+}
+.tt-badge-veg::before {
+  background-color: #16A34A !important;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+}
+
+.tt-badge-nonveg {
+  background-color: #FEF2F2 !important;
+  color: #991B1B !important;
+  border-color: #FECACA !important;
+}
+.tt-badge-nonveg::before {
+  background-color: #DC2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+
+.badge.rounded-pill.bg-danger-subtle {
+  background-color: #FEF2F2 !important;
+  color: #991B1B !important;
+  border: 1px solid #FECACA !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+.badge.rounded-pill.bg-danger-subtle::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background-color: #DC2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+</style>
   {% block extra_css %}{% endblock %}
 </head>
 <body class="tt-chef-body">
@@ -287,7 +471,26 @@
 <!-- Scripts -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/animations.js' %}"></script>
-<script src="{% static 'js/chef.js' %}?v=4.1"></script>
+<script src="{% static 'js/chef.js' %}?v=7.0"></script>
 {% block extra_js %}{% endblock %}
+
+<!-- Table Wheel Scroll Protection (Forces Vertical Page Scroll) -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var tables = document.querySelectorAll('.tt-table-responsive, .table-responsive');
+  tables.forEach(function (table) {
+    table.addEventListener('wheel', function (e) {
+      if (!e.shiftKey && Math.abs(e.deltaY) > 0) {
+        e.preventDefault();
+        window.scrollBy({
+          top: e.deltaY,
+          left: 0,
+          behavior: 'auto'
+        });
+      }
+    }, { passive: false });
+  });
+});
+</script>
 </body>
 </html>

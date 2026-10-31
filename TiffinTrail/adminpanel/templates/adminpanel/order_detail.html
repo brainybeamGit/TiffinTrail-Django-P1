@@ -16,18 +16,44 @@
     <span class="badge {% if order.payment_status == 'paid' %}bg-success{% else %}bg-warning text-dark{% endif %} px-3 py-2">
       {{ order.get_payment_status_display }}
     </span>
-    <form method="post" action="{% url 'adminpanel:order_delete' order.id %}" class="d-inline ms-2" onsubmit="return confirm('DHYAN DEIN: Kya aap sach me Order #{{ order.order_number }} ko permanently delete karna chahte hain? Yeh wapas nahi aayega.');">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-sm btn-danger px-3 py-1.5 shadow-sm">
-        🗑 Delete Order
-      </button>
-    </form>
+    <button type="button" class="btn btn-sm btn-danger px-3 py-1.5 shadow-sm ms-2 d-inline-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#deleteOrderModal">
+      <i class="bi bi-trash3-fill"></i> Delete Order
+    </button>
   </div>
 </div>
 
 <div class="row g-4">
   <!-- Left Column: Ordered Items & Bill -->
   <div class="col-lg-7">
+    {% if order.has_review %}
+    <!-- Customer Feedback & Rating Card -->
+    <div class="tt-card border-warning mb-4">
+      <div class="tt-card-header bg-warning-subtle d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title text-dark mb-0">
+          ★ Customer Feedback & Rating
+        </h5>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-warning text-dark fw-bold">★ {{ order.customer_review.rating }} / 5 Stars</span>
+          <button type="button" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 py-1 px-2" data-bs-toggle="modal" data-bs-target="#deleteOrderReviewModal" title="Delete Review">
+            <i class="bi bi-trash3-fill"></i> Delete Review
+          </button>
+        </div>
+      </div>
+      <div class="tt-card-body">
+        <p class="mb-2 text-dark fs-6 fst-italic">&ldquo;{{ order.customer_review.comment }}&rdquo;</p>
+        <div class="small text-muted d-flex align-items-center gap-2 flex-wrap">
+          <span>Customer: <strong>{{ order.recipient_name }}</strong></span>
+          <span>·</span>
+          <span>{{ order.customer_review.created_at|date:"d M Y · h:i A" }}</span>
+          {% if order.customer_review.meal %}
+          <span>·</span>
+          <span class="badge bg-light text-secondary border">Dish: {{ order.customer_review.meal.name }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <div class="tt-card mb-4">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
         <h5 class="tt-card-title"> Ordered Meals ({{ items.count }})</h5>
@@ -161,4 +187,95 @@
     </div>
   </div>
 </div>
+
+<!-- Delete Order Confirmation Modal -->
+<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-labelledby="deleteOrderModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deleteOrderModalLabel">Delete Order</h5>
+            <div class="text-muted small">Permanent Order Removal</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-2">
+          Are you sure you want to permanently delete order <strong class="text-dark">#{{ order.order_number }}</strong>?
+        </p>
+        <div class="alert alert-warning border-0 bg-warning-subtle text-dark small rounded-3 mb-0 p-3 d-flex gap-2">
+          <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0 mt-0.5"></i>
+          <div>
+            <strong>Warning:</strong> Customer: {{ order.user.get_full_name|default:order.user.username }} | Total: ₹{{ order.final_amount }}. All linked order items and transaction records will be permanently removed.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'adminpanel:order_delete' order.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+            <i class="bi bi-trash3-fill"></i> Permanently Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if order.has_review and order.customer_review %}
+<!-- Delete Review Modal for Order -->
+<div class="modal fade" id="deleteOrderReviewModal" tabindex="-1" aria-labelledby="deleteOrderReviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deleteOrderReviewModalLabel">Delete Customer Review</h5>
+            <div class="text-muted small">Permanent Review Removal</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-2">
+          Are you sure you want to permanently delete customer review for Order <strong class="text-dark">#{{ order.order_number }}</strong>?
+        </p>
+        <div class="bg-light p-3 rounded-3 mb-3 border">
+          <div class="text-warning small mb-1">
+            {% if order.customer_review.rating == 5 %}★★★★★{% elif order.customer_review.rating == 4 %}★★★★☆{% elif order.customer_review.rating == 3 %}★★★☆☆{% elif order.customer_review.rating == 2 %}★★☆☆☆{% else %}★☆☆☆☆{% endif %}
+            <span class="text-dark fw-bold ms-1">{{ order.customer_review.rating }} / 5 Stars</span>
+          </div>
+          <div class="text-dark small fst-italic">&ldquo;{{ order.customer_review.comment }}&rdquo;</div>
+          <div class="text-muted small mt-1">Reviewer: <strong>{{ order.customer_review.user.get_full_name|default:order.customer_review.user.username }}</strong></div>
+        </div>
+        <div class="alert alert-warning border-0 bg-warning-subtle text-dark small rounded-3 mb-0 p-3 d-flex gap-2">
+          <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0 mt-0.5"></i>
+          <div>
+            <strong>Warning:</strong> Deleting this review will remove it from Chef <strong>{{ order.chef.business_name }}</strong>'s profile and automatically recalculate their overall rating.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'adminpanel:review_delete' order.customer_review.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+            <i class="bi bi-trash3-fill"></i> Permanently Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endblock %}

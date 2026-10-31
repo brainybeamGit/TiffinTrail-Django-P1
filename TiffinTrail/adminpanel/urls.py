@@ -13,6 +13,7 @@ urlpatterns = [
     path('customers/', views.customer_list, name='customers'),
     path('customers/<int:user_id>/', views.customer_detail, name='customer_detail'),
     path('customers/<int:user_id>/toggle/', views.customer_toggle_status, name='customer_toggle_status'),
+    path('customers/<int:user_id>/delete/', views.customer_delete, name='customer_delete'),
 
     # Chefs & Verification
     path('chefs/', views.chef_list, name='chefs'),
@@ -64,6 +65,7 @@ urlpatterns = [
     # Reviews Moderation
     path('reviews/', views.review_list, name='reviews'),
     path('reviews/<int:review_id>/toggle/', views.review_toggle_hide, name='review_toggle_hide'),
+    path('reviews/<int:review_id>/delete/', views.review_delete, name='review_delete'),
 
     # Reports & Analytics
     path('reports/', views.reports_view, name='reports'),

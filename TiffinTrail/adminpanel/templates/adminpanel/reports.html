@@ -200,13 +200,13 @@
       <div class="col-md-4">
         <label class="form-label small fw-semibold text-muted mb-1">Report Category</label>
         <select name="report_type" class="form-select rounded-3" onchange="this.form.submit()">
-          <option value="orders" {% if report_type == 'orders' %}selected{% endif %}>📦 Order & Fulfillment Report</option>
-          <option value="revenue" {% if report_type == 'revenue' %}selected{% endif %}>💰 Revenue & Commission Ledger</option>
-          <option value="subscriptions" {% if report_type == 'subscriptions' %}selected{% endif %}>📅 Subscriptions Report</option>
-          <option value="customers" {% if report_type == 'customers' %}selected{% endif %}>👥 Customer Registrations Report</option>
-          <option value="chefs" {% if report_type == 'chefs' %}selected{% endif %}>👨‍🍳 Chef Verifications Report</option>
-          <option value="complaints" {% if report_type == 'complaints' %}selected{% endif %}>💬 Complaints & Support Report</option>
-          <option value="coupons" {% if report_type == 'coupons' %}selected{% endif %}>🎟️ Coupon Performance Report</option>
+          <option value="orders" {% if report_type == 'orders' %}selected{% endif %}>Order & Fulfillment Report</option>
+          <option value="revenue" {% if report_type == 'revenue' %}selected{% endif %}>Revenue & Commission Ledger</option>
+          <option value="subscriptions" {% if report_type == 'subscriptions' %}selected{% endif %}>Subscriptions Report</option>
+          <option value="customers" {% if report_type == 'customers' %}selected{% endif %}>Customer Registrations Report</option>
+          <option value="chefs" {% if report_type == 'chefs' %}selected{% endif %}>Chef Verifications Report</option>
+          <option value="complaints" {% if report_type == 'complaints' %}selected{% endif %}>Complaints & Support Report</option>
+          <option value="coupons" {% if report_type == 'coupons' %}selected{% endif %}>Coupon Performance Report</option>
         </select>
       </div>
 
@@ -459,7 +459,7 @@
   </div>
 
   <!-- Grab & Scroll Table View -->
-  <div class="tt-table-responsive tt-grab-scroll" style="overflow-x: auto; cursor: grab;">
+  <div class="tt-table-responsive">
     <table class="tt-report-table" id="reportDataTable">
       <thead>
         <tr>
@@ -475,19 +475,19 @@
               <td>
                 {% if cell == 'Delivered' or cell == 'Paid' or cell == 'Active' or cell == 'Approved' or cell == 'Resolved' %}
                   <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill small fw-semibold">
-                    ✓ {{ cell }}
+                    <i class="bi bi-check2 me-1"></i>{{ cell }}
                   </span>
                 {% elif cell == 'Pending' or cell == 'Under Review' or cell == 'In Prep' or cell == 'Cooking in Progress' or cell == 'Payment Pending' %}
                   <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2.5 py-1 rounded-pill small fw-semibold">
-                    ⏳ {{ cell }}
+                    <i class="bi bi-clock me-1"></i>{{ cell }}
                   </span>
                 {% elif cell == 'Cancelled' or cell == 'Failed' or cell == 'Rejected' or cell == 'Open' or cell == 'Refunded' or cell == 'Inactive' %}
                   <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2.5 py-1 rounded-pill small fw-semibold">
-                    ✕ {{ cell }}
+                    <i class="bi bi-x me-1"></i>{{ cell }}
                   </span>
                 {% elif cell == 'Out for Delivery' %}
                   <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2.5 py-1 rounded-pill small fw-semibold">
-                    🛵 {{ cell }}
+                    <i class="bi bi-bicycle me-1"></i>{{ cell }}
                   </span>
                 {% elif cell|slice:":3" == "TT-" %}
                   <span class="font-monospace small fw-bold text-dark bg-light px-2 py-0.5 rounded border">

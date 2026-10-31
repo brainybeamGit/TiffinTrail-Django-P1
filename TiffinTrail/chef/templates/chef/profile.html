@@ -22,7 +22,7 @@
         {% endif %}
         <!-- Cover Upload Button Overlay -->
         <button type="button" class="btn btn-sm btn-dark bg-opacity-75 text-white position-absolute top-0 end-0 m-2 rounded-pill px-2.5 py-1" style="font-size: 0.75rem;" data-bs-toggle="modal" data-bs-target="#uploadImagesModal" title="Change Cover Banner">
-          📷 Change Cover
+          <i class="bi bi-camera me-1"></i>Change Cover
         </button>
       </div>
 
@@ -37,7 +37,7 @@
             </div>
           {% endif %}
           <button type="button" class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0 p-1 shadow-sm d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;" data-bs-toggle="modal" data-bs-target="#uploadImagesModal" title="Change Profile Photo">
-            📷
+            <i class="bi bi-camera me-1"></i>
           </button>
         </div>
 
@@ -46,7 +46,7 @@
 
         <!-- Rating & Badges -->
         <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
-          <span class="badge bg-warning text-dark fw-bold">★ {{ chef.rating }} ({{ chef.review_count }} reviews)</span>
+          <span class="badge bg-warning text-dark fw-bold"><i class="bi bi-star-fill text-warning me-1"></i>{{ chef.rating }} ({{ chef.review_count }} reviews)</span>
           {% if chef.is_approved %}
             <span class="badge bg-success">Verified Chef ✓</span>
           {% else %}
@@ -56,7 +56,7 @@
 
         <div class="d-flex justify-content-center gap-2">
           <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#uploadImagesModal">
-            📷 Change Photos
+            <i class="bi bi-camera me-1"></i>Change Photos
           </button>
           <a href="{% url 'chef:profile_edit' %}" class="btn btn-sm btn-outline-primary">Edit Profile</a>
           <a href="{% url 'customer:chef_detail' chef.id %}" target="_blank" class="btn btn-sm btn-outline-secondary">Public View ↗</a>
@@ -170,7 +170,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="uploadImagesModalLabel">📷 Kitchen Photos & Branding</h5>
+        <h5 class="modal-title" id="uploadImagesModalLabel"><i class="bi bi-camera me-1"></i>Kitchen Photos & Branding</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="{% url 'chef:upload_images' %}" method="post" enctype="multipart/form-data">

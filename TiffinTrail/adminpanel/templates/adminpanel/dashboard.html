@@ -1,300 +1,540 @@
 {% extends 'adminpanel/base.html' %}
 {% load static %}
 
-{% block title %}Dashboard Overview | TiffinTrail Admin Console{% endblock %}
-{% block eyebrow %}PLATFORM PERFORMANCE & OVERVIEW{% endblock %}
-{% block page_heading %}Welcome, Administrator {{ request.user.first_name|default:request.user.username }}!{% endblock %}
+{% block title %}Executive Dashboard | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}PLATFORM OPERATIONS & EXECUTIVE OVERVIEW{% endblock %}
+{% block page_heading %}Executive Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Executive Dashboard Styling */
+  .tt-dash-header {
+    background: #ffffff;
+    border: 1px solid var(--tt-admin-border);
+    border-radius: var(--tt-admin-radius);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+
+  .tt-kpi-card {
+    background: #ffffff;
+    border: 1px solid var(--tt-admin-border);
+    border-radius: var(--tt-admin-radius);
+    padding: 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .tt-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 55, 70, 0.08);
+    border-color: #cbd5e1;
+  }
+  .tt-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+  }
+  .tt-kpi-card.kpi-revenue::before { background: #10b981; }
+  .tt-kpi-card.kpi-orders::before { background: #3b82f6; }
+  .tt-kpi-card.kpi-subs::before { background: #8b5cf6; }
+  .tt-kpi-card.kpi-chefs::before { background: #f59e0b; }
+
+  .tt-kpi-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .tt-kpi-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .tt-kpi-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+  .icon-green { background-color: #ecfdf5; color: #059669; border: 1px solid #d1fae5; }
+  .icon-blue { background-color: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+  .icon-purple { background-color: #f5f3ff; color: #7c3aed; border: 1px solid #ede9fe; }
+  .icon-amber { background-color: #fffbeb; color: #d97706; border: 1px solid #fef3c7; }
+  .icon-slate { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+  .icon-rose { background-color: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6; }
+
+  .tt-kpi-value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .tt-kpi-subtext {
+    font-size: 0.82rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Micro KPI cards */
+  .tt-micro-kpi {
+    background: #ffffff;
+    border: 1px solid var(--tt-admin-border);
+    border-radius: var(--tt-admin-radius-sm);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.15s ease;
+  }
+  .tt-micro-kpi:hover {
+    border-color: #94a3b8;
+    background: #fbfbfb;
+  }
+
+  /* 7-Day Chart Styling */
+  .tt-chart-wrapper {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 16px 8px 8px;
+  }
+  .tt-chart-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+    padding: 0 4px;
+  }
+  .tt-chart-bar-outer {
+    width: 100%;
+    max-width: 44px;
+    height: 150px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: #f8fafc;
+    border-radius: 6px;
+    padding-bottom: 2px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .tt-chart-bar-inner {
+    width: 80%;
+    background: linear-gradient(180deg, #253746 0%, #3b82f6 100%);
+    border-radius: 5px 5px 2px 2px;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 4px;
+  }
+  .tt-chart-col:hover .tt-chart-bar-inner {
+    background: linear-gradient(180deg, #E6AD45 0%, #f59e0b 100%);
+  }
+  .tt-chart-val-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 6px;
+  }
+  .tt-chart-day-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  /* Quick Navigation Grid */
+  .tt-nav-tile {
+    background: #ffffff;
+    border: 1px solid var(--tt-admin-border);
+    border-radius: var(--tt-admin-radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #1e293b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+  }
+  .tt-nav-tile:hover {
+    border-color: #253746;
+    background: #f8fafc;
+    color: #253746;
+    transform: translateY(-1px);
+  }
+  .tt-nav-tile i {
+    font-size: 1.15rem;
+    color: #253746;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- Quick Action & Alert Header -->
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-  <div class="d-flex align-items-center gap-2">
-    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-semibold">
-       Live Platform State: All Services Healthy
-    </span>
-    {% if pending_verifications > 0 %}
-      <a href="{% url 'adminpanel:chefs' %}?verification=pending" class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 text-decoration-none fw-bold">
-         {{ pending_verifications }} Chef Applications Pending Review
-      </a>
-    {% endif %}
-  </div>
+<!-- Executive Operational Header -->
+<div class="tt-dash-header">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h4 class="fw-bold mb-0 text-dark">Platform Operations Console</h4>
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small fw-semibold">
+          <i class="bi bi-shield-check me-1"></i>Healthy
+        </span>
+      </div>
+      <p class="text-muted small mb-0">
+        <i class="bi bi-calendar3 me-1"></i>{{ today|date:"l, d F Y" }} &bull; Real-time system metrics and aggregated database activity.
+      </p>
+    </div>
 
-  <div class="d-flex align-items-center gap-2">
-    <a href="{% url 'adminpanel:reports' %}" class="btn btn-sm btn-tt-outline rounded-pill px-3">
-      Generate Platform Reports
-    </a>
-    <a href="{% url 'adminpanel:plan_add' %}" class="btn btn-sm btn-tt-primary rounded-pill px-3">
-      + Create Meal Plan
-    </a>
+    <!-- Executive Action Buttons -->
+    <div class="d-flex align-items-center flex-wrap gap-2">
+      {% if pending_verifications > 0 %}
+      <a href="{% url 'adminpanel:chefs' %}?verification=pending" class="btn btn-sm btn-warning text-dark fw-bold px-3 shadow-sm">
+        <i class="bi bi-patch-check-fill me-1"></i>{{ pending_verifications }} Verifications Pending
+      </a>
+      {% endif %}
+      <a href="{% url 'adminpanel:reports' %}" class="btn btn-sm btn-outline-secondary px-3">
+        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Financial Reports
+      </a>
+      <a href="{% url 'adminpanel:plan_add' %}" class="btn btn-sm btn-tt-primary px-3 shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i>Create Meal Plan
+      </a>
+    </div>
   </div>
 </div>
 
-<!-- 11 Core Platform Metrics Grid -->
+<!-- Primary Hero KPI Metrics (4 Core Pillars) -->
 <div class="row g-3 mb-4">
-  <!-- Total Customers -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Total Customers</span>
-      </div>
+  <!-- Total Revenue -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="tt-kpi-card kpi-revenue">
       <div>
-        <h3 class="tt-stat-value">{{ total_customers }}</h3>
-        <div class="tt-stat-meta text-primary">Registered diner accounts</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Total Chefs -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Total Chefs</span>
-      </div>
-      <div>
-        <h3 class="tt-stat-value text-success">{{ total_chefs }}</h3>
-        <div class="tt-stat-meta text-muted">Home kitchens enrolled</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Pending Chef Verifications -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card {% if pending_verifications > 0 %}border-warning{% endif %}">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title text-warning">Pending Verifications</span>
-      </div>
-      <div>
-        <h3 class="tt-stat-value text-warning">{{ pending_verifications }}</h3>
-        <div class="tt-stat-meta">
-          {% if pending_verifications > 0 %}
-            <a href="{% url 'adminpanel:chefs' %}?verification=pending" class="text-warning fw-bold text-decoration-none">Review applications →</a>
-          {% else %}
-            <span class="text-muted">All applications reviewed</span>
-          {% endif %}
+        <div class="tt-kpi-top">
+          <div>
+            <div class="tt-kpi-title">Gross Revenue</div>
+            <div class="tt-kpi-value text-success">₹{{ total_collected_amount|floatformat:2 }}</div>
+          </div>
+          <div class="tt-kpi-icon-wrap icon-green">
+            <i class="bi bi-currency-rupee"></i>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Active Meal Plans -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Active Plans</span>
-      </div>
-      <div>
-        <h3 class="tt-stat-value">{{ active_plans }}</h3>
-        <div class="tt-stat-meta text-muted">Subscription options live</div>
+      <div class="tt-kpi-subtext">
+        <span class="badge bg-success-subtle text-success border border-success-subtle py-1 px-2 small">
+          <i class="bi bi-arrow-up-right me-1"></i>Settled
+        </span>
+        <span class="text-muted ms-1 small">Orders & Subscriptions</span>
       </div>
     </div>
   </div>
 
-  <!-- Total Orders -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Total Orders</span>
-      </div>
+  <!-- Total Orders Volume -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="tt-kpi-card kpi-orders">
       <div>
-        <h3 class="tt-stat-value">{{ total_orders }}</h3>
-        <div class="tt-stat-meta text-muted">Lifetime customer orders</div>
+        <div class="tt-kpi-top">
+          <div>
+            <div class="tt-kpi-title">Total Orders</div>
+            <div class="tt-kpi-value">{{ total_orders }}</div>
+          </div>
+          <div class="tt-kpi-icon-wrap icon-blue">
+            <i class="bi bi-bag-check-fill"></i>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Pending Orders -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Pending Orders</span>
-      </div>
-      <div>
-        <h3 class="tt-stat-value text-warning">{{ pending_orders }}</h3>
-        <div class="tt-stat-meta text-muted">Awaiting kitchen accept</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Completed Orders -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Delivered Orders</span>
-      </div>
-      <div>
-        <h3 class="tt-stat-value text-success">{{ completed_orders }}</h3>
-        <div class="tt-stat-meta text-success">Fulfilled successfully</div>
+      <div class="tt-kpi-subtext">
+        <span class="text-success fw-bold">{{ completed_orders }} Delivered</span>
+        <span class="text-muted mx-1">&bull;</span>
+        <span class="text-warning fw-semibold">{{ pending_orders }} Pending</span>
       </div>
     </div>
   </div>
 
   <!-- Active Subscriptions -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Active Subscriptions</span>
-      </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="tt-kpi-card kpi-subs">
       <div>
-        <h3 class="tt-stat-value text-success">{{ active_subscriptions }}</h3>
-        <div class="tt-stat-meta text-muted">Recurring daily/weekly meals</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Successful Payments Count -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Successful Payments</span>
-      </div>
-      <div>
-        <h3 class="tt-stat-value">{{ successful_payments_count }}</h3>
-        <div class="tt-stat-meta text-muted">Verified transactions</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Total Collected Amount -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card border-success">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title text-success">Total Collected</span>
-      </div>
-      <div>
-        <h3 class="tt-stat-value text-success">₹{{ total_collected_amount|floatformat:2 }}</h3>
-        <div class="tt-stat-meta text-muted">Orders & Subscriptions</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Pending Complaints -->
-  <div class="col-sm-6 col-md-4 col-xl-3">
-    <div class="tt-stat-card {% if pending_complaints_count > 0 %}border-danger{% endif %}">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title text-danger">Pending Complaints</span>
-      </div>
-      <div>
-        <h3 class="tt-stat-value text-danger">{{ pending_complaints_count }}</h3>
-        <div class="tt-stat-meta">
-          {% if pending_complaints_count > 0 %}
-            <a href="{% url 'adminpanel:complaints' %}?status=open" class="text-danger fw-bold text-decoration-none">Review open tickets →</a>
-          {% else %}
-            <span class="text-muted">Zero pending tickets</span>
-          {% endif %}
+        <div class="tt-kpi-top">
+          <div>
+            <div class="tt-kpi-title">Active Subscriptions</div>
+            <div class="tt-kpi-value" style="color: #7c3aed;">{{ active_subscriptions }}</div>
+          </div>
+          <div class="tt-kpi-icon-wrap icon-purple">
+            <i class="bi bi-arrow-repeat"></i>
+          </div>
         </div>
+      </div>
+      <div class="tt-kpi-subtext">
+        <span class="text-muted small">{{ total_subscriptions }} total recurring tiffin packages</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Partner Home Chefs -->
+  <div class="col-sm-6 col-xl-3">
+    <div class="tt-kpi-card kpi-chefs">
+      <div>
+        <div class="tt-kpi-top">
+          <div>
+            <div class="tt-kpi-title">Partner Home Chefs</div>
+            <div class="tt-kpi-value text-dark">{{ total_chefs }}</div>
+          </div>
+          <div class="tt-kpi-icon-wrap icon-amber">
+            <i class="bi bi-shop"></i>
+          </div>
+        </div>
+      </div>
+      <div class="tt-kpi-subtext">
+        {% if pending_verifications > 0 %}
+          <a href="{% url 'adminpanel:chefs' %}?verification=pending" class="text-warning fw-bold text-decoration-none small">
+            <i class="bi bi-exclamation-circle me-1"></i>{{ pending_verifications }} Verification Required &rarr;
+          </a>
+        {% else %}
+          <span class="text-success small"><i class="bi bi-check2-circle me-1"></i>All kitchens verified</span>
+        {% endif %}
       </div>
     </div>
   </div>
 </div>
 
-<!-- Offline Visual Activity Trends & Status Distribution -->
+<!-- Secondary Operational Metrics (4 Micro Pillars) -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="tt-micro-kpi">
+      <div>
+        <div class="text-muted small fw-semibold text-uppercase">Diners</div>
+        <div class="fs-5 fw-bold text-dark mt-1">{{ total_customers }}</div>
+      </div>
+      <div class="tt-kpi-icon-wrap icon-slate" style="width: 36px; height: 36px; font-size: 1rem;">
+        <i class="bi bi-people-fill"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="tt-micro-kpi">
+      <div>
+        <div class="text-muted small fw-semibold text-uppercase">Meal Plans</div>
+        <div class="fs-5 fw-bold text-dark mt-1">{{ active_plans }}</div>
+      </div>
+      <div class="tt-kpi-icon-wrap icon-slate" style="width: 36px; height: 36px; font-size: 1rem;">
+        <i class="bi bi-calendar3-range-fill"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="tt-micro-kpi">
+      <div>
+        <div class="text-muted small fw-semibold text-uppercase">Transactions</div>
+        <div class="fs-5 fw-bold text-dark mt-1">{{ successful_payments_count }}</div>
+      </div>
+      <div class="tt-kpi-icon-wrap icon-slate" style="width: 36px; height: 36px; font-size: 1rem;">
+        <i class="bi bi-credit-card-fill"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="tt-micro-kpi {% if pending_complaints_count > 0 %}border-danger{% endif %}">
+      <div>
+        <div class="text-muted small fw-semibold text-uppercase">Support Tickets</div>
+        <div class="fs-5 fw-bold {% if pending_complaints_count > 0 %}text-danger{% else %}text-dark{% endif %} mt-1">
+          {{ pending_complaints_count }}
+        </div>
+      </div>
+      <div class="tt-kpi-icon-wrap {% if pending_complaints_count > 0 %}icon-rose{% else %}icon-slate{% endif %}" style="width: 36px; height: 36px; font-size: 1rem;">
+        <i class="bi bi-headset"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Visual Analytics & Status Distribution Grid -->
 <div class="row g-4 mb-4">
-  <!-- 7-Day Order Activity Trend -->
+  <!-- 7-Day Revenue & Daily Orders Chart -->
   <div class="col-lg-8">
     <div class="tt-card h-100">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title">7-Day Platform Order & Revenue Trend</h5>
-        <span class="text-muted small">Real-time database aggregation</span>
+        <div>
+          <h5 class="tt-card-title mb-0">
+            <i class="bi bi-bar-chart-line text-primary"></i>
+            7-Day Platform Revenue & Order Activity
+          </h5>
+          <span class="text-muted small">Daily aggregated earnings and order volume</span>
+        </div>
+        <a href="{% url 'adminpanel:analytics' %}" class="btn btn-sm btn-outline-secondary">
+          Detailed Analytics &rarr;
+        </a>
       </div>
+
       <div class="tt-card-body">
-        <div class="tt-chart-container">
-          <div class="tt-chart-bar-group">
+        <div class="tt-chart-wrapper">
+          <div class="d-flex align-items-end justify-content-between gap-2" style="min-height: 190px;">
             {% for day in days_data %}
-              <div class="tt-chart-col" title="{{ day.date }}: {{ day.orders }} orders (₹{{ day.revenue }})">
-                <span class="tt-chart-bar-val">₹{{ day.revenue|floatformat:0 }}</span>
-                <div class="tt-chart-bar" style="height: {% if day.revenue > 0 %}{% widthratio day.revenue 1000 130 %}px{% else %}4px{% endif %};"></div>
-                <span class="tt-chart-label">{{ day.short_date }}</span>
+            <div class="tt-chart-col" title="{{ day.date }}: {{ day.orders }} orders, ₹{{ day.revenue }} revenue">
+              <span class="tt-chart-val-label">₹{{ day.revenue|floatformat:0 }}</span>
+              <div class="tt-chart-bar-outer">
+                <div class="tt-chart-bar-inner" style="height: {% if day.revenue > 0 %}{% widthratio day.revenue 1000 130 %}px{% else %}4px{% endif %};"></div>
               </div>
+              <span class="tt-chart-day-label">{{ day.short_date }}</span>
+              <span class="text-muted" style="font-size: 0.7rem;">{{ day.orders }} ord</span>
+            </div>
             {% endfor %}
+          </div>
+        </div>
+
+        <!-- Metric Summary Strip -->
+        <div class="row g-2 mt-3 pt-3 border-top text-center">
+          <div class="col-4">
+            <div class="text-muted small">Fulfillment Rate</div>
+            <div class="fs-6 fw-bold text-success mt-1">
+              {% if total_orders > 0 %}{% widthratio completed_orders total_orders 100 %}%{% else %}100%{% endif %}
+            </div>
+          </div>
+          <div class="col-4 border-start border-end">
+            <div class="text-muted small">Completed Deliveries</div>
+            <div class="fs-6 fw-bold text-dark mt-1">{{ completed_orders }} Orders</div>
+          </div>
+          <div class="col-4">
+            <div class="text-muted small">Active Kitchens</div>
+            <div class="fs-6 fw-bold text-dark mt-1">{{ total_chefs }} Kitchens</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Order Status Breakdown -->
+  <!-- Order Status Pipeline -->
   <div class="col-lg-4">
     <div class="tt-card h-100">
       <div class="tt-card-header">
-        <h5 class="tt-card-title">Order Status Distribution</h5>
+        <h5 class="tt-card-title mb-0">
+          <i class="bi bi-pie-chart text-success"></i>
+          Order Pipeline Distribution
+        </h5>
       </div>
       <div class="tt-card-body">
-        <div class="d-flex flex-column gap-3">
+        <div class="d-flex flex-column gap-3 mb-4">
           {% for stat in status_distribution %}
-            <div>
-              <div class="d-flex justify-content-between align-items-center mb-1 small fw-semibold">
-                <span style="color: {{ stat.color }};">● {{ stat.label }}</span>
-                <span>{{ stat.count }} orders</span>
-              </div>
-              <div class="tt-progress">
-                <div class="tt-progress-bar" style="width: {% if total_orders > 0 %}{% widthratio stat.count total_orders 100 %}%{% else %}0%{% endif %}; background-color: {{ stat.color }};"></div>
-              </div>
+          <div>
+            <div class="d-flex justify-content-between align-items-center mb-1 small fw-semibold">
+              <span style="color: {{ stat.color }};">
+                <i class="bi bi-circle-fill me-1" style="font-size: 0.55rem;"></i>{{ stat.label }}
+              </span>
+              <span class="text-dark">{{ stat.count }} orders</span>
             </div>
+            <div class="progress" style="height: 7px; background-color: #f1f5f9;">
+              <div class="progress-bar" style="width: {% if total_orders > 0 %}{% widthratio stat.count total_orders 100 %}%{% else %}0%{% endif %}; background-color: {{ stat.color }}; border-radius: 4px;"></div>
+            </div>
+          </div>
           {% endfor %}
         </div>
 
-        <hr class="my-4">
-
-        <div class="p-3 bg-light rounded text-center">
-          <div class="text-muted small">Platform Fulfillment Rate</div>
-          <div class="fs-4 fw-bold text-success mt-1">
+        <div class="p-3 bg-light rounded-3 border text-center">
+          <div class="text-muted small text-uppercase fw-bold">Delivery Success Metric</div>
+          <div class="fs-3 fw-bold text-success mt-1">
             {% if total_orders > 0 %}
               {% widthratio completed_orders total_orders 100 %}%
             {% else %}
               100%
             {% endif %}
           </div>
+          <p class="text-muted small mb-0 mt-1">
+            Fulfilled from confirmed orders
+          </p>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Two-Column Operational Section: Recent Orders & Pending Chef Applications -->
-<div class="row g-4">
+<!-- Operational Section: Recent Orders & Priority Review Queue -->
+<div class="row g-4 mb-4">
   <!-- Recent Incoming Orders -->
   <div class="col-lg-7">
     <div class="tt-card h-100">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title">Recent Platform Orders</h5>
-        <a href="{% url 'adminpanel:orders' %}" class="btn btn-sm btn-outline-secondary">View All Orders →</a>
+        <div>
+          <h5 class="tt-card-title mb-0">
+            <i class="bi bi-receipt-cutoff text-primary"></i>
+            Recent Platform Orders
+          </h5>
+          <span class="text-muted small">Latest incoming meal requests</span>
+        </div>
+        <a href="{% url 'adminpanel:orders' %}" class="btn btn-sm btn-outline-secondary">
+          View All Orders &rarr;
+        </a>
       </div>
       <div class="tt-card-body p-0">
-        <div class="tt-table-responsive">
-          <table class="tt-table">
-            <thead>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
+            <thead class="table-light">
               <tr>
-                <th>Order #</th>
-                <th>Diner</th>
-                <th>Chef</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th class="text-end">Action</th>
+                <th class="ps-3 py-2 text-uppercase text-muted" style="font-size: 0.72rem;">Order #</th>
+                <th class="py-2 text-uppercase text-muted" style="font-size: 0.72rem;">Customer</th>
+                <th class="py-2 text-uppercase text-muted" style="font-size: 0.72rem;">Kitchen</th>
+                <th class="py-2 text-uppercase text-muted" style="font-size: 0.72rem;">Amount</th>
+                <th class="py-2 text-uppercase text-muted" style="font-size: 0.72rem;">Status</th>
+                <th class="pe-3 py-2 text-end text-uppercase text-muted" style="font-size: 0.72rem;">Action</th>
               </tr>
             </thead>
             <tbody>
               {% for ord in recent_orders %}
-                <tr>
-                  <td>
-                    <a href="{% url 'adminpanel:order_detail' ord.id %}" class="fw-bold text-dark text-decoration-none">
-                      {{ ord.order_number }}
-                    </a>
-                    <div class="text-muted small">{{ ord.created_at|date:"d M, H:i" }}</div>
-                  </td>
-                  <td>{{ ord.recipient_name }}</td>
-                  <td>{{ ord.chef.business_name }}</td>
-                  <td><strong>₹{{ ord.final_amount }}</strong></td>
-                  <td><span class="tt-badge tt-badge-{{ ord.status }}">{{ ord.get_status_display }}</span></td>
-                  <td class="text-end tt-actions-cell">
-                    <div class="tt-actions-group">
-                      <a href="{% url 'adminpanel:order_detail' ord.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">Manage</a>
-                    </div>
-                  </td>
-                </tr>
+              <tr>
+                <td class="ps-3">
+                  <a href="{% url 'adminpanel:order_detail' ord.id %}" class="fw-bold text-dark text-decoration-none font-monospace">
+                    #{{ ord.order_number|slice:":18" }}...
+                  </a>
+                  <div class="text-muted" style="font-size: 0.72rem;">{{ ord.created_at|date:"d M, H:i" }}</div>
+                </td>
+                <td>
+                  <span class="fw-semibold text-dark">{{ ord.recipient_name }}</span>
+                </td>
+                <td>
+                  <span class="text-muted small"><i class="bi bi-shop me-1"></i>{{ ord.chef.business_name|truncatechars:18 }}</span>
+                </td>
+                <td>
+                  <strong class="text-dark">₹{{ ord.final_amount }}</strong>
+                </td>
+                <td>
+                  <span class="tt-badge tt-badge-{{ ord.status }}">
+                    {{ ord.get_status_display }}
+                  </span>
+                </td>
+                <td class="pe-3 text-end">
+                  <a href="{% url 'adminpanel:order_detail' ord.id %}" class="btn btn-sm btn-outline-primary py-1 px-2 font-monospace" style="font-size: 0.75rem;">
+                    Manage
+                  </a>
+                </td>
+              </tr>
               {% empty %}
-                <tr>
-                  <td colspan="6" class="text-center py-4 text-muted">No orders placed yet.</td>
-                </tr>
+              <tr>
+                <td colspan="6" class="text-center py-4 text-muted">
+                  <i class="bi bi-inbox d-block fs-3 mb-2 text-muted"></i>
+                  No orders recorded yet.
+                </td>
+              </tr>
               {% endfor %}
             </tbody>
           </table>
@@ -303,35 +543,139 @@
     </div>
   </div>
 
-  <!-- Pending Chef Verification Applications -->
+  <!-- Priority Queue: Pending Chef Applications & Support Tickets -->
   <div class="col-lg-5">
-    <div class="tt-card h-100">
+    <!-- Chef Applications Queue -->
+    <div class="tt-card mb-4">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title">Chef Verification Queue</h5>
-        <a href="{% url 'adminpanel:chefs' %}?verification=pending" class="text-success small fw-semibold text-decoration-none">View Queue</a>
+        <div>
+          <h5 class="tt-card-title mb-0">
+            <i class="bi bi-patch-check text-warning"></i>
+            Chef Verification Queue
+          </h5>
+          <span class="text-muted small">New kitchen onboarding applications</span>
+        </div>
+        <a href="{% url 'adminpanel:chefs' %}?verification=pending" class="text-primary small fw-semibold text-decoration-none">
+          View All &rarr;
+        </a>
       </div>
       <div class="tt-card-body p-3">
         {% if pending_chef_apps %}
-          <div class="d-flex flex-column gap-3">
+          <div class="d-flex flex-column gap-2">
             {% for chef in pending_chef_apps %}
-              <div class="p-3 bg-light rounded border d-flex align-items-center justify-content-between">
-                <div>
-                  <strong class="d-block text-dark">{{ chef.business_name }}</strong>
-                  <span class="text-muted small">{{ chef.user.get_full_name|default:chef.user.username }} · {{ chef.phone|default:"No phone" }}</span>
-                  <div class="text-muted small mt-1">Applied: {{ chef.created_at|date:"d M Y" }}</div>
-                </div>
-                <div>
-                  <a href="{% url 'adminpanel:chef_detail' chef.id %}" class="btn btn-sm btn-primary">Review App →</a>
-                </div>
+            <div class="p-3 bg-light rounded border d-flex align-items-center justify-content-between">
+              <div>
+                <strong class="d-block text-dark">{{ chef.business_name }}</strong>
+                <span class="text-muted small">
+                  <i class="bi bi-person me-1"></i>{{ chef.user.get_full_name|default:chef.user.username }} &bull; {{ chef.phone|default:"No phone" }}
+                </span>
+                <div class="text-muted mt-1" style="font-size: 0.72rem;">Applied: {{ chef.created_at|date:"d M Y" }}</div>
               </div>
+              <div>
+                <a href="{% url 'adminpanel:chef_detail' chef.id %}" class="btn btn-sm btn-primary">
+                  Review &rarr;
+                </a>
+              </div>
+            </div>
             {% endfor %}
           </div>
         {% else %}
           <div class="text-center py-4 text-muted">
-            <div class="fs-2 mb-1">✓</div>
-            <p class="small mb-0">No pending chef verification applications in queue.</p>
+            <div class="d-inline-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle mb-2" style="width: 42px; height: 42px;">
+              <i class="bi bi-check2 fs-4"></i>
+            </div>
+            <p class="small mb-0 text-dark fw-semibold">Queue is Clear</p>
+            <span class="text-muted" style="font-size: 0.75rem;">All home kitchen applications have been reviewed.</span>
           </div>
         {% endif %}
+      </div>
+    </div>
+
+    <!-- Quick Operational Complaints / Support -->
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="tt-card-title mb-0">
+            <i class="bi bi-headset text-danger"></i>
+            Support Tickets
+          </h5>
+        </div>
+        <a href="{% url 'adminpanel:complaints' %}" class="text-primary small fw-semibold text-decoration-none">
+          Manage &rarr;
+        </a>
+      </div>
+      <div class="tt-card-body p-3">
+        {% if recent_complaints %}
+          <div class="d-flex flex-column gap-2">
+            {% for comp in recent_complaints %}
+            <div class="p-2 border rounded bg-white d-flex align-items-center justify-content-between small">
+              <div>
+                <strong class="text-dark">#{{ comp.ticket_number }}</strong> - {{ comp.subject|truncatechars:24 }}
+                <div class="text-muted" style="font-size: 0.72rem;">Diner: {{ comp.customer.username }}</div>
+              </div>
+              <span class="badge {% if comp.status == 'open' %}bg-danger-subtle text-danger{% else %}bg-secondary-subtle text-secondary{% endif %}">
+                {{ comp.get_status_display }}
+              </span>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-3 text-muted">
+            <i class="bi bi-check-all text-success fs-4 d-block mb-1"></i>
+            <span class="small">No unresolved customer tickets.</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fast Access Operations Shortcuts Toolbar -->
+<div class="tt-card">
+  <div class="tt-card-header">
+    <h5 class="tt-card-title mb-0">
+      <i class="bi bi-grid-fill text-muted"></i>
+      Quick Management Workspace
+    </h5>
+    <span class="text-muted small">Direct portal navigation</span>
+  </div>
+  <div class="tt-card-body p-3">
+    <div class="row g-2">
+      <div class="col-6 col-md-4 col-xl-2">
+        <a href="{% url 'adminpanel:customers' %}" class="tt-nav-tile">
+          <i class="bi bi-people-fill"></i>
+          <span>Customers</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <a href="{% url 'adminpanel:chefs' %}" class="tt-nav-tile">
+          <i class="bi bi-shop"></i>
+          <span>Home Chefs</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <a href="{% url 'adminpanel:meals' %}" class="tt-nav-tile">
+          <i class="bi bi-egg-fried"></i>
+          <span>Dishes & Menu</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <a href="{% url 'adminpanel:subscriptions' %}" class="tt-nav-tile">
+          <i class="bi bi-arrow-repeat"></i>
+          <span>Subscriptions</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <a href="{% url 'adminpanel:coupons' %}" class="tt-nav-tile">
+          <i class="bi bi-ticket-perforated-fill"></i>
+          <span>Coupons</span>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <a href="{% url 'adminpanel:payments' %}" class="tt-nav-tile">
+          <i class="bi bi-credit-card-2-front-fill"></i>
+          <span>Payments Ledger</span>
+        </a>
       </div>
     </div>
   </div>

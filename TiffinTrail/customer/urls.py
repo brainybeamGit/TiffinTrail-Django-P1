@@ -47,6 +47,7 @@ urlpatterns = [
     path('orders/<int:pk>/', views.order_detail, name='order_detail'),
     path('orders/<int:pk>/cancel/', views.order_cancel, name='order_cancel'),
     path('orders/<int:pk>/reorder/', views.order_reorder, name='order_reorder'),
+    path('orders/<int:pk>/feedback/', views.submit_order_feedback, name='submit_order_feedback'),
 
     # Reviews
     path('reviews/', views.reviews_view, name='reviews'),
@@ -65,6 +66,11 @@ urlpatterns = [
     path('login/', views.customer_login, name='login'),
     path('register/', views.customer_register, name='register'),
     path('logout/', views.customer_logout, name='logout'),
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'),
+    path('resend-otp/', views.resend_otp, name='resend_otp'),
+    path('reset-password/<str:uidb64>/<str:token>/', views.password_reset_confirm, name='password_reset_confirm'),
+    path('reset/<str:uidb64>/<str:token>/', views.password_reset_confirm, name='password_reset_confirm_alt'),
 
     # Static Informational
     path('about/', views.about, name='about'),

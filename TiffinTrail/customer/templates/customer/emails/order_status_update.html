@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Status Update - TiffinTrail</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F7F5F0; color: #1F2937; line-height: 1.6;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #F7F5F0; padding: 30px 15px;">
+    <tr>
+      <td align="center">
+        <!-- Main Container -->
+        <table role="presentation" width="100%" max-width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #E5E7EB;">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #253746 0%, #17242E 100%); padding: 30px 24px; text-align: center;">
+              <h1 style="margin: 0; color: #FFFFFF; font-size: 24px; font-weight: 800; letter-spacing: 0.5px;">
+                Tiffin<span style="color: #E6AD45;">Trail</span>
+              </h1>
+              <p style="margin: 6px 0 0 0; color: #D1D5DB; font-size: 13px;">
+                Ghar Jaisa Swad, Apno Ka Pyar
+              </p>
+            </td>
+          </tr>
+
+          <!-- Status Highlight -->
+          <tr>
+            <td style="padding: 28px 24px 16px 24px; text-align: center;">
+              <div style="display: inline-block; width: 56px; height: 56px; line-height: 56px; background-color: #FEF3C7; color: #D97706; border-radius: 50%; font-size: 26px; font-weight: bold; margin-bottom: 12px;">
+                &#9733;
+              </div>
+              <h2 style="margin: 0 0 6px 0; color: #111827; font-size: 20px; font-weight: 700;">
+                Order Status Update: {{ order.get_status_display }}
+              </h2>
+              <p style="margin: 0; color: #6B7280; font-size: 14px;">
+                Namaste <strong>{{ order.recipient_name }}</strong>, aapka order #{{ order.order_number }} ab <strong>{{ order.get_status_display }}</strong> status par hai.
+              </p>
+              <div style="margin-top: 14px; display: inline-block; background-color: #EFF6FF; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #1E40AF; border: 1px solid #BFDBFE;">
+                Chef: {{ order.chef.business_name }}
+              </div>
+            </td>
+          </tr>
+
+          <!-- Summary Box -->
+          <tr>
+            <td style="padding: 0 24px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #F9FAFB; border-radius: 12px; padding: 16px; border: 1px solid #E5E7EB;">
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #6B7280;">Order Number:</td>
+                  <td align="right" style="padding: 6px 0; font-size: 13px; font-weight: 700; color: #1F2937;">#{{ order.order_number }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #6B7280;">Total Amount:</td>
+                  <td align="right" style="padding: 6px 0; font-size: 14px; font-weight: 700; color: #0E9F6E;">₹{{ order.final_amount|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #6B7280;">Delivery Address:</td>
+                  <td align="right" style="padding: 6px 0; font-size: 13px; color: #374151;">{{ order.delivery_address_text }}</td>
+                </tr>
+                {% if order.cancellation_reason %}
+                <tr>
+                  <td style="padding: 6px 0; font-size: 13px; color: #DC2626; font-weight: 600;">Reason:</td>
+                  <td align="right" style="padding: 6px 0; font-size: 13px; color: #DC2626;">{{ order.cancellation_reason }}</td>
+                </tr>
+                {% endif %}
+              </table>
+            </td>
+          </tr>
+
+          {% if order.status == 'delivered' %}
+          <!-- Feedback Invitation Box for Delivered Order -->
+          <tr>
+            <td style="padding: 24px 24px 28px 24px;">
+              <div style="background-color: #FEF3C7; border: 1px solid #FDE68A; border-radius: 12px; padding: 22px; text-align: center;">
+                <div style="font-size: 24px; line-height: 1; margin-bottom: 8px;">🍽️ &#11088; &#11088; &#11088; &#11088; &#11088;</div>
+                <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 700; color: #92400E;">
+                  Aapka Khana Kaisa Laga?
+                </h3>
+                <p style="margin: 0 0 16px 0; font-size: 13.5px; color: #78350F; line-height: 1.5;">
+                  Order deliver ho chuka hai! Kripya 1 minute nikaal kar apne chef <strong>{{ order.chef.business_name }}</strong> ko rating aur feedback dein:
+                </p>
+                <a href="{{ site_url }}/orders/{{ order.id }}/#feedback" target="_blank" style="font-size: 14px; font-weight: 700; color: #FFFFFF; text-decoration: none; padding: 12px 28px; border-radius: 8px; display: inline-block; background-color: #D97706; box-shadow: 0 2px 4px rgba(217, 119, 6, 0.3);">
+                  Rate Your Meal & Leave Feedback &rarr;
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <!-- CTA Button -->
+          <tr>
+            <td align="center" style="padding: 24px 24px 28px 24px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="center" style="border-radius: 8px; background-color: #253746;">
+                    <a href="{{ site_url }}/orders/{{ order.id }}/" target="_blank" style="font-size: 14px; font-weight: 700; color: #FFFFFF; text-decoration: none; padding: 12px 28px; border-radius: 8px; display: inline-block; background-color: #253746;">
+                      View Live Order Details &rarr;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #F9FAFB; padding: 20px 24px; text-align: center; border-top: 1px solid #E5E7EB; border-radius: 0 0 16px 16px;">
+              <p style="margin: 0 0 6px 0; font-size: 12px; color: #6B7280;">
+                Support: <a href="mailto:{{ support_email }}" style="color: #253746; font-weight: 600;">{{ support_email }}</a>
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #9CA3AF;">
+                &copy; {{ current_year }} TiffinTrail Platform.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+

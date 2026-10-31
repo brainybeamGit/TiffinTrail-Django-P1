@@ -93,17 +93,22 @@
                   <span class="badge bg-success">Visible</span>
                 {% endif %}
               </td>
-              <td class="text-end">
-                <form action="{% url 'adminpanel:review_toggle_hide' rev.id %}" method="post" class="d-inline">
-                  {% csrf_token %}
-                  <label class="tt-toggle-switch tt-toggle-sm tt-toggle-danger" for="reviewToggle{{ rev.id }}"
-                    title="{% if rev.is_hidden %}Restore to public view{% else %}Hide this review from public{% endif %}"
-                    {% if not rev.is_hidden %}onclick="if(!confirm('Hide this review from public kitchen display?')) { event.preventDefault(); }"{% endif %}>
-                    <input type="checkbox" id="reviewToggle{{ rev.id }}" {% if not rev.is_hidden %}checked{% endif %} onchange="this.form.submit()">
-                    <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
-                    <span class="tt-toggle-label" style="font-size:0.78rem;">{% if rev.is_hidden %}Hidden{% else %}Visible{% endif %}</span>
-                  </label>
-                </form>
+              <td class="text-end tt-actions-cell">
+                <div class="tt-actions-group">
+                  <form action="{% url 'adminpanel:review_toggle_hide' rev.id %}" method="post" class="d-inline m-0">
+                    {% csrf_token %}
+                    <label class="tt-toggle-switch tt-toggle-sm tt-toggle-danger m-0" for="reviewToggle{{ rev.id }}"
+                      title="{% if rev.is_hidden %}Restore to public view{% else %}Hide this review from public{% endif %}"
+                      {% if not rev.is_hidden %}onclick="if(!confirm('Hide this review from public kitchen display?')) { event.preventDefault(); }"{% endif %}>
+                      <input type="checkbox" id="reviewToggle{{ rev.id }}" {% if not rev.is_hidden %}checked{% endif %} onchange="this.form.submit()">
+                      <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
+                      <span class="tt-toggle-label" style="font-size:0.78rem;">{% if rev.is_hidden %}Hidden{% else %}Visible{% endif %}</span>
+                    </label>
+                  </form>
+                  <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteReviewModal{{ rev.id }}" title="Delete Review">
+                    <i class="bi bi-trash-fill"></i> Delete
+                  </button>
+                </div>
               </td>
 
             </tr>
@@ -133,4 +138,54 @@
     {% endif %}
   </div>
 </div>
+
+{% for rev in page_obj %}
+<!-- Delete Review Modal for {{ rev.id }} -->
+<div class="modal fade" id="deleteReviewModal{{ rev.id }}" tabindex="-1" aria-labelledby="deleteReviewModalLabel{{ rev.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deleteReviewModalLabel{{ rev.id }}">Delete Customer Review</h5>
+            <div class="text-muted small">Permanent Review Removal</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-2">
+          Are you sure you want to permanently delete Review <strong class="text-dark">#{{ rev.id }}</strong> by <strong class="text-dark">{{ rev.user.get_full_name|default:rev.user.username }}</strong>?
+        </p>
+        <div class="bg-light p-3 rounded-3 mb-3 border">
+          <div class="text-warning small mb-1">
+            {% if rev.rating == 5 %}★★★★★{% elif rev.rating == 4 %}★★★★☆{% elif rev.rating == 3 %}★★★☆☆{% elif rev.rating == 2 %}★★☆☆☆{% else %}★☆☆☆☆{% endif %}
+            <span class="text-dark fw-bold ms-1">{{ rev.rating }} / 5 Stars</span>
+          </div>
+          <div class="text-dark small fst-italic">&ldquo;{{ rev.comment|truncatechars:120 }}&rdquo;</div>
+          <div class="text-muted small mt-1">Chef Kitchen: <strong>{{ rev.chef.business_name }}</strong></div>
+        </div>
+        <div class="alert alert-warning border-0 bg-warning-subtle text-dark small rounded-3 mb-0 p-3 d-flex gap-2">
+          <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0 mt-0.5"></i>
+          <div>
+            <strong>Warning:</strong> Deleting this review will automatically recalculate Chef <strong>{{ rev.chef.business_name }}</strong>'s average rating. This action cannot be undone.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'adminpanel:review_delete' rev.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+            <i class="bi bi-trash3-fill"></i> Permanently Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to TiffinTrail</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F7F5F0; color: #1F2937; line-height: 1.6;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #F7F5F0; padding: 30px 15px;">
+    <tr>
+      <td align="center">
+        <!-- Main Card Container -->
+        <table role="presentation" width="100%" max-width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #E5E7EB;">
+          
+          <!-- Brand Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #253746 0%, #17242E 100%); padding: 32px 24px; text-align: center;">
+              <h1 style="margin: 0; color: #FFFFFF; font-size: 26px; font-weight: 800; letter-spacing: 0.5px;">
+                Tiffin<span style="color: #E6AD45;">Trail</span>
+              </h1>
+              <p style="margin: 6px 0 0 0; color: #D1D5DB; font-size: 13px; font-weight: 500;">
+                Ghar Jaisa Swad, Apno Ka Pyar
+              </p>
+            </td>
+          </tr>
+
+          <!-- Welcome Headline & Status Badge -->
+          <tr>
+            <td style="padding: 32px 24px 16px 24px; text-align: center;">
+              <div style="display: inline-block; width: 60px; height: 60px; line-height: 60px; background-color: #FEF3C7; color: #D97706; border-radius: 50%; font-size: 28px; font-weight: bold; margin-bottom: 14px;">
+                &#10003;
+              </div>
+              <h2 style="margin: 0 0 8px 0; color: #111827; font-size: 24px; font-weight: 800;">
+                Welcome to TiffinTrail!
+              </h2>
+              <p style="margin: 0; color: #4B5563; font-size: 15px;">
+                Namaste <strong>{{ customer_name }}</strong>, aapka TiffinTrail par dil se swagat hai.
+              </p>
+              <p style="margin: 8px 0 0 0; color: #6B7280; font-size: 13.5px;">
+                Aapka account successfully create ho chuka hai. Ab fresh, pure aur swadisht ghar ka khana sirf ek click ki doori par hai!
+              </p>
+            </td>
+          </tr>
+
+          <!-- Account Details Box -->
+          <tr>
+            <td style="padding: 12px 24px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #F9FAFB; border-radius: 12px; padding: 18px; border: 1px solid #E5E7EB;">
+                <tr>
+                  <td colspan="2" style="padding-bottom: 10px; border-bottom: 1px solid #E5E7EB;">
+                    <div style="font-size: 12px; text-transform: uppercase; color: #6B7280; font-weight: 700; letter-spacing: 0.5px;">
+                      Your Account Information
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="40%" style="padding: 10px 0 4px 0; font-size: 13px; color: #6B7280;">Username:</td>
+                  <td width="60%" style="padding: 10px 0 4px 0; font-size: 13px; color: #1F2937; font-weight: 600;">{{ username }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px 0; font-size: 13px; color: #6B7280;">Email Address:</td>
+                  <td style="padding: 4px 0; font-size: 13px; color: #1F2937; font-weight: 600;">{{ email }}</td>
+                </tr>
+                {% if phone %}
+                <tr>
+                  <td style="padding: 4px 0; font-size: 13px; color: #6B7280;">Mobile Number:</td>
+                  <td style="padding: 4px 0; font-size: 13px; color: #1F2937; font-weight: 600;">{{ phone }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td style="padding: 4px 0; font-size: 13px; color: #6B7280;">Account Status:</td>
+                  <td style="padding: 4px 0; font-size: 13px; color: #0E9F6E; font-weight: 700;">Active & Verified</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Highlights: What You Can Do -->
+          <tr>
+            <td style="padding: 16px 24px 8px 24px;">
+              <h3 style="margin: 0 0 14px 0; font-size: 14px; text-transform: uppercase; color: #6B7280; font-weight: 700; letter-spacing: 0.5px;">
+                Why You'll Love TiffinTrail
+              </h3>
+              
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <!-- Feature 1 -->
+                <tr>
+                  <td width="36" valign="top" style="padding-bottom: 12px;">
+                    <div style="width: 28px; height: 28px; line-height: 28px; text-align: center; background-color: #DEF7EC; color: #0E9F6E; border-radius: 50%; font-size: 14px; font-weight: bold;">&#10003;</div>
+                  </td>
+                  <td valign="top" style="padding-bottom: 12px; padding-left: 8px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #1F2937;">Authentic Ghar Ka Khana</div>
+                    <div style="font-size: 12.5px; color: #6B7280;">Verified home chefs se prepared taaza, hygienic aur nutritious meals.</div>
+                  </td>
+                </tr>
+                
+                <!-- Feature 2 -->
+                <tr>
+                  <td width="36" valign="top" style="padding-bottom: 12px;">
+                    <div style="width: 28px; height: 28px; line-height: 28px; text-align: center; background-color: #E1EFFE; color: #1C64F2; border-radius: 50%; font-size: 14px; font-weight: bold;">&#10003;</div>
+                  </td>
+                  <td valign="top" style="padding-bottom: 12px; padding-left: 8px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #1F2937;">Flexible Tiffin Subscriptions</div>
+                    <div style="font-size: 12.5px; color: #6B7280;">Weekly aur Monthly meal plans jise aap kabhi bhi customize, pause ya resume kar sakte hain.</div>
+                  </td>
+                </tr>
+
+                <!-- Feature 3 -->
+                <tr>
+                  <td width="36" valign="top" style="padding-bottom: 12px;">
+                    <div style="width: 28px; height: 28px; line-height: 28px; text-align: center; background-color: #FEF3C7; color: #D97706; border-radius: 50%; font-size: 14px; font-weight: bold;">&#10003;</div>
+                  </td>
+                  <td valign="top" style="padding-bottom: 12px; padding-left: 8px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #1F2937;">Doorstep Delivery & Exclusive Offers</div>
+                    <div style="font-size: 12.5px; color: #6B7280;">On-time delivery aur promotional discount coupons ka fayda uthaiye.</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Primary Call to Action Button -->
+          <tr>
+            <td style="padding: 16px 24px 28px 24px; text-align: center;">
+              <a href="{{ site_url }}/menu/" style="display: inline-block; background-color: #E6AD45; color: #1F2937; font-size: 15px; font-weight: 700; text-decoration: none; padding: 14px 32px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                Explore Today's Menu &rarr;
+              </a>
+              <div style="margin-top: 12px;">
+                <a href="{{ site_url }}/meal-plans/" style="color: #253746; font-size: 13px; font-weight: 600; text-decoration: underline;">
+                  Or browse Monthly Tiffin Meal Plans
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Support & Help Footer -->
+          <tr>
+            <td style="background-color: #F9FAFB; padding: 20px 24px; border-top: 1px solid #E5E7EB; text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: #6B7280;">
+                Kisi bhi query ya support ke liye hume likhein: 
+                <a href="mailto:{{ support_email }}" style="color: #253746; font-weight: 600; text-decoration: none;">{{ support_email }}</a>
+              </p>
+              <p style="margin: 6px 0 0 0; font-size: 11px; color: #9CA3AF;">
+                &copy; {{ current_year }} TiffinTrail. Ghar Jaisa Swad, Apno Ka Pyar. All rights reserved.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+

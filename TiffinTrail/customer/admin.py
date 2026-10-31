@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     CustomerProfile, DeliveryAddress, Coupon,
     Cart, CartItem, Order, OrderItem,
-    Subscription, Review
+    Subscription, Review, PasswordResetOTP
 )
 
 
@@ -59,6 +59,14 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('user', 'chef', 'meal', 'rating', 'created_at')
+    list_display = ('user', 'chef', 'order', 'meal', 'rating', 'created_at')
     list_filter = ('rating', 'created_at')
-    search_fields = ('user__username', 'chef__business_name', 'comment')
+    search_fields = ('user__username', 'chef__business_name', 'order__order_number', 'comment')
+
+
+@admin.register(PasswordResetOTP)
+class PasswordResetOTPAdmin(admin.ModelAdmin):
+    list_display = ('email', 'user', 'otp', 'user_type', 'is_used', 'expires_at', 'created_at')
+    list_filter = ('user_type', 'is_used', 'created_at')
+    search_fields = ('email', 'user__username', 'otp')
+    readonly_fields = ('created_at',)

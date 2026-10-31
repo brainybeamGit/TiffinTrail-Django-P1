@@ -266,6 +266,18 @@ class Order(models.Model):
         }
         return mapping.get(self.status, 1)
 
+    @property
+    def is_delivered(self):
+        return self.status == 'delivered'
+
+    @property
+    def customer_review(self):
+        return self.reviews.first()
+
+    @property
+    def has_review(self):
+        return self.reviews.exists()
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
@@ -356,6 +368,7 @@ class Subscription(models.Model):
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     chef = models.ForeignKey(ChefProfile, on_delete=models.CASCADE, related_name='reviews')
+    order = models.ForeignKey('Order', on_delete=models.SET_NULL, null=True, blank=True, related_name='reviews')
     meal = models.ForeignKey(Meal, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviews')
     rating = models.PositiveSmallIntegerField(choices=[(i, f"{i} Stars") for i in range(1, 6)], default=5)
     comment = models.TextField()
@@ -366,7 +379,6 @@ class Review(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-        unique_together = ('user', 'chef', 'meal')
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -378,4 +390,27 @@ class Review(models.Model):
         chef.update_rating()
 
     def __str__(self):
-        return f"{self.rating}★ by {self.user.get_full_name() or self.user.username} for {self.chef.business_name}"
+        order_str = f" [Order #{self.order.order_number}]" if self.order else ""
+        return f"{self.rating}★ by {self.user.get_full_name() or self.user.username} for {self.chef.business_name}{order_str}"
+
+
+class PasswordResetOTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='password_reset_otps')
+    email = models.EmailField()
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    user_type = models.CharField(max_length=20, default='customer')  # 'customer' or 'chef'
+
+    class Meta:
+        verbose_name = 'Password Reset OTP'
+        verbose_name_plural = 'Password Reset OTPs'
+        ordering = ['-created_at']
+
+    def is_valid(self):
+        return (not self.is_used) and (timezone.now() < self.expires_at)
+
+    def __str__(self):
+        status = "Valid" if self.is_valid() else ("Used" if self.is_used else "Expired")
+        return f"OTP ({self.user_type}) for {self.email} [{status}]"

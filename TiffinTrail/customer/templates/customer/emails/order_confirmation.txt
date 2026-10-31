@@ -1,0 +1,43 @@
+==================================================================
+                 TIFFINTRAIL - ORDER CONFIRMED
+==================================================================
+
+Namaste {{ order.recipient_name }},
+
+Aapka order successfully confirm ho gaya hai!
+
+Order ID: #{{ order.order_number }}
+Kitchen: {{ order.chef.business_name }}
+Chef Contact: {{ order.chef.phone }}
+Payment Mode: {{ order.get_payment_method_display }} ({{ order.get_payment_status_display }})
+Delivery Address: {{ order.delivery_address_text }}
+Phone: {{ order.recipient_phone }}
+{% if order.delivery_notes %}Note: {{ order.delivery_notes }}{% endif %}
+
+------------------------------------------------------------------
+ORDERED ITEMS
+------------------------------------------------------------------
+{% for item in order.items.all %}
+* {{ item.quantity }}x {{ item.meal_name }} - Rs. {{ item.subtotal|floatformat:2 }} (Rs. {{ item.unit_price|floatformat:2 }} each)
+{% endfor %}
+
+------------------------------------------------------------------
+BILL SUMMARY
+------------------------------------------------------------------
+Items Subtotal:  Rs. {{ order.total_amount|floatformat:2 }}
+Delivery Fee:    Rs. {{ order.delivery_fee|floatformat:2 }}
+Taxes (GST):     Rs. {{ order.tax_amount|floatformat:2 }}
+{% if order.discount_amount > 0 %}Coupon Discount: - Rs. {{ order.discount_amount|floatformat:2 }}{% endif %}
+------------------------------------------------------------------
+TOTAL AMOUNT:    Rs. {{ order.final_amount|floatformat:2 }}
+------------------------------------------------------------------
+
+Aap apna order live track kar sakte hain:
+{{ site_url }}/orders/{{ order.id }}/
+
+Support Email: {{ support_email }}
+
+Dhanyawaad,
+Team TiffinTrail
+Ghar Jaisa Swad, Apno Ka Pyar
+

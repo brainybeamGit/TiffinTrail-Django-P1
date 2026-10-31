@@ -82,6 +82,11 @@ def chef_register(request):
         form = ChefRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
+            try:
+                from customer.emails import send_chef_welcome_email
+                send_chef_welcome_email(user.chef_profile, async_send=True)
+            except Exception as exc:
+                print(f"[EMAIL ERROR] Chef welcome email failed: {exc}")
             login(request, user)
             messages.success(
                 request,
@@ -593,6 +598,13 @@ def order_status_update(request, order_id):
                     order.payment_status = 'paid'
             order.save()
 
+            # Send Email notification on Order Confirmation & Status Updates
+            try:
+                from customer.emails import send_order_status_update_email
+                send_order_status_update_email(order, new_status, async_send=True)
+            except Exception as _em_err:
+                pass
+
             messages.success(request, f"Order {order.order_number} status updated to '{order.get_status_display()}'.")
         else:
             messages.error(request, f"Invalid status transition from {order.get_status_display()} to {new_status}.")
@@ -935,3 +947,198 @@ def chef_settings(request):
         'chef': chef,
         'password_form': password_form,
     })
+
+
+
+def chef_forgot_password(request):
+    """Chef Studio forgot password request view (sends 6-digit OTP)."""
+    if request.user.is_authenticated and hasattr(request.user, 'chef_profile'):
+        return redirect('chef:dashboard')
+
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        if not email:
+            messages.error(request, "Please enter a valid chef email address.")
+            return render(request, 'chef/forgot_password.html')
+
+        import secrets
+        from datetime import timedelta
+        from django.utils import timezone
+        from customer.models import PasswordResetOTP
+        from customer.emails import send_chef_password_reset_otp_email
+
+        chef = ChefProfile.objects.filter(user__email__iexact=email).first()
+        if chef:
+            user = chef.user
+            otp = f"{secrets.randbelow(1000000):06d}"
+            expires_at = timezone.now() + timedelta(minutes=10)
+
+            PasswordResetOTP.objects.filter(
+                email__iexact=email,
+                user_type='chef',
+                is_used=False
+            ).update(is_used=True)
+
+            PasswordResetOTP.objects.create(
+                user=user,
+                email=email,
+                otp=otp,
+                expires_at=expires_at,
+                user_type='chef'
+            )
+
+            send_chef_password_reset_otp_email(chef, otp, async_send=True)
+            request.session['chef_reset_email'] = email
+            messages.success(request, f"A 6-digit OTP has been sent to {email}. Enter it below to set your new Chef password.")
+            return redirect('chef:verify_otp')
+        else:
+            messages.error(request, "No Chef Studio account found for this email address. Please check your email.")
+            return render(request, 'chef/forgot_password.html', {'email': email})
+
+    return render(request, 'chef/forgot_password.html')
+
+
+def chef_verify_otp(request):
+    """Chef Studio OTP verification and password reset."""
+    email = request.session.get('chef_reset_email', '').strip()
+
+    def mask_chef_email(e):
+        if not e or '@' not in e:
+            return e
+        p = e.split('@')
+        n, d = p[0], p[1]
+        m = n[:2] + '*' * max(1, len(n) - 2)
+        return f"{m}@{d}"
+
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower() or email
+        otp = request.POST.get('otp', '').strip().replace(' ', '')
+        new_password = request.POST.get('new_password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        if not email:
+            messages.error(request, "Please provide your registered chef email.")
+            return render(request, 'chef/verify_otp.html', {'email': email, 'masked_email': mask_chef_email(email)})
+
+        if not otp:
+            messages.error(request, "Please enter the 6-digit OTP sent to your email.")
+            return render(request, 'chef/verify_otp.html', {'email': email, 'masked_email': mask_chef_email(email)})
+
+        if len(new_password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+            return render(request, 'chef/verify_otp.html', {'email': email, 'masked_email': mask_chef_email(email)})
+
+        if new_password != confirm_password:
+            messages.error(request, "Passwords do not match. Please re-enter.")
+            return render(request, 'chef/verify_otp.html', {'email': email, 'masked_email': mask_chef_email(email)})
+
+        from customer.models import PasswordResetOTP
+
+        chef = ChefProfile.objects.filter(user__email__iexact=email).first()
+        if not chef:
+            messages.error(request, "No Chef Studio account found for this email address.")
+            return render(request, 'chef/verify_otp.html', {'email': email, 'masked_email': mask_chef_email(email)})
+
+        user = chef.user
+        otp_record = PasswordResetOTP.objects.filter(
+            email__iexact=email,
+            user_type='chef',
+            is_used=False
+        ).order_by('-created_at').first()
+
+        if not otp_record or not otp_record.is_valid() or otp_record.otp != otp:
+            messages.error(request, "Invalid or expired OTP. Please check the code or request a fresh OTP.")
+            return render(request, 'chef/verify_otp.html', {'email': email, 'masked_email': mask_chef_email(email)})
+
+        user.set_password(new_password)
+        user.save()
+        otp_record.is_used = True
+        otp_record.save()
+
+        request.session.pop('chef_reset_email', None)
+        messages.success(request, "Chef Studio password reset successfully! You can now sign in with your new password.")
+        return redirect('chef:login')
+
+    masked_email = mask_chef_email(email) if email else ''
+    return render(request, 'chef/verify_otp.html', {'email': email, 'masked_email': masked_email})
+
+
+def chef_resend_otp(request):
+    """Resend fresh 6-digit OTP to the chef."""
+    email = request.session.get('chef_reset_email', '') or request.GET.get('email', '').strip().lower()
+    if not email:
+        messages.error(request, "Please enter your email to request an OTP.")
+        return redirect('chef:forgot_password')
+
+    import secrets
+    from datetime import timedelta
+    from django.utils import timezone
+    from customer.models import PasswordResetOTP
+    from customer.emails import send_chef_password_reset_otp_email
+
+    chef = ChefProfile.objects.filter(user__email__iexact=email).first()
+    if chef:
+        user = chef.user
+        otp = f"{secrets.randbelow(1000000):06d}"
+        expires_at = timezone.now() + timedelta(minutes=10)
+
+        PasswordResetOTP.objects.filter(
+            email__iexact=email,
+            user_type='chef',
+            is_used=False
+        ).update(is_used=True)
+
+        PasswordResetOTP.objects.create(
+            user=user,
+            email=email,
+            otp=otp,
+            expires_at=expires_at,
+            user_type='chef'
+        )
+
+        send_chef_password_reset_otp_email(chef, otp, async_send=True)
+        messages.success(request, f"A fresh 6-digit OTP has been sent to {email}.")
+    else:
+        messages.error(request, "No Chef Studio account found for this email address.")
+
+    request.session['chef_reset_email'] = email
+    return redirect('chef:verify_otp')
+
+
+def chef_password_reset_confirm(request, uidb64, token):
+    """Chef Studio password reset confirmation view."""
+    from django.contrib.auth import get_user_model, logout
+    from django.contrib.auth.tokens import default_token_generator
+    from django.utils.http import urlsafe_base64_decode
+    from django.utils.encoding import force_str
+
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is None or not default_token_generator.check_token(user, token) or not hasattr(user, 'chef_profile'):
+        messages.error(request, "This password reset link is invalid or has expired. Please request a new link.")
+        return redirect('chef:forgot_password')
+
+    # If another user is logged in, log them out cleanly so the chef account password can be reset
+    if request.user.is_authenticated and request.user.pk != user.pk:
+        logout(request)
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        if len(new_password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+        elif new_password != confirm_password:
+            messages.error(request, "Passwords do not match. Please re-enter.")
+        else:
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, "Chef Studio password reset successfully! You can now sign in with your new password.")
+            return redirect('chef:login')
+
+    return render(request, 'chef/password_reset_confirm.html', {'user': user, 'chef': user.chef_profile})

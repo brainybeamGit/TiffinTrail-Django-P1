@@ -78,7 +78,7 @@
             {% if chef.is_active %}onclick="if(!confirm('Suspend this chef kitchen? Diners will not see their meals.')) { event.preventDefault(); }"{% endif %}>
             <div class="tt-toggle-row-left">
               <div class="tt-toggle-row-icon {% if chef.is_active %}icon-green{% else %}icon-red{% endif %}">
-                {% if chef.is_active %}🍽️{% else %}🔒{% endif %}
+                {% if chef.is_active %}<i class="bi bi-egg-fried me-1"></i>️{% else %}🔒{% endif %}
               </div>
               <div>
                 <p class="tt-toggle-row-title">
@@ -109,7 +109,7 @@
         <div class="mt-3 pt-3 border-top">
           <label class="form-label small fw-bold text-danger d-block mb-1">Danger Zone</label>
           <button type="button" class="btn btn-sm btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteChefModal">
-            🗑️ Delete Chef Permanently
+            <i class="bi bi-trash-fill me-1"></i>Delete Chef Permanently
           </button>
         </div>
       </div>
@@ -147,7 +147,7 @@
     <!-- Kitchen Branding & Photos Management -->
     <div class="tt-card mb-4">
       <div class="tt-card-header">
-        <h5 class="tt-card-title">📷 Kitchen Photos & Cover Banner</h5>
+        <h5 class="tt-card-title"><i class="bi bi-camera me-1"></i>Kitchen Photos & Cover Banner</h5>
       </div>
       <div class="tt-card-body small">
         <div class="mb-3">
@@ -328,33 +328,47 @@
 
 <!-- Delete Chef Confirmation Modal -->
 <div class="modal fade" id="deleteChefModal" tabindex="-1" aria-labelledby="deleteChefModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-danger">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="deleteChefModalLabel">⚠️ Confirm Chef Deletion</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form action="{% url 'adminpanel:chef_delete' chef.id %}" method="post">
-        {% csrf_token %}
-        <div class="modal-body">
-          <p class="mb-2">Are you sure you want to permanently delete <strong>{{ chef.business_name }}</strong>?</p>
-          <div class="alert alert-warning small mb-3">
-            <strong>Warning:</strong> This will permanently delete:
-            <ul class="mb-0 mt-1 ps-3">
-              <li>Chef kitchen profile & account (<strong>{{ chef.user.username }}</strong>)</li>
-              <li>All homestyle dishes and menus created by this chef</li>
-              <li>Active & past meal schedules, subscriptions, and orders</li>
-            </ul>
-            This action <strong>cannot be undone</strong>.
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
           </div>
-          <p class="small text-muted mb-0">Please click the button below to confirm permanent deletion.</p>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deleteChefModalLabel">Delete Chef Kitchen</h5>
+            <div class="text-muted small">Permanent Deletion Warning</div>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-danger fw-bold">🗑️ Yes, Delete Chef Permanently</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{% url 'adminpanel:chef_delete' chef.id %}" method="post" class="m-0">
+        {% csrf_token %}
+        <div class="modal-body py-3 px-4">
+          <p class="text-secondary mb-2">
+            Are you sure you want to permanently delete kitchen <strong class="text-dark">{{ chef.business_name }}</strong>?
+          </p>
+          <div class="alert alert-warning border-0 bg-warning-subtle text-dark small rounded-3 mb-0 p-3">
+            <div class="d-flex gap-2 mb-2">
+              <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0 mt-0.5"></i>
+              <strong>Warning: This action will permanently remove:</strong>
+            </div>
+            <ul class="mb-0 ps-3">
+              <li>Chef kitchen profile and user account (<code>{{ chef.user.username }}</code>)</li>
+              <li>All homestyle dishes, menu items, and meal plans</li>
+              <li>Active & historic customer subscriptions and orders</li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+            <i class="bi bi-trash3-fill"></i> Yes, Permanently Delete
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
 {% endblock %}

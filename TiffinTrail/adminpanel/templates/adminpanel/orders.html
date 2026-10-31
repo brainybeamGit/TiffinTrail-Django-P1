@@ -63,7 +63,7 @@
             <th>Total Amount</th>
             <th>Payment</th>
             <th>Status</th>
-            <th class="text-end" style="min-width: 170px;">Actions</th>
+            <th class="text-end" >Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -105,12 +105,9 @@
                   <a href="{% url 'adminpanel:order_detail' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
                     <i class="bi bi-gear-fill"></i> Manage
                   </a>
-                  <form method="post" action="{% url 'adminpanel:order_delete' order.id %}" class="d-inline m-0" onsubmit="return confirm('Kya aap order #{{ order.order_number }} ko permanently delete karna chahte hain?');">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm tt-btn-action tt-btn-action-danger" title="Delete Order">
-                      <i class="bi bi-trash-fill"></i> Delete
-                    </button>
-                  </form>
+                  <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteOrderModal{{ order.id }}" title="Delete Order">
+                    <i class="bi bi-trash-fill"></i> Delete
+                  </button>
                 </div>
               </td>
             </tr>
@@ -140,4 +137,46 @@
     {% endif %}
   </div>
 </div>
+
+{% for order in page_obj %}
+<!-- Delete Order Modal for {{ order.id }} -->
+<div class="modal fade" id="deleteOrderModal{{ order.id }}" tabindex="-1" aria-labelledby="deleteOrderModalLabel{{ order.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deleteOrderModalLabel{{ order.id }}">Delete Order</h5>
+            <div class="text-muted small">Permanent Order Removal</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-2">
+          Are you sure you want to permanently delete order <strong class="text-dark">#{{ order.order_number }}</strong>?
+        </p>
+        <div class="alert alert-warning border-0 bg-warning-subtle text-dark small rounded-3 mb-0 p-3 d-flex gap-2">
+          <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0 mt-0.5"></i>
+          <div>
+            <strong>Warning:</strong> Customer: {{ order.user.get_full_name|default:order.user.username }} | Total: ₹{{ order.final_amount }}. All linked order items, invoices, and review records will be removed.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'adminpanel:order_delete' order.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+            <i class="bi bi-trash3-fill"></i> Permanently Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

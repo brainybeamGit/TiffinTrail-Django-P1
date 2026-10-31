@@ -1,0 +1,27 @@
+==================================================================
+              TIFFINTRAIL - ORDER STATUS UPDATE
+==================================================================
+
+Namaste {{ order.recipient_name }},
+
+Aapka order #{{ order.order_number }} update ho chuka hai:
+New Status: {{ order.get_status_display }}
+Chef: {{ order.chef.business_name }}
+
+Total Amount: Rs. {{ order.final_amount|floatformat:2 }}
+Delivery Address: {{ order.delivery_address_text }}
+{% if order.cancellation_reason %}Reason: {{ order.cancellation_reason }}{% endif %}
+
+Aap live order details yahan dekh sakte hain:
+{{ site_url }}/orders/{{ order.id }}/
+
+{% if order.status == 'delivered' %}
+FEEDBACK & RATING:
+Aapka khana kaisa laga? Apne home chef ko rating aur review dene ke liye is link par jayein:
+{{ site_url }}/orders/{{ order.id }}/#feedback
+{% endif %}
+
+Dhanyawaad,
+Team TiffinTrail
+Ghar Jaisa Swad, Apno Ka Pyar
+

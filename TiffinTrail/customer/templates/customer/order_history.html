@@ -75,7 +75,19 @@
         </div>
 
         <div class="col-md-4 text-md-end">
-          <div class="d-flex justify-content-md-end gap-2 flex-wrap">
+          <div class="d-flex justify-content-md-end gap-2 flex-wrap align-items-center">
+            {% if order.status == 'delivered' %}
+              {% if order.has_review %}
+              <span class="badge bg-success-subtle text-success border border-success-subtle rounded-3 py-2 px-2.5 small d-inline-flex align-items-center gap-1">
+                ⭐ {{ order.customer_review.rating }}★ Rated
+              </span>
+              {% else %}
+              <a href="{% url 'customer:order_detail' order.pk %}#feedback" class="btn btn-sm btn-outline-warning text-dark fw-semibold rounded-3 d-inline-flex align-items-center gap-1 shadow-xs">
+                ⭐ Rate Order
+              </a>
+              {% endif %}
+            {% endif %}
+
             <a href="{% url 'customer:order_detail' order.pk %}" class="btn btn-sm btn-tt-outline rounded-3">
               View Tracking & Receipt
             </a>

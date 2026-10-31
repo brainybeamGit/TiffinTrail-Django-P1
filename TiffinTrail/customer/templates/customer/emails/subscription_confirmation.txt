@@ -1,0 +1,25 @@
+==================================================================
+           TIFFINTRAIL - SUBSCRIPTION CONFIRMED
+==================================================================
+
+Namaste {{ sub.recipient_name }},
+
+Aapka meal plan subscription successfully activate ho gaya hai!
+
+Subscription ID: #{{ sub.subscription_number }}
+Meal Plan: {{ sub.plan.name }}
+Home Chef: {{ sub.chef.business_name }}
+Duration: {{ sub.start_date|date:"d M Y" }} to {{ sub.end_date|date:"d M Y" }}
+Delivery Slot: {{ sub.get_delivery_slot_display }}
+Delivery Address: {{ sub.delivery_address_text }}
+Total Amount: Rs. {{ sub.total_amount|floatformat:2 }} ({{ sub.get_payment_method_display|upper }})
+
+Live subscription status check karne ke liye:
+{{ site_url }}/subscriptions/{{ sub.id }}/
+
+Support Email: {{ support_email }}
+
+Dhanyawaad,
+Team TiffinTrail
+Ghar Jaisa Swad, Apno Ka Pyar
+

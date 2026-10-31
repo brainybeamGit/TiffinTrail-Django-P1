@@ -9,6 +9,11 @@ urlpatterns = [
     path('login/', views.chef_login, name='login'),
     path('register/', views.chef_register, name='register'),
     path('logout/', views.chef_logout, name='logout'),
+    path('forgot-password/', views.chef_forgot_password, name='forgot_password'),
+    path('verify-otp/', views.chef_verify_otp, name='verify_otp'),
+    path('resend-otp/', views.chef_resend_otp, name='resend_otp'),
+    path('reset-password/<str:uidb64>/<str:token>/', views.chef_password_reset_confirm, name='password_reset_confirm'),
+    path('reset/<str:uidb64>/<str:token>/', views.chef_password_reset_confirm, name='password_reset_confirm_alt'),
 
     # Profile Management
     path('profile/', views.profile_view, name='profile'),

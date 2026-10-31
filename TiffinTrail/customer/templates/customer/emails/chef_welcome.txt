@@ -1,0 +1,37 @@
+==================================================================
+        TIFFINTRAIL - KITCHEN APPLICATION RECEIVED
+==================================================================
+
+Namaste Chef {{ chef_name }},
+
+TiffinTrail Partner Kitchen community me aapka swagat hai!
+
+Aapka kitchen registration successfully submit ho chuka hai:
+
+------------------------------------------------------------------
+REGISTERED KITCHEN DETAILS
+------------------------------------------------------------------
+Kitchen Name:    {{ business_name }}
+Cuisines:        {{ cuisines }}
+{% if specialties %}Specialties:     {{ specialties }}{% endif %}
+Mobile Number:   {{ phone }}
+Kitchen Address: {{ kitchen_address }}
+Status:          Pending Verification
+
+------------------------------------------------------------------
+NEXT STEPS
+------------------------------------------------------------------
+1. Hamari admin team 24-48 hours ke andar aapke documents aur details ko review karegi.
+2. Aap Chef Dashboard par jakar apne dishes aur menu setup kar sakte hain.
+3. Verification complete hote hi aapka kitchen live ho jayega aur aap orders accept kar sakenge.
+
+Chef Dashboard Access:
+{{ site_url }}/chef/
+
+Support & Inquiries:
+Email: {{ support_email }}
+
+Dhanyawaad,
+Team TiffinTrail
+Ghar Jaisa Swad, Apno Ka Pyar
+

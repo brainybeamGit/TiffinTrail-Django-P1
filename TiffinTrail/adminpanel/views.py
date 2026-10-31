@@ -241,6 +241,43 @@ def customer_toggle_status(request, user_id):
     return redirect('adminpanel:customer_detail', user_id=customer.id)
 
 
+@admin_required
+def customer_delete(request, user_id):
+    """Permanently delete a customer account and record audit log."""
+    customer = get_object_or_404(User, id=user_id, is_staff=False, chef_profile__isnull=True)
+    if request.method == 'POST':
+        cust_username = customer.username
+        cust_email = customer.email
+        cust_name = customer.get_full_name() or cust_username
+
+        if customer.is_staff or customer.is_superuser or hasattr(customer, 'chef_profile'):
+            messages.error(request, "Staff and Chef accounts cannot be deleted from the customer section.")
+            return redirect('adminpanel:customers')
+
+        with transaction.atomic():
+            chef_ids = list(customer.reviews.values_list('chef_id', flat=True))
+
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Customer Deleted",
+                target_model='User',
+                target_id=str(user_id),
+                details=f"Customer '{cust_name}' (@{cust_username}, {cust_email}) was permanently deleted by admin {request.user.username}."
+            )
+
+            customer.delete()
+
+            for cid in set(chef_ids):
+                c_obj = ChefProfile.objects.filter(id=cid).first()
+                if c_obj:
+                    c_obj.update_rating()
+
+        messages.success(request, f"Customer account '{cust_name}' (@{cust_username}) has been permanently deleted.")
+        return redirect('adminpanel:customers')
+
+    return redirect('adminpanel:customer_detail', user_id=customer.id)
+
+
 # ==============================================================================
 # Chef Management & Verification
 # ==============================================================================
@@ -883,6 +920,11 @@ def order_detail(request, order_id):
                 if reason:
                     order.cancellation_reason = f"Admin override: {reason}"
                 order.save()
+                try:
+                    from customer.emails import send_order_status_update_email
+                    send_order_status_update_email(order, new_status, async_send=True)
+                except Exception:
+                    pass
                 AdminActivityLog.objects.create(
                     admin=request.user,
                     action="Order Status Override",
@@ -1176,6 +1218,33 @@ def review_toggle_hide(request, review_id):
         status_str = "Hidden from public view" if review.is_hidden else "Restored to public view"
         messages.success(request, f"Review #{review.id} has been {status_str}.")
     return redirect('adminpanel:reviews')
+
+@admin_required
+def review_delete(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    if request.method == 'POST':
+        chef = review.chef
+        reviewer_name = review.user.get_full_name() or review.user.username
+        rating_val = review.rating
+
+        with transaction.atomic():
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Review Deleted",
+                target_model='Review',
+                target_id=str(review_id),
+                details=f"Review #{review_id} ({rating_val} stars) by '{reviewer_name}' for Chef '{chef.business_name}' was permanently deleted by admin {request.user.username}."
+            )
+            # review.delete() calls chef.update_rating() internally
+            review.delete()
+
+        messages.success(request, f"Review #{review_id} by {reviewer_name} has been permanently deleted.")
+        next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
+        if next_url and next_url != request.build_absolute_uri():
+            return redirect(next_url)
+        return redirect('adminpanel:reviews')
+    return redirect('adminpanel:reviews')
+
 
 
 # ==============================================================================

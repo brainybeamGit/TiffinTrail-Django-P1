@@ -8,16 +8,53 @@
   <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="{% static 'css/design-system.css' %}?v=4.0">
+  <link rel="stylesheet" href="{% static 'css/design-system.css' %}?v=7.0">
   <link rel="stylesheet" href="{% static 'css/animations.css' %}">
-  <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=4.0">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=7.0">
   <style>
+    /* Professional Sidebar & Nav Polish */
+    .tt-nav-link {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      padding: 10px 16px !important;
+      color: #94a3b8 !important;
+      border-radius: 8px !important;
+      margin: 2px 12px !important;
+      font-size: 0.86rem !important;
+      font-weight: 500 !important;
+      text-decoration: none !important;
+      transition: all 0.15s ease !important;
+    }
+    .tt-nav-link i {
+      font-size: 1.05rem !important;
+      width: 20px !important;
+      text-align: center !important;
+      color: #94a3b8 !important;
+      transition: color 0.15s ease !important;
+      flex-shrink: 0 !important;
+    }
+    .tt-nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.08) !important;
+      color: #ffffff !important;
+    }
+    .tt-nav-link:hover i {
+      color: #E6AD45 !important;
+    }
+    .tt-nav-link.active {
+      background-color: #E6AD45 !important;
+      color: #1e293b !important;
+      font-weight: 700 !important;
+    }
+    .tt-nav-link.active i {
+      color: #1e293b !important;
+    }
+
     /* Table Action Buttons & Cell Polish */
     .tt-actions-cell {
       white-space: nowrap !important;
       text-align: right !important;
-      min-width: 155px !important;
-      padding-right: 20px !important;
+      padding-right: 14px !important;
     }
     .tt-actions-group {
       display: inline-flex !important;
@@ -75,30 +112,250 @@
       color: #1e293b !important;
     }
 
-    /* Drag-to-Scroll on Table Details */
     .tt-table-responsive,
     .table-responsive {
-      cursor: grab;
-      user-select: none;
-      -webkit-user-select: none;
+      width: 100% !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch !important;
+      scrollbar-width: thin !important;
+      scrollbar-color: #94a3b8 #f1f5f9 !important;
+      cursor: default !important;
+      user-select: auto !important;
+      -webkit-user-select: auto !important;
+      padding-bottom: 6px !important;
     }
-    .tt-table-responsive.tt-is-dragging,
-    .table-responsive.tt-is-dragging {
-      cursor: grabbing !important;
+
+    /* Visible Horizontal Scrollbar at Bottom */
+    .tt-table-responsive::-webkit-scrollbar,
+    .table-responsive::-webkit-scrollbar {
+      display: block !important;
+      height: 8px !important;
     }
-    .tt-table-responsive.tt-is-dragging * {
-      cursor: grabbing !important;
-      user-select: none !important;
+    .tt-table-responsive::-webkit-scrollbar-track,
+    .table-responsive::-webkit-scrollbar-track {
+      background: #f1f5f9 !important;
+      border-radius: 4px !important;
+      border: 1px solid #e2e8f0 !important;
     }
-    .tt-table-responsive a,
-    .tt-table-responsive button,
-    .tt-table-responsive input,
-    .tt-table-responsive select,
-    .tt-table-responsive .tt-btn-action {
-      cursor: pointer;
-      user-select: auto;
+    .tt-table-responsive::-webkit-scrollbar-thumb,
+    .table-responsive::-webkit-scrollbar-thumb {
+      background: #94a3b8 !important;
+      border-radius: 4px !important;
     }
-  </style>
+    .tt-table-responsive::-webkit-scrollbar-thumb:hover,
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+      background: #64748b !important;
+    }
+  
+/* Status Badges with Circle Indicators */
+.tt-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 11px !important;
+  border-radius: 999px !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  border: 1px solid transparent !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+.tt-badge::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+}
+
+/* Cancelled / Rejected / Failed / Suspended */
+.tt-badge-cancelled,
+.tt-badge-rejected,
+.tt-badge-failed,
+.tt-badge-suspended,
+.tt-badge-danger {
+  background-color: #FEF2F2 !important;
+  color: #991B1B !important;
+  border-color: #FECACA !important;
+}
+.tt-badge-cancelled::before,
+.tt-badge-rejected::before,
+.tt-badge-failed::before,
+.tt-badge-suspended::before,
+.tt-badge-danger::before {
+  background-color: #DC2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+
+/* Delivered / Completed / Approved / Active / Paid / Resolved */
+.tt-badge-delivered,
+.tt-badge-completed,
+.tt-badge-approved,
+.tt-badge-active,
+.tt-badge-paid,
+.tt-badge-resolved,
+.tt-badge-success {
+  background-color: #F0FDF4 !important;
+  color: #166534 !important;
+  border-color: #BBF7D0 !important;
+}
+.tt-badge-delivered::before,
+.tt-badge-completed::before,
+.tt-badge-approved::before,
+.tt-badge-active::before,
+.tt-badge-paid::before,
+.tt-badge-resolved::before,
+.tt-badge-success::before {
+  background-color: #16A34A !important;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+}
+
+/* Pending / Order Received / Under Review / Resubmission */
+.tt-badge-pending,
+.tt-badge-under_review,
+.tt-badge-resubmission,
+.tt-badge-warning {
+  background-color: #FFFBEB !important;
+  color: #92400E !important;
+  border-color: #FDE68A !important;
+}
+.tt-badge-pending::before,
+.tt-badge-under_review::before,
+.tt-badge-resubmission::before,
+.tt-badge-warning::before {
+  background-color: #D97706 !important;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2) !important;
+}
+
+/* Confirmed / Preparing / Cooking / In Prep / In Progress */
+.tt-badge-confirmed,
+.tt-badge-preparing,
+.tt-badge-in_progress,
+.tt-badge-info {
+  background-color: #EFF6FF !important;
+  color: #1E40AF !important;
+  border-color: #BFDBFE !important;
+}
+.tt-badge-confirmed::before,
+.tt-badge-preparing::before,
+.tt-badge-in_progress::before,
+.tt-badge-info::before {
+  background-color: #2563EB !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+}
+
+/* Out for Delivery */
+.tt-badge-out_for_delivery {
+  background-color: #F0FDFA !important;
+  color: #115E59 !important;
+  border-color: #99F6E4 !important;
+}
+.tt-badge-out_for_delivery::before {
+  background-color: #0D9488 !important;
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
+}
+
+/* Open Complaint */
+.tt-badge-open {
+  background-color: #FEF2F2 !important;
+  color: #991B1B !important;
+  border-color: #FECACA !important;
+}
+.tt-badge-open::before {
+  background-color: #DC2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+
+/* Closed */
+.tt-badge-closed {
+  background-color: #F8FAFC !important;
+  color: #475569 !important;
+  border-color: #E2E8F0 !important;
+}
+.tt-badge-closed::before {
+  background-color: #94A3B8 !important;
+}
+
+/* Veg & Non-Veg */
+.tt-badge-veg {
+  background-color: #F0FDF4 !important;
+  color: #166534 !important;
+  border-color: #86EFAC !important;
+}
+.tt-badge-veg::before {
+  background-color: #16A34A !important;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+}
+
+.tt-badge-nonveg {
+  background-color: #FEF2F2 !important;
+  color: #991B1B !important;
+  border-color: #FECACA !important;
+}
+.tt-badge-nonveg::before {
+  background-color: #DC2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+
+.badge.rounded-pill.bg-danger-subtle {
+  background-color: #FEF2F2 !important;
+  color: #991B1B !important;
+  border: 1px solid #FECACA !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+.badge.rounded-pill.bg-danger-subtle::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background-color: #DC2626 !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+}
+
+    /* Premium Unified Modal System */
+    .modal {
+      z-index: 1060 !important;
+    }
+    .modal-backdrop {
+      z-index: 1055 !important;
+      background-color: #0f172a !important;
+    }
+    .modal-backdrop.show {
+      opacity: 0.65 !important;
+    }
+    .modal.fade .modal-dialog {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease-out !important;
+      transform: scale(0.96) translateY(-12px) !important;
+    }
+    .modal.show .modal-dialog {
+      transform: scale(1) translateY(0) !important;
+    }
+    .modal-content {
+      border-radius: 16px !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.28), 0 12px 24px -8px rgba(15, 23, 42, 0.12) !important;
+      overflow: hidden !important;
+      background: #ffffff !important;
+    }
+    .modal-header .btn-close {
+      margin-top: -2px !important;
+      margin-right: -2px !important;
+      opacity: 0.6 !important;
+      transition: opacity 0.15s ease, transform 0.15s ease !important;
+    }
+    .modal-header .btn-close:hover {
+      opacity: 1 !important;
+      transform: scale(1.1) !important;
+    }
+</style>
   {% block extra_css %}{% endblock %}
 </head>
 <body class="tt-admin-body">
@@ -107,10 +364,10 @@
   <aside class="tt-sidebar" id="ttSidebar">
     <!-- Brand -->
     <a class="tt-brand" href="{% url 'adminpanel:dashboard' %}">
-      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" class="tt-brand-logo" style="width: 42px; height: 42px; object-fit: contain; border-radius: 10px;">
+      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" class="tt-brand-logo" style="width: 38px; height: 38px; object-fit: contain; border-radius: 8px;">
       <div class="tt-brand-text">
         <span class="tt-brand-name">TiffinTrail</span>
-        <span class="tt-brand-subtitle">Platform Admin</span>
+        <span class="tt-brand-subtitle">Enterprise Console</span>
       </div>
     </a>
 
@@ -118,24 +375,30 @@
     <div class="tt-nav-label">OPERATIONS & WORKSPACE</div>
     <nav class="tt-nav">
       <a class="tt-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'adminpanel:dashboard' %}">
+        <i class="bi bi-grid-1x2-fill"></i>
         <span>Dashboard Overview</span>
       </a>
       <a class="tt-nav-link {% if 'customer' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:customers' %}">
+        <i class="bi bi-people-fill"></i>
         <span>Customer Management</span>
       </a>
       <a class="tt-nav-link {% if 'chef' in request.resolver_match.url_name and not request.GET.verification %}active{% endif %}" href="{% url 'adminpanel:chefs' %}">
+        <i class="bi bi-shop"></i>
         <span>Chef Management</span>
       </a>
       <a class="tt-nav-link {% if request.GET.verification == 'pending' %}active{% endif %}" href="{% url 'adminpanel:chefs' %}?verification=pending">
+        <i class="bi bi-patch-check-fill"></i>
         <span>Chef Verification</span>
         {% if admin_pending_verifications_count > 0 %}
-          <span class="tt-badge-amber">{{ admin_pending_verifications_count }}</span>
+          <span class="tt-badge-amber ms-auto">{{ admin_pending_verifications_count }}</span>
         {% endif %}
       </a>
       <a class="tt-nav-link {% if 'meal' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:meals' %}">
+        <i class="bi bi-egg-fried"></i>
         <span>Meal Management</span>
       </a>
       <a class="tt-nav-link {% if 'plan' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:plans' %}">
+        <i class="bi bi-calendar3-range-fill"></i>
         <span>Meal Plans</span>
       </a>
     </nav>
@@ -143,24 +406,30 @@
     <div class="tt-nav-label">ORDERS & COMMERCE</div>
     <nav class="tt-nav">
       <a class="tt-nav-link {% if 'subscription' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:subscriptions' %}">
+        <i class="bi bi-arrow-repeat"></i>
         <span>Subscriptions</span>
       </a>
       <a class="tt-nav-link {% if 'order' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:orders' %}">
+        <i class="bi bi-bag-check-fill"></i>
         <span>Orders Management</span>
       </a>
       <a class="tt-nav-link {% if 'payment' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:payments' %}">
+        <i class="bi bi-credit-card-2-front-fill"></i>
         <span>Payment & Ledger</span>
       </a>
       <a class="tt-nav-link {% if 'complaint' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:complaints' %}">
+        <i class="bi bi-headset"></i>
         <span>Complaints & Support</span>
         {% if admin_pending_complaints_count > 0 %}
-          <span class="tt-badge-count">{{ admin_pending_complaints_count }}</span>
+          <span class="tt-badge-count ms-auto">{{ admin_pending_complaints_count }}</span>
         {% endif %}
       </a>
       <a class="tt-nav-link {% if 'coupon' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:coupons' %}">
+        <i class="bi bi-ticket-perforated-fill"></i>
         <span>Coupon Management</span>
       </a>
       <a class="tt-nav-link {% if 'review' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:reviews' %}">
+        <i class="bi bi-star-half"></i>
         <span>Reviews Moderation</span>
       </a>
     </nav>
@@ -168,15 +437,18 @@
     <div class="tt-nav-label">ANALYTICS & REPORTS</div>
     <nav class="tt-nav">
       <a class="tt-nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}" href="{% url 'adminpanel:analytics' %}">
+        <i class="bi bi-bar-chart-fill"></i>
         <span>Analytics & Charts</span>
       </a>
       <a class="tt-nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}" href="{% url 'adminpanel:reports' %}">
+        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
         <span>Reports & Export</span>
       </a>
       <a class="tt-nav-link {% if 'notification' in request.resolver_match.url_name or 'notices' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'adminpanel:notifications' %}">
+        <i class="bi bi-bell-fill"></i>
         <span>Admin Notifications</span>
         {% if admin_unread_count > 0 %}
-          <span class="tt-badge-count">{{ admin_unread_count }}</span>
+          <span class="tt-badge-count ms-auto">{{ admin_unread_count }}</span>
         {% endif %}
       </a>
     </nav>
@@ -184,9 +456,11 @@
     <div class="tt-nav-label">SYSTEM</div>
     <nav class="tt-nav">
       <a class="tt-nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'adminpanel:profile' %}">
+        <i class="bi bi-person-circle"></i>
         <span>Admin Profile</span>
       </a>
       <a class="tt-nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}" href="{% url 'adminpanel:settings' %}">
+        <i class="bi bi-shield-lock-fill"></i>
         <span>Settings & Security</span>
       </a>
     </nav>
@@ -194,9 +468,11 @@
     <!-- Bottom Actions -->
     <div class="tt-sidebar-bottom">
       <a class="tt-sidebar-link-btn" href="{% url 'customer:home' %}" target="_blank">
-        <span>View Customer Website ↗</span>
+        <i class="bi bi-box-arrow-up-right me-1"></i>
+        <span>Customer Website</span>
       </a>
       <a class="tt-sidebar-link-btn text-danger" href="{% url 'adminpanel:logout' %}">
+        <i class="bi bi-box-arrow-right me-1"></i>
         <span>Sign Out</span>
       </a>
     </div>
@@ -207,7 +483,9 @@
     <!-- Topbar -->
     <header class="tt-topbar">
       <div class="tt-topbar-left">
-        <button class="tt-menu-toggle" id="ttMenuToggle" type="button" aria-label="Toggle Navigation"></button>
+        <button class="tt-menu-toggle" id="ttMenuToggle" type="button" aria-label="Toggle Navigation">
+          <i class="bi bi-list"></i>
+        </button>
         <div>
           <span class="tt-eyebrow">{% block eyebrow %}TIFFINTRAIL ADMIN CONSOLE{% endblock %}</span>
           <h1 class="tt-page-title">{% block page_heading %}Dashboard{% endblock %}</h1>
@@ -222,7 +500,7 @@
 
         <!-- Notification Bell -->
         <a class="tt-topbar-notif" href="{% url 'adminpanel:notifications' %}" title="Admin Notifications">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <i class="bi bi-bell"></i>
           {% if admin_unread_count > 0 %}
             <span class="tt-notif-dot">{{ admin_unread_count }}</span>
           {% endif %}
@@ -236,10 +514,10 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end shadow-sm border">
             <li><h6 class="dropdown-header">Platform Administrator</h6></li>
-            <li><a class="dropdown-item" href="{% url 'adminpanel:profile' %}">Admin Profile</a></li>
-            <li><a class="dropdown-item" href="{% url 'adminpanel:settings' %}">Change Password</a></li>
+            <li><a class="dropdown-item" href="{% url 'adminpanel:profile' %}"><i class="bi bi-person me-2"></i>Admin Profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'adminpanel:settings' %}"><i class="bi bi-key me-2"></i>Change Password</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="{% url 'adminpanel:logout' %}">Sign Out</a></li>
+            <li><a class="dropdown-item text-danger" href="{% url 'adminpanel:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
           </ul>
         </div>
       </div>
@@ -262,7 +540,7 @@
 
     <!-- Footer -->
     <footer class="tt-footer">
-      <div>© {% now "Y" %} <strong>TiffinTrail</strong> – Enterprise Administrative Control Center.</div>
+      <div>&copy; {% now "Y" %} <strong>TiffinTrail</strong> &ndash; Enterprise Administrative Control Center.</div>
       <div>
         <span class="badge bg-light text-muted border">Role: Platform Super-Administrator</span>
       </div>
@@ -273,7 +551,26 @@
 <!-- Scripts -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/animations.js' %}"></script>
-<script src="{% static 'js/admin.js' %}?v=4.1"></script>
+<script src="{% static 'js/admin.js' %}?v=7.0"></script>
 {% block extra_js %}{% endblock %}
+
+<!-- Table Wheel Scroll Protection (Forces Vertical Page Scroll) -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var tables = document.querySelectorAll('.tt-table-responsive, .table-responsive');
+  tables.forEach(function (table) {
+    table.addEventListener('wheel', function (e) {
+      if (!e.shiftKey && Math.abs(e.deltaY) > 0) {
+        e.preventDefault();
+        window.scrollBy({
+          top: e.deltaY,
+          left: 0,
+          behavior: 'auto'
+        });
+      }
+    }, { passive: false });
+  });
+});
+</script>
 </body>
 </html>

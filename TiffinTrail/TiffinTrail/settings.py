@@ -141,16 +141,19 @@ LOGIN_URL = 'customer:login'
 LOGIN_REDIRECT_URL = 'customer:home'
 LOGOUT_REDIRECT_URL = 'customer:home'
 
-# Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
+# Site URL for emails and links
+SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000').rstrip('/')
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+# Email Configuration
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'lakumdharmesh799@gmail.com')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'rpcy isaq lcsq wlgp')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', f"TiffinTrail <{EMAIL_HOST_USER}>")
+SERVER_EMAIL = EMAIL_HOST_USER
 
 # Razorpay Payment Gateway Configuration
 RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "rzp_test_TBNsUzgbC9Y6kK")
 RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "Vqo59i6fCq6gH1BrSFKRlvCt")
-

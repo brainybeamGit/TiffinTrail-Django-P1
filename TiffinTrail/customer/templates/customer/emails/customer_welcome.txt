@@ -1,0 +1,38 @@
+==================================================================
+                 TIFFINTRAIL - WELCOME TO THE FAMILY!
+==================================================================
+
+Namaste {{ customer_name }},
+
+Aapka TiffinTrail par dil se swagat hai!
+
+Aapka account successfully register ho chuka hai. Ab fresh, swadisht aur authentic ghar ka khana seedha aapke doorstep tak pohchega.
+
+------------------------------------------------------------------
+ACCOUNT DETAILS
+------------------------------------------------------------------
+Username:      {{ username }}
+Email:         {{ email }}
+{% if phone %}Mobile:        {{ phone }}{% endif %}
+Status:        Active
+
+------------------------------------------------------------------
+EXPLORE TIFFINTRAIL
+------------------------------------------------------------------
+* Authentic Ghar Ka Khana - Prepared by verified home chefs
+* Flexible Subscriptions  - Weekly & Monthly tiffin meal plans
+* Fast Doorstep Delivery  - Fresh and on-time every single day
+
+Explore Today's Menu:
+{{ site_url }}/menu/
+
+Browse Subscription Plans:
+{{ site_url }}/meal-plans/
+
+Kisi bhi sahayata ke liye:
+Support Email: {{ support_email }}
+
+Dhanyawaad,
+Team TiffinTrail
+Ghar Jaisa Swad, Apno Ka Pyar
+

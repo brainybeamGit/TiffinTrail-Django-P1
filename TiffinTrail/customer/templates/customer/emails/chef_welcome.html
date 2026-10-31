@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to TiffinTrail Kitchens</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F7F5F0; color: #1F2937; line-height: 1.6;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #F7F5F0; padding: 30px 15px;">
+    <tr>
+      <td align="center">
+        <!-- Main Container -->
+        <table role="presentation" width="100%" max-width="600" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 1px solid #E5E7EB;">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #253746 0%, #17242E 100%); padding: 32px 24px; text-align: center;">
+              <h1 style="margin: 0; color: #FFFFFF; font-size: 26px; font-weight: 800; letter-spacing: 0.5px;">
+                Tiffin<span style="color: #E6AD45;">Trail</span> <span style="font-size: 14px; font-weight: 500; color: #D1D5DB; vertical-align: middle; background: rgba(255,255,255,0.15); padding: 3px 8px; border-radius: 12px; margin-left: 6px;">Kitchen Partner</span>
+              </h1>
+              <p style="margin: 6px 0 0 0; color: #D1D5DB; font-size: 13px; font-weight: 500;">
+                Ghar Jaisa Swad, Apno Ka Pyar
+              </p>
+            </td>
+          </tr>
+
+          <!-- Confirmation Status Badge -->
+          <tr>
+            <td style="padding: 30px 24px 16px 24px; text-align: center;">
+              <div style="display: inline-block; width: 60px; height: 60px; line-height: 60px; background-color: #DEF7EC; color: #0E9F6E; border-radius: 50%; font-size: 28px; font-weight: bold; margin-bottom: 12px;">
+                &#10003;
+              </div>
+              <h2 style="margin: 0 0 6px 0; color: #111827; font-size: 22px; font-weight: 700;">
+                Kitchen Application Received!
+              </h2>
+              <p style="margin: 0; color: #4B5563; font-size: 14px;">
+                Namaste Chef <strong>{{ chef_name }}</strong>, TiffinTrail Partner Kitchen community me aapka swagat hai.
+              </p>
+              <div style="margin-top: 14px; display: inline-block; background-color: #FEF3C7; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #92400E; border: 1px solid #FDE68A;">
+                Application Status: <strong>Pending Verification</strong>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Kitchen Profile Summary Box -->
+          <tr>
+            <td style="padding: 12px 24px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #F9FAFB; border-radius: 12px; padding: 18px; border: 1px solid #E5E7EB;">
+                <tr>
+                  <td colspan="2" style="padding-bottom: 10px; border-bottom: 1px solid #E5E7EB;">
+                    <div style="font-size: 12px; text-transform: uppercase; color: #6B7280; font-weight: 700; letter-spacing: 0.5px;">
+                      Registered Kitchen Details
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="38%" style="padding: 10px 0 4px 0; font-size: 13px; color: #6B7280;">Kitchen Name:</td>
+                  <td width="62%" style="padding: 10px 0 4px 0; font-size: 13px; color: #1F2937; font-weight: 700;">{{ business_name }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px 0; font-size: 13px; color: #6B7280;">Cuisines:</td>
+                  <td style="padding: 4px 0; font-size: 13px; color: #1F2937; font-weight: 600;">{{ cuisines }}</td>
+                </tr>
+                {% if specialties %}
+                <tr>
+                  <td style="padding: 4px 0; font-size: 13px; color: #6B7280;">Signature Dishes:</td>
+                  <td style="padding: 4px 0; font-size: 13px; color: #1F2937; font-weight: 600;">{{ specialties }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td style="padding: 4px 0; font-size: 13px; color: #6B7280;">Contact Mobile:</td>
+                  <td style="padding: 4px 0; font-size: 13px; color: #1F2937; font-weight: 600;">{{ phone }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 4px 0; font-size: 13px; color: #6B7280;">Kitchen Address:</td>
+                  <td style="padding: 4px 0; font-size: 13px; color: #374151;">{{ kitchen_address }}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Next Steps Timeline -->
+          <tr>
+            <td style="padding: 16px 24px 8px 24px;">
+              <h3 style="margin: 0 0 14px 0; font-size: 14px; text-transform: uppercase; color: #6B7280; font-weight: 700; letter-spacing: 0.5px;">
+                What Happens Next?
+              </h3>
+              
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td width="32" valign="top" style="padding-bottom: 12px;">
+                    <div style="width: 24px; height: 24px; line-height: 24px; text-align: center; background-color: #253746; color: #FFFFFF; border-radius: 50%; font-size: 12px; font-weight: bold;">1</div>
+                  </td>
+                  <td valign="top" style="padding-bottom: 12px; padding-left: 8px;">
+                    <div style="font-size: 13.5px; font-weight: 700; color: #1F2937;">Profile & Quality Review</div>
+                    <div style="font-size: 12px; color: #6B7280;">Hamari admin team 24 se 48 hours ke andar aapke kitchen details aur documents ko verify karegi.</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="32" valign="top" style="padding-bottom: 12px;">
+                    <div style="width: 24px; height: 24px; line-height: 24px; text-align: center; background-color: #253746; color: #FFFFFF; border-radius: 50%; font-size: 12px; font-weight: bold;">2</div>
+                  </td>
+                  <td valign="top" style="padding-bottom: 12px; padding-left: 8px;">
+                    <div style="font-size: 13.5px; font-weight: 700; color: #1F2937;">Menu Setup & Dishes</div>
+                    <div style="font-size: 12px; color: #6B7280;">Aap abhi se Chef Dashboard me login karke apne meals aur daily menus prepare kar sakte hain.</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="32" valign="top" style="padding-bottom: 12px;">
+                    <div style="width: 24px; height: 24px; line-height: 24px; text-align: center; background-color: #253746; color: #FFFFFF; border-radius: 50%; font-size: 12px; font-weight: bold;">3</div>
+                  </td>
+                  <td valign="top" style="padding-bottom: 12px; padding-left: 8px;">
+                    <div style="font-size: 13.5px; font-weight: 700; color: #1F2937;">Go Live & Receive Orders</div>
+                    <div style="font-size: 12px; color: #6B7280;">Approval ke baad aapka kitchen TiffinTrail customers ko show hoga aur aapko orders aana shuru ho jayenge.</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Primary CTA Button -->
+          <tr>
+            <td style="padding: 16px 24px 28px 24px; text-align: center;">
+              <a href="{{ site_url }}/chef/" style="display: inline-block; background-color: #253746; color: #FFFFFF; font-size: 14px; font-weight: 700; text-decoration: none; padding: 14px 32px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                Open Chef Dashboard &rarr;
+              </a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #F9FAFB; padding: 20px 24px; border-top: 1px solid #E5E7EB; text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: #6B7280;">
+                Chef Support & Onboarding Helpline: 
+                <a href="mailto:{{ support_email }}" style="color: #253746; font-weight: 600; text-decoration: none;">{{ support_email }}</a>
+              </p>
+              <p style="margin: 6px 0 0 0; font-size: 11px; color: #9CA3AF;">
+                &copy; {{ current_year }} TiffinTrail. Empowering local home chefs. All rights reserved.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+

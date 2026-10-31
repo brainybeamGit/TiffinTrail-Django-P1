@@ -53,78 +53,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 5000);
   });
 
-  // 4. Click & Drag to Scroll for Table Details (.tt-table-responsive, .table-responsive)
-  function initDragScroll() {
-    const tableContainers = document.querySelectorAll('.tt-table-responsive, .table-responsive');
-    tableContainers.forEach(container => {
-      let isDown = false;
-      let startX = 0;
-      let scrollLeft = 0;
-      let hasDragged = false;
-      const dragThreshold = 6;
 
-      container.classList.add('tt-drag-scrollable');
-
-      container.addEventListener('mousedown', function (e) {
-        // Allow direct clicks on interactive elements without drag lock
-        if (e.target.closest('input, select, textarea, .dropdown-menu, .modal')) {
-          return;
-        }
-        isDown = true;
-        hasDragged = false;
-        container.classList.add('tt-is-dragging');
-        startX = e.pageX - container.offsetLeft;
-        scrollLeft = container.scrollLeft;
-      });
-
-      window.addEventListener('mouseup', function () {
-        if (isDown) {
-          isDown = false;
-          container.classList.remove('tt-is-dragging');
-          setTimeout(() => { hasDragged = false; }, 60);
-        }
-      });
-
-      container.addEventListener('mouseleave', function () {
-        if (isDown) {
-          isDown = false;
-          container.classList.remove('tt-is-dragging');
-        }
-      });
-
-      container.addEventListener('mousemove', function (e) {
-        if (!isDown) return;
-        const x = e.pageX - container.offsetLeft;
-        const walk = (x - startX);
-        if (Math.abs(walk) > dragThreshold) {
-          hasDragged = true;
-          e.preventDefault();
-          container.scrollLeft = scrollLeft - walk;
-        }
-      });
-
-      // Prevent link/button trigger if the user was actively dragging
-      container.addEventListener('click', function (e) {
-        if (hasDragged) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }, true);
-
-      // Mouse Wheel horizontal scroll support over tables
-      container.addEventListener('wheel', function (e) {
-        if (container.scrollWidth > container.clientWidth) {
-          if (e.shiftKey) return;
-          const atStart = container.scrollLeft <= 0;
-          const atEnd = Math.ceil(container.scrollLeft + container.clientWidth) >= container.scrollWidth;
-          if ((e.deltaY > 0 && !atEnd) || (e.deltaY < 0 && !atStart)) {
-            e.preventDefault();
-            container.scrollLeft += e.deltaY;
-          }
-        }
-      }, { passive: false });
-    });
-  }
-
-  initDragScroll();
+  // 4. Ensure mouse wheel over tables scrolls the window vertically (no horizontal hijack)
+  const tableContainers = document.querySelectorAll('.tt-table-responsive, .table-responsive');
+  tableContainers.forEach(function (container) {
+    container.addEventListener('wheel', function (e) {
+      if (!e.shiftKey && Math.abs(e.deltaY) > 0) {
+        e.preventDefault();
+        window.scrollBy({
+          top: e.deltaY,
+          left: 0,
+          behavior: 'auto'
+        });
+      }
+    }, { passive: false });
+  });
 });

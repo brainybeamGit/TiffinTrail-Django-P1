@@ -397,6 +397,13 @@ def subscribe(request, chef_id=None, plan_id=None):
                 link=f"/chef/subscriptions/{sub.id}/"
             )
 
+            # Send Email Confirmation
+            try:
+                from .emails import send_subscription_confirmation_email
+                send_subscription_confirmation_email(sub, async_send=True)
+            except Exception:
+                pass
+
             messages.success(request, f"🎉 Subscription successfully created! Your {plan_obj.name} starts on {start_date.strftime('%b %d, %Y')}.")
             return redirect('customer:subscription_detail', pk=sub.pk)
     else:
@@ -589,6 +596,13 @@ def razorpay_subscription_verify(request):
         notification_type='subscription',
         link=f"/chef/subscriptions/{sub.id}/"
     )
+
+    # Send Email Confirmation
+    try:
+        from .emails import send_subscription_confirmation_email
+        send_subscription_confirmation_email(sub, async_send=True)
+    except Exception:
+        pass
 
     messages.success(request, f"🎉 Subscription successfully activated! Payment of ₹{sub.total_amount} verified via Razorpay for {plan_obj.name}.")
     return JsonResponse({
@@ -911,6 +925,13 @@ def _process_cart_order(user, cart_obj, items, recipient_name, recipient_phone, 
             link=f"/chef/orders/{order.id}/"
         )
 
+        # Send Order Confirmation Email to Customer & Store Owner
+        try:
+            from .emails import send_order_confirmation_email
+            send_order_confirmation_email(order, async_send=True)
+        except Exception as _em_err:
+            pass
+
     return order
 
 
@@ -1170,11 +1191,66 @@ def order_detail(request, pk):
         })
 
     items = order.items.select_related('meal')
+    review = order.customer_review
     context = {
         'order': order,
         'items': items,
+        'review': review,
     }
     return render(request, 'customer/order_detail.html', context)
+
+
+@login_required
+def submit_order_feedback(request, pk):
+    """Submit or update feedback/rating for a completed (delivered) order."""
+    order = get_object_or_404(Order, pk=pk, user=request.user)
+
+    if order.status != 'delivered':
+        messages.error(request, "Feedback can only be submitted after your order has been delivered.")
+        return redirect('customer:order_detail', pk=order.pk)
+
+    if request.method == 'POST':
+        try:
+            rating = int(request.POST.get('rating', 5))
+        except (ValueError, TypeError):
+            rating = 5
+        rating = max(1, min(5, rating))
+
+        comment = request.POST.get('comment', '').strip()
+        if not comment:
+            messages.error(request, "Please enter a short comment about your meal experience.")
+            return redirect(f"{reverse('customer:order_detail', kwargs={'pk': order.pk})}#feedback")
+
+        meal_id = request.POST.get('meal_id')
+        meal = None
+        if meal_id:
+            meal = Meal.objects.filter(pk=meal_id).first()
+
+        review, created = Review.objects.update_or_create(
+            order=order,
+            user=request.user,
+            defaults={
+                'chef': order.chef,
+                'meal': meal,
+                'rating': rating,
+                'comment': comment,
+            }
+        )
+
+        customer_name = request.user.get_full_name() or request.user.username
+        comment_snippet = comment[:60]
+        ChefNotification.objects.create(
+            chef=order.chef,
+            title="New Order Feedback Received",
+            message=f"{customer_name} rated Order #{order.order_number}: {rating}★ (\"{comment_snippet}...\")",
+            notification_type='review',
+            link="/chef/reviews/"
+        )
+
+        msg = f"Thank you! Your feedback for Order #{order.order_number} has been recorded." if created else "Your feedback has been updated."
+        messages.success(request, msg)
+
+    return redirect(f"{reverse('customer:order_detail', kwargs={'pk': order.pk})}#feedback")
 
 
 @login_required
@@ -1431,6 +1507,11 @@ def customer_register(request):
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            try:
+                from .emails import send_customer_welcome_email
+                send_customer_welcome_email(user, async_send=True)
+            except Exception as exc:
+                print(f"[EMAIL ERROR] Customer welcome email failed: {exc}")
             login(request, user)
             # Migrate guest cart
             get_or_create_cart(request)
@@ -1464,3 +1545,214 @@ def contact(request):
         messages.success(request, f"Thank you {name}! Your message has been received. Our team will contact you at {email} within 24 hours.")
         return redirect('customer:contact')
     return render(request, 'customer/contact.html')
+
+
+
+def mask_email(email):
+    """Helper to mask email e.g. dharmesh@gmail.com -> dha***@gmail.com"""
+    if not email or '@' not in email:
+        return email
+    try:
+        parts = email.split('@')
+        name, domain = parts[0], parts[1]
+        if len(name) <= 2:
+            masked = name[0] + '*'
+        elif len(name) <= 4:
+            masked = name[:2] + '*' * (len(name) - 2)
+        else:
+            masked = name[:3] + '*' * (len(name) - 3)
+        return f"{masked}@{domain}"
+    except Exception:
+        return email
+
+
+def forgot_password(request):
+    """Customer forgot password request view (sends 6-digit OTP)."""
+    if request.user.is_authenticated:
+        return redirect('customer:home')
+
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        if not email:
+            messages.error(request, "Please enter a valid email address.")
+            return render(request, 'customer/forgot_password.html')
+
+        from django.contrib.auth import get_user_model
+        import secrets
+        from datetime import timedelta
+        from django.utils import timezone
+        from .models import PasswordResetOTP
+        from .emails import send_password_reset_otp_email
+
+        User = get_user_model()
+        user = User.objects.filter(email__iexact=email).first()
+
+        if user:
+            otp = f"{secrets.randbelow(1000000):06d}"
+            expires_at = timezone.now() + timedelta(minutes=10)
+
+            PasswordResetOTP.objects.filter(
+                email__iexact=email,
+                user_type='customer',
+                is_used=False
+            ).update(is_used=True)
+
+            PasswordResetOTP.objects.create(
+                user=user,
+                email=email,
+                otp=otp,
+                expires_at=expires_at,
+                user_type='customer'
+            )
+
+            send_password_reset_otp_email(user, otp, async_send=True)
+            request.session['reset_email'] = email
+            messages.success(request, f"A 6-digit OTP has been sent to {email}. Please enter it below to set your new password.")
+            return redirect('customer:verify_otp')
+        else:
+            messages.error(request, "No account was found with this email address. Please check your spelling or register.")
+            return render(request, 'customer/forgot_password.html', {'email': email})
+
+    return render(request, 'customer/forgot_password.html')
+
+
+def verify_otp(request):
+    """Customer OTP verification and new password setup."""
+    email = request.session.get('reset_email', '').strip()
+
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower() or email
+        otp = request.POST.get('otp', '').strip().replace(' ', '')
+        new_password = request.POST.get('new_password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        if not email:
+            messages.error(request, "Please provide your registered email address.")
+            return render(request, 'customer/verify_otp.html', {'email': email, 'masked_email': mask_email(email)})
+
+        if not otp:
+            messages.error(request, "Please enter the 6-digit OTP sent to your email.")
+            return render(request, 'customer/verify_otp.html', {'email': email, 'masked_email': mask_email(email)})
+
+        if len(new_password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+            return render(request, 'customer/verify_otp.html', {'email': email, 'masked_email': mask_email(email)})
+
+        if new_password != confirm_password:
+            messages.error(request, "Passwords do not match. Please re-enter.")
+            return render(request, 'customer/verify_otp.html', {'email': email, 'masked_email': mask_email(email)})
+
+        from django.contrib.auth import get_user_model
+        from .models import PasswordResetOTP
+
+        User = get_user_model()
+        user = User.objects.filter(email__iexact=email).first()
+
+        if not user:
+            messages.error(request, "No account found for this email address.")
+            return render(request, 'customer/verify_otp.html', {'email': email, 'masked_email': mask_email(email)})
+
+        otp_record = PasswordResetOTP.objects.filter(
+            email__iexact=email,
+            user_type='customer',
+            is_used=False
+        ).order_by('-created_at').first()
+
+        if not otp_record or not otp_record.is_valid() or otp_record.otp != otp:
+            messages.error(request, "Invalid or expired OTP. Please enter the correct 6-digit code or request a fresh OTP.")
+            return render(request, 'customer/verify_otp.html', {'email': email, 'masked_email': mask_email(email)})
+
+        user.set_password(new_password)
+        user.save()
+        otp_record.is_used = True
+        otp_record.save()
+
+        request.session.pop('reset_email', None)
+        messages.success(request, "Your password has been reset successfully! You can now sign in with your new password.")
+        return redirect('customer:login')
+
+    masked_email = mask_email(email) if email else ''
+    return render(request, 'customer/verify_otp.html', {'email': email, 'masked_email': masked_email})
+
+
+def resend_otp(request):
+    """Resend a fresh 6-digit OTP to the customer."""
+    email = request.session.get('reset_email', '') or request.GET.get('email', '').strip().lower()
+    if not email:
+        messages.error(request, "Please enter your email to request an OTP.")
+        return redirect('customer:forgot_password')
+
+    from django.contrib.auth import get_user_model
+    import secrets
+    from datetime import timedelta
+    from django.utils import timezone
+    from .models import PasswordResetOTP
+    from .emails import send_password_reset_otp_email
+
+    User = get_user_model()
+    user = User.objects.filter(email__iexact=email).first()
+
+    if user:
+        otp = f"{secrets.randbelow(1000000):06d}"
+        expires_at = timezone.now() + timedelta(minutes=10)
+
+        PasswordResetOTP.objects.filter(
+            email__iexact=email,
+            user_type='customer',
+            is_used=False
+        ).update(is_used=True)
+
+        PasswordResetOTP.objects.create(
+            user=user,
+            email=email,
+            otp=otp,
+            expires_at=expires_at,
+            user_type='customer'
+        )
+
+        send_password_reset_otp_email(user, otp, async_send=True)
+        messages.success(request, f"A fresh 6-digit OTP has been sent to {email}.")
+    else:
+        messages.error(request, "Account not found for this email address.")
+
+    request.session['reset_email'] = email
+    return redirect('customer:verify_otp')
+
+
+def password_reset_confirm(request, uidb64, token):
+    """Customer password reset confirmation view."""
+    from django.contrib.auth import get_user_model, logout
+    from django.contrib.auth.tokens import default_token_generator
+    from django.utils.http import urlsafe_base64_decode
+    from django.utils.encoding import force_str
+
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is None or not default_token_generator.check_token(user, token):
+        messages.error(request, "This password reset link is invalid or has expired. Please request a new link.")
+        return redirect('customer:forgot_password')
+
+    # If another user is logged in, log them out cleanly so the target user's password can be reset
+    if request.user.is_authenticated and request.user.pk != user.pk:
+        logout(request)
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        if len(new_password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+        elif new_password != confirm_password:
+            messages.error(request, "Passwords do not match. Please re-enter.")
+        else:
+            user.set_password(new_password)
+            user.save()
+            messages.success(request, "Your password has been reset successfully! You can now sign in with your new password.")
+            return redirect('customer:login')
+
+    return render(request, 'customer/password_reset_confirm.html', {'user': user})
