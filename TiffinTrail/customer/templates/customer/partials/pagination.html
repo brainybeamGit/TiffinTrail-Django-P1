@@ -1,34 +1,36 @@
 {% if page_obj.has_other_pages %}
 <nav aria-label="Page navigation" class="mt-4 pt-2">
-  <ul class="pagination justify-content-center">
+  <ul class="pagination pagination-sm justify-content-center gap-1 mb-0">
     {% if page_obj.has_previous %}
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
-        &laquo; Prev
-      </a>
-    </li>
+      <li class="page-item">
+        <a class="page-link rounded-pill px-3 py-1.5 text-dark" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
+          <i class="bi bi-chevron-left me-1"></i> Prev
+        </a>
+      </li>
     {% else %}
-    <li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
+      <li class="page-item disabled"><span class="page-link rounded-pill px-3 py-1.5"><i class="bi bi-chevron-left me-1"></i> Prev</span></li>
     {% endif %}
 
     {% for num in page_obj.paginator.page_range %}
       {% if page_obj.number == num %}
-      <li class="page-item active"><span class="page-link" style="background-color: var(--tt-green-700); border-color: var(--tt-green-700);">{{ num }}</span></li>
+        <li class="page-item active">
+          <span class="page-link rounded-pill px-3 py-1.5 bg-dark border-dark text-white fw-bold">{{ num }}</span>
+        </li>
       {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-      <li class="page-item">
-        <a class="page-link text-dark" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
-      </li>
+        <li class="page-item">
+          <a class="page-link rounded-pill px-3 py-1.5 text-dark" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+        </li>
       {% endif %}
     {% endfor %}
 
     {% if page_obj.has_next %}
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
-        Next &raquo;
-      </a>
-    </li>
+      <li class="page-item">
+        <a class="page-link rounded-pill px-3 py-1.5 text-dark" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
+          Next <i class="bi bi-chevron-right ms-1"></i>
+        </a>
+      </li>
     {% else %}
-    <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+      <li class="page-item disabled"><span class="page-link rounded-pill px-3 py-1.5">Next <i class="bi bi-chevron-right ms-1"></i></span></li>
     {% endif %}
   </ul>
 </nav>

@@ -10,19 +10,19 @@
 <div class="mb-4">
   <div class="tt-filter-nav">
     <a href="{% url 'adminpanel:complaints' %}" class="tt-filter-btn {% if not status_filter %}active{% endif %}">
-      All Tickets ({{ counts.all }})
+      All Tickets <span class="badge bg-light text-dark ms-1">{{ counts.all }}</span>
     </a>
     <a href="?status=open" class="tt-filter-btn {% if status_filter == 'open' %}active{% endif %}">
-       Open ({{ counts.open }})
+      <i class="bi bi-exclamation-circle text-warning me-1"></i> Open <span class="badge bg-warning text-dark ms-1">{{ counts.open }}</span>
     </a>
     <a href="?status=in_progress" class="tt-filter-btn {% if status_filter == 'in_progress' %}active{% endif %}">
-       In Progress ({{ counts.in_progress }})
+      <i class="bi bi-hourglass-split text-info me-1"></i> In Progress <span class="badge bg-info text-dark ms-1">{{ counts.in_progress }}</span>
     </a>
     <a href="?status=resolved" class="tt-filter-btn {% if status_filter == 'resolved' %}active{% endif %}">
-       Resolved ({{ counts.resolved }})
+      <i class="bi bi-check2-circle text-success me-1"></i> Resolved <span class="badge bg-success ms-1">{{ counts.resolved }}</span>
     </a>
     <a href="?status=closed" class="tt-filter-btn {% if status_filter == 'closed' %}active{% endif %}">
-      Closed ({{ counts.closed }})
+      <i class="bi bi-archive text-secondary me-1"></i> Closed <span class="badge bg-secondary ms-1">{{ counts.closed }}</span>
     </a>
   </div>
 </div>
@@ -37,8 +37,10 @@
 
       <div class="col-md-6">
         <div class="input-group">
-          <span class="input-group-text bg-white"></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by Ticket #, Subject, or Diner Name...">
+          <span class="input-group-text bg-white border-end-0 text-muted">
+            <i class="bi bi-search"></i>
+          </span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search by Ticket #, Subject, or Diner Name...">
         </div>
       </div>
 
@@ -46,15 +48,22 @@
         <select name="priority" class="form-select" onchange="this.form.submit()">
           <option value="">All Priorities</option>
           <option value="urgent" {% if priority_filter == 'urgent' %}selected{% endif %}>Urgent / Critical</option>
-          <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>High</option>
-          <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>Medium</option>
-          <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>Low</option>
+          <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>High Priority</option>
+          <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>Medium Priority</option>
+          <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>Low Priority</option>
         </select>
       </div>
 
       <div class="col-md-3 d-flex gap-2">
-        <button type="submit" class="btn btn-primary w-100">Filter</button>
-        <a href="{% url 'adminpanel:complaint_add' %}" class="btn btn-success text-nowrap"> New Ticket</a>
+        <button type="submit" class="btn btn-primary w-100 fw-medium">Filter</button>
+        {% if search_query or priority_filter or status_filter %}
+          <a href="{% url 'adminpanel:complaints' %}" class="btn btn-outline-secondary" title="Clear Filters">
+            <i class="bi bi-x-lg"></i>
+          </a>
+        {% endif %}
+        <a href="{% url 'adminpanel:complaint_add' %}" class="btn btn-success text-nowrap d-inline-flex align-items-center gap-1 shadow-sm">
+          <i class="bi bi-plus-lg"></i> New Ticket
+        </a>
       </div>
     </form>
   </div>
@@ -82,22 +91,22 @@
             <tr>
               <td>
                 <a href="{% url 'adminpanel:complaint_detail' cmp.id %}" class="fw-bold text-dark text-decoration-none">
-                  {{ cmp.ticket_number }}
+                  #{{ cmp.ticket_number }}
                 </a>
-                <div class="text-muted small">{{ cmp.created_at|date:"d M, H:i" }}</div>
+                <div class="text-muted small">{{ cmp.created_at|date:"d M Y, H:i" }}</div>
               </td>
               <td>
-                <span class="fw-semibold text-dark">{{ cmp.subject|truncatechars:40 }}</span>
+                <span class="fw-semibold text-dark">{{ cmp.subject|truncatechars:45 }}</span>
               </td>
               <td>
-                <a href="{% url 'adminpanel:customer_detail' cmp.customer.id %}" class="text-decoration-none">
+                <a href="{% url 'adminpanel:customer_detail' cmp.customer.id %}" class="text-decoration-none text-dark fw-medium">
                   {{ cmp.customer.get_full_name|default:cmp.customer.username }}
                 </a>
               </td>
               <td>
                 {% if cmp.chef %}
-                  <a href="{% url 'adminpanel:chef_detail' cmp.chef.id %}" class="text-decoration-none">
-                    {{ cmp.chef.business_name }}
+                  <a href="{% url 'adminpanel:chef_detail' cmp.chef.id %}" class="text-decoration-none text-secondary">
+                    <i class="bi bi-shop me-1"></i>{{ cmp.chef.business_name }}
                   </a>
                 {% else %}
                   <span class="text-muted small">General Support</span>
@@ -107,7 +116,7 @@
                 <span class="badge bg-light text-dark border">{{ cmp.get_category_display }}</span>
               </td>
               <td>
-                <span class="badge {% if cmp.priority == 'urgent' %}bg-danger{% elif cmp.priority == 'high' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                <span class="badge {% if cmp.priority == 'urgent' %}bg-danger text-white{% elif cmp.priority == 'high' %}bg-warning text-dark{% elif cmp.priority == 'medium' %}bg-info text-dark{% else %}bg-secondary text-white{% endif %}">
                   {{ cmp.get_priority_display }}
                 </span>
               </td>
@@ -116,15 +125,20 @@
                   {{ cmp.get_status_display }}
                 </span>
               </td>
-              <td class="text-end">
-                <a href="{% url 'adminpanel:complaint_detail' cmp.id %}" class="btn btn-sm btn-outline-primary">
-                  Manage Ticket →
-                </a>
+              <td class="text-end tt-actions-cell">
+                <div class="tt-actions-group">
+                  <a href="{% url 'adminpanel:complaint_detail' cmp.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
+                    Manage <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
               </td>
             </tr>
           {% empty %}
             <tr>
-              <td colspan="8" class="text-center py-5 text-muted">No support tickets found matching this filter.</td>
+              <td colspan="8" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                No support tickets found matching this filter.
+              </td>
             </tr>
           {% endfor %}
         </tbody>
@@ -137,11 +151,19 @@
         <span class="text-muted small">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
         <ul class="pagination pagination-sm mb-0">
           {% if page_obj.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">Previous</a></li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">
+                <i class="bi bi-chevron-left"></i> Previous
+              </a>
+            </li>
           {% endif %}
           <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
           {% if page_obj.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}">Next</a></li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}{% if priority_filter %}&priority={{ priority_filter }}{% endif %}">
+                Next <i class="bi bi-chevron-right"></i>
+              </a>
+            </li>
           {% endif %}
         </ul>
       </div>

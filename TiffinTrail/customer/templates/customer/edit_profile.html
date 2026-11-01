@@ -9,14 +9,14 @@
     <div class="col-lg-6">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-2 small">
-          <li class="breadcrumb-item"><a href="{% url 'customer:home' %}">Home</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'customer:profile' %}">Account</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+          <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'customer:profile' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Account</a></li>
+          <li class="breadcrumb-item active text-muted" aria-current="page">Edit Profile</li>
         </ol>
       </nav>
 
-      <div class="p-4 p-md-5 bg-white rounded-4 border shadow-sm">
-        <h2 class="fs-4 fw-bold mb-1">Edit Account Profile</h2>
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <h2 class="h4 fw-bold mb-1" style="color: var(--tt-charcoal);">Edit Account Profile</h2>
         <p class="text-muted small mb-4">Keep your contact details up to date for smooth tiffin delivery handoffs.</p>
 
         <form action="" method="post" enctype="multipart/form-data">
@@ -24,42 +24,44 @@
 
           <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label small fw-bold">First Name</label>
+              <label class="form-label small fw-semibold text-muted">First Name</label>
               {{ form.first_name }}
-              {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors.0 }}</div>{% endif %}
+              {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Last Name</label>
+              <label class="form-label small fw-semibold text-muted">Last Name</label>
               {{ form.last_name }}
-              {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors.0 }}</div>{% endif %}
+              {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
             </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Email Address</label>
+            <label class="form-label small fw-semibold text-muted">Email Address</label>
             {{ form.email }}
-            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors.0 }}</div>{% endif %}
+            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Mobile Phone Number</label>
+            <label class="form-label small fw-semibold text-muted">Mobile Phone Number</label>
             {{ form.phone }}
-            {% if form.phone.errors %}<div class="text-danger small">{{ form.phone.errors.0 }}</div>{% endif %}
+            {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">About You & Taste Preferences</label>
+            <label class="form-label small fw-semibold text-muted">About You &amp; Taste Preferences</label>
             {{ form.bio }}
           </div>
 
           <div class="mb-4">
-            <label class="form-label small fw-bold">Profile Picture</label>
+            <label class="form-label small fw-semibold text-muted">Profile Picture</label>
             {{ form.profile_image }}
           </div>
 
           <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-tt-primary">Save Changes</button>
-            <a href="{% url 'customer:profile' %}" class="btn btn-tt-subtle">Cancel</a>
+            <button type="submit" class="btn btn-tt-primary px-4 py-2 rounded-3 fw-semibold shadow-xs">
+              <i class="bi bi-check-lg me-1"></i> Save Changes
+            </button>
+            <a href="{% url 'customer:profile' %}" class="btn btn-light border px-4 py-2 rounded-3 text-dark">Cancel</a>
           </div>
         </form>
       </div>

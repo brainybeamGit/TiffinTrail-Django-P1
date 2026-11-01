@@ -1,7 +1,7 @@
 {% extends 'customer/base.html' %}
 {% load static %}
 
-{% block title %}{{ chef.business_name }} | TiffinTrail{% endblock %}
+{% block title %}{{ chef.business_name }} | Verified Home Kitchen | TiffinTrail{% endblock %}
 
 {% block content %}
 <!-- Chef Profile Header -->
@@ -9,8 +9,8 @@
   <div class="container">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-3 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'customer:chefs' %}" class="text-decoration-none" style="color: var(--tt-primary);">Chefs</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:chefs' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Chefs</a></li>
         <li class="breadcrumb-item active text-muted" aria-current="page">{{ chef.business_name }}</li>
       </ol>
     </nav>
@@ -20,7 +20,7 @@
         {% if chef.profile_image %}
         <img src="{{ chef.profile_image.url }}" class="rounded-circle shadow-sm border border-3 border-white" style="width: 110px; height: 110px; object-fit: cover;" alt="{{ chef.business_name }}">
         {% else %}
-        <div class="tt-avatar-initials rounded-circle" style="width: 100px; height: 100px; font-size: 2.2rem; background-color: var(--tt-primary); color: white;">
+        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px; font-size: 2.2rem; background: var(--tt-charcoal); color: var(--tt-gold); font-weight: 700; border: 3px solid #ffffff;">
           {{ chef.business_name|slice:":1"|upper }}
         </div>
         {% endif %}
@@ -28,45 +28,56 @@
 
       <div class="col-md">
         <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-          <h1 class="h2 fw-bold mb-0 text-dark">{{ chef.business_name }}</h1>
+          <h1 class="h2 fw-bold mb-0" style="color: var(--tt-charcoal);">{{ chef.business_name }}</h1>
           {% if chef.is_approved %}
           <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small d-inline-flex align-items-center gap-1">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            FSSAI Certified Kitchen
+            <i class="bi bi-shield-fill-check"></i>
+            FSSAI Verified Kitchen
           </span>
           {% endif %}
         </div>
 
         <div class="d-flex flex-wrap align-items-center gap-3 text-muted small mb-2">
-          <span class="d-flex align-items-center gap-1">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            Chef {{ chef.user.get_full_name|default:chef.user.username }} ({{ chef.experience_years }} yrs exp)
+          <span class="d-inline-flex align-items-center gap-1">
+            <i class="bi bi-person-badge text-secondary"></i>
+            Chef {{ chef.user.get_full_name|default:chef.user.username }}
+            {% if chef.experience_years %}({{ chef.experience_years }} yrs exp){% endif %}
           </span>
-          <span class="d-flex align-items-center gap-1">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            Servicing: <strong class="text-dark">{{ chef.service_areas }}</strong>
+          <span class="d-inline-flex align-items-center gap-1">
+            <i class="bi bi-geo-alt-fill text-danger"></i>
+            Servicing: <strong class="text-dark">{{ chef.service_areas|default:"Neighborhood Localities" }}</strong>
           </span>
-          <span class="text-dark fw-bold d-flex align-items-center gap-1">
-            <span class="text-warning">★</span> {{ chef.rating }} ({{ chef.review_count }} reviews)
+          <span class="text-dark fw-bold d-inline-flex align-items-center gap-1">
+            <i class="bi bi-star-fill text-warning"></i>
+            {{ chef.rating|floatformat:1 }}
+            <span class="text-muted fw-normal">({{ chef.review_count }} review{% if chef.review_count != 1 %}s{% endif %})</span>
           </span>
         </div>
 
         <div class="d-flex flex-wrap gap-1 mb-2">
           {% for cuisine in chef.get_cuisines_list %}
           <span class="badge bg-light text-dark border px-2 py-1 font-monospace" style="font-size: 0.75rem;">{{ cuisine }}</span>
+          {% empty %}
+          <span class="badge bg-light text-muted border px-2 py-1" style="font-size: 0.75rem;">Homestyle Indian</span>
           {% endfor %}
         </div>
 
+        {% if chef.bio %}
         <p class="text-muted small mb-0" style="max-width: 720px; line-height: 1.6;">
           {{ chef.bio }}
         </p>
+        {% endif %}
       </div>
 
       <div class="col-md-auto text-md-end">
-        <div class="p-3 rounded-4 border text-center" style="background-color: var(--tt-cream); border-color: var(--tt-border) !important;">
-          <small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.72rem;">Starting From</small>
-          <div class="h3 fw-bold mb-1" style="color: var(--tt-primary);">₹{{ chef.starting_price|floatformat:0 }}<small class="fs-6 text-muted">/meal</small></div>
-          <a href="#plansSection" class="btn btn-sm btn-tt-primary w-100 rounded-3">Subscribe Plans ↓</a>
+        <div class="p-3 rounded-4 border text-center shadow-xs" style="background-color: var(--tt-cream); border-color: var(--tt-border) !important; min-width: 170px;">
+          <small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.72rem; letter-spacing: 0.05em;">Starting From</small>
+          <div class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">
+            ₹{{ chef.starting_price|floatformat:2 }}<small class="fs-6 text-muted fw-normal">/meal</small>
+          </div>
+          <a href="#plansSection" class="btn btn-sm btn-tt-primary w-100 rounded-3 d-inline-flex align-items-center justify-content-center gap-1 fw-semibold">
+            <i class="bi bi-calendar2-check"></i> View Plans
+          </a>
         </div>
       </div>
     </div>
@@ -78,19 +89,19 @@
   <ul class="nav nav-pills mb-4 border-bottom pb-3 gap-2" id="chefDetailTabs" role="tablist">
     <li class="nav-item" role="presentation">
       <button class="nav-link active fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" id="meals-tab" data-bs-toggle="tab" data-bs-target="#mealsTabPane" type="button" role="tab">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+        <i class="bi bi-egg-fried"></i>
         Daily & Weekly Menu ({{ meals.count }})
       </button>
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" id="plans-tab" data-bs-toggle="tab" data-bs-target="#plansTabPane" type="button" role="tab">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <i class="bi bi-calendar3"></i>
         Subscription Plans ({{ meal_plans.count }})
       </button>
     </li>
     <li class="nav-item" role="presentation">
       <button class="nav-link fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviewsTabPane" type="button" role="tab">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        <i class="bi bi-chat-quote"></i>
         Reviews & Ratings ({{ reviews.count }})
       </button>
     </li>
@@ -108,8 +119,10 @@
         {% endfor %}
       </div>
       {% else %}
-      <div class="text-center py-5 bg-white rounded-4 border p-4" style="border-color: var(--tt-border) !important;">
-        <p class="text-muted mb-0">No active meal items available for direct ordering right now.</p>
+      <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-xs" style="border-color: var(--tt-border) !important;">
+        <i class="bi bi-basket3 text-muted fs-1 d-block mb-2"></i>
+        <h5 class="fw-bold text-dark mb-1">No Single Meals Listed Today</h5>
+        <p class="text-muted small mb-0">This chef currently specializes in recurring meal subscription plans. Explore subscription packages below.</p>
       </div>
       {% endif %}
     </div>
@@ -117,95 +130,45 @@
     <!-- Tab 2: Subscription Plans -->
     <div class="tab-pane fade" id="plansTabPane" role="tabpanel">
       <div id="plansSection">
-        <div class="row g-4 justify-content-center">
+        {% if meal_plans %}
+        <div class="row g-4">
           {% for plan in meal_plans %}
           <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 p-4 h-100 d-flex flex-column {% if plan.plan_type == 'weekly' %}is-featured{% endif %}" style="border: {% if plan.plan_type == 'weekly' %}2px solid var(--tt-gold){% else %}1px solid var(--tt-border){% endif %} !important; background: white;">
-              <!-- Top Row: Plan Type (Left) & Recommended / Savings Badge (Right) -->
-              <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
-                <span class="badge bg-light text-dark border px-2.5 py-1 font-monospace" style="font-size: 0.75rem; letter-spacing: 0.05em;">
-                  {{ plan.get_plan_type_display|upper }}
-                </span>
-                {% if plan.plan_type == 'weekly' %}
-                  <span class="badge rounded-pill px-2.5 py-1 fw-bold small d-inline-flex align-items-center gap-1 shadow-sm" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; font-size: 0.7rem; letter-spacing: 0.04em;">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    RECOMMENDED
-                  </span>
-                {% elif plan.savings_percent %}
-                  <span class="badge rounded-pill px-2.5 py-1 fw-bold small d-inline-flex align-items-center gap-1 shadow-sm" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-size: 0.7rem;">
-                    Save {{ plan.savings_percent }}%
-                  </span>
-                {% endif %}
-              </div>
-
-              <!-- Duration & Total Meals Subtitle -->
-              <div class="text-muted small fw-medium mb-3">
-                {{ plan.duration_days }} Days · {{ plan.total_meals }} Meals
-              </div>
-
-              <h3 class="h4 fw-bold mb-2 text-dark">{{ plan.name }}</h3>
-
-              <p class="text-secondary small mb-3">
-                {{ plan.description }}
-              </p>
-
-              <div class="h3 fw-bold mb-2" style="color: var(--tt-primary);">
-                ₹{{ plan.price|floatformat:0 }}
-                <small class="fs-6 text-muted fw-normal">/ {{ plan.duration_days }} days</small>
-              </div>
-
-              {% if plan.savings %}
-              <div class="d-inline-flex align-items-center gap-1 badge bg-warning-subtle text-dark px-2.5 py-1 rounded-pill mb-3 align-self-start">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Save ₹{{ plan.savings|floatformat:0 }} vs individual dishes</span>
-              </div>
-              {% else %}
-              <div class="mb-3"></div>
-              {% endif %}
-
-              <ul class="list-unstyled mb-4 small text-secondary">
-                {% for feat in plan.get_features_list %}
-                <li class="d-flex align-items-center gap-2 mb-2">
-                  <span class="text-success fw-bold">✓</span>
-                  <span>{{ feat }}</span>
-                </li>
-                {% endfor %}
-              </ul>
-
-              <div class="border-top pt-3 mt-auto">
-                <div class="small text-muted mb-3">
-                  <strong>Delivery Schedule:</strong> {{ plan.delivery_schedule }}
-                </div>
-                <a href="{% url 'customer:subscribe_direct' chef_id=chef.pk plan_id=plan.pk %}" class="btn btn-tt-primary w-100 py-2.5 rounded-3">
-                  Subscribe with {{ chef.business_name }} →
-                </a>
-              </div>
-            </div>
-          </div>
-          {% empty %}
-          <div class="col-12 text-center py-5 bg-white rounded-4 border" style="border-color: var(--tt-border) !important;">
-            <p class="text-muted mb-0">No custom subscription plans published for this chef yet.</p>
+            {% include 'customer/partials/plan_card.html' with plan=plan chef=chef %}
           </div>
           {% endfor %}
         </div>
+        {% else %}
+        <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-xs" style="border-color: var(--tt-border) !important;">
+          <i class="bi bi-calendar-x text-muted fs-1 d-block mb-2"></i>
+          <h5 class="fw-bold text-dark mb-1">No Active Subscription Plans</h5>
+          <p class="text-muted small mb-0">This home chef does not have active subscription plans right now. Check back shortly or browse individual dishes.</p>
+        </div>
+        {% endif %}
       </div>
     </div>
 
-    <!-- Tab 3: Reviews -->
+    <!-- Tab 3: Reviews & Ratings -->
     <div class="tab-pane fade" id="reviewsTabPane" role="tabpanel">
       <div class="row g-4">
-        <!-- Review Summary & Submission -->
+        <!-- Rating Summary & Add Review Form -->
         <div class="col-lg-4">
-          <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-4" style="border: 1px solid var(--tt-border) !important;">
-            <div class="display-4 fw-bold text-dark mb-1">{{ chef.rating }}</div>
-            <div class="text-warning fs-5 mb-2">★★★★★</div>
-            <p class="text-muted small mb-0">Based on {{ chef.review_count }} authentic customer ratings</p>
+          <!-- Overall Rating Box -->
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+            <div class="display-4 fw-bold mb-1" style="color: var(--tt-charcoal);">{{ chef.rating|floatformat:1 }}</div>
+            <div class="text-warning fs-5 mb-2 d-inline-flex gap-1 justify-content-center">
+              {% for i in "12345" %}
+                <i class="bi bi-star-fill"></i>
+              {% endfor %}
+            </div>
+            <p class="text-muted small mb-0">Based on {{ chef.review_count }} authentic customer rating{% if chef.review_count != 1 %}s{% endif %}</p>
           </div>
 
           <!-- Add Review Form -->
           {% if request.user.is_authenticated %}
-          <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important;">
-            <h5 class="fw-bold fs-6 mb-3 text-dark">
+          <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+            <h5 class="fw-bold fs-6 mb-3 text-dark d-flex align-items-center gap-2">
+              <i class="bi bi-pencil-square text-warning"></i>
               {% if user_review %}Edit Your Review{% else %}Write a Review for {{ chef.business_name }}{% endif %}
             </h5>
             <form action="{% url 'customer:add_review' %}" method="post">
@@ -214,31 +177,36 @@
               <input type="hidden" name="next" value="{{ request.get_full_path }}">
 
               <div class="mb-3">
-                <label class="form-label small fw-semibold text-muted">Select Rating</label>
-                <div class="tt-star-picker fs-4" style="cursor: pointer; color: #f59e0b;">
-                  <span class="star-btn active" data-value="1">★</span>
-                  <span class="star-btn active" data-value="2">★</span>
-                  <span class="star-btn active" data-value="3">★</span>
-                  <span class="star-btn active" data-value="4">★</span>
-                  <span class="star-btn active" data-value="5">★</span>
-                  <input type="hidden" name="rating" id="ratingInput" value="{{ user_review.rating|default:5 }}">
+                <label class="form-label small fw-semibold text-muted">Select Star Rating</label>
+                <div class="tt-star-picker d-flex gap-1 fs-4" style="cursor: pointer; color: #f59e0b;" id="starPickerContainer">
+                  <i class="bi bi-star-fill star-item" data-value="1"></i>
+                  <i class="bi bi-star-fill star-item" data-value="2"></i>
+                  <i class="bi bi-star-fill star-item" data-value="3"></i>
+                  <i class="bi bi-star-fill star-item" data-value="4"></i>
+                  <i class="bi bi-star-fill star-item" data-value="5"></i>
                 </div>
+                <input type="hidden" name="rating" id="ratingInput" value="{{ user_review.rating|default:5 }}">
               </div>
 
               <div class="mb-3">
-                <label class="form-label small fw-semibold text-muted">Your Feedback</label>
-                <textarea name="comment" rows="3" class="form-control form-control-sm rounded-3" placeholder="Share your experience about the taste, warmth, spices, and packaging..." required>{{ user_review.comment|default:'' }}</textarea>
+                <label class="form-label small fw-semibold text-muted">Your Honest Experience</label>
+                <textarea name="comment" rows="3" class="form-control form-control-sm rounded-3" placeholder="Share your experience regarding food taste, portion size, warmth, packaging, and delivery..." required>{{ user_review.comment|default:'' }}</textarea>
               </div>
 
-              <button type="submit" class="btn btn-sm btn-tt-primary w-100 py-2 rounded-3">
+              <button type="submit" class="btn btn-sm btn-tt-primary w-100 py-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 shadow-xs">
+                <i class="bi bi-send-check"></i>
                 {% if user_review %}Update Review{% else %}Submit Review{% endif %}
               </button>
             </form>
           </div>
           {% else %}
-          <div class="card border-0 shadow-sm rounded-4 p-4 text-center" style="border: 1px solid var(--tt-border) !important;">
-            <p class="small text-muted mb-2">Have you tasted dishes from {{ chef.business_name }}?</p>
-            <a href="{% url 'customer:login' %}?next={{ request.get_full_path }}" class="btn btn-sm btn-tt-outline rounded-3">Log in to leave a review</a>
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+            <i class="bi bi-lock-fill text-muted fs-3 mb-2 d-block"></i>
+            <h6 class="fw-bold text-dark mb-1">Have you dined with {{ chef.business_name }}?</h6>
+            <p class="small text-muted mb-3">Sign in to share your rating and review with the TiffinTrail diner community.</p>
+            <a href="{% url 'customer:login' %}?next={{ request.get_full_path }}" class="btn btn-sm btn-tt-outline rounded-3 px-3 py-2 fw-semibold">
+              <i class="bi bi-box-arrow-in-right"></i> Log in to Review
+            </a>
           </div>
           {% endif %}
         </div>
@@ -248,39 +216,45 @@
           {% if reviews %}
           <div class="d-grid gap-3">
             {% for rev in reviews %}
-            <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important;">
+            <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
               <div class="d-flex align-items-center justify-content-between mb-2">
                 <div class="d-flex align-items-center gap-2">
-                  <div class="tt-avatar-initials rounded-circle" style="width: 36px; height: 36px; font-size: 0.9rem; background-color: var(--tt-primary-light); color: var(--tt-primary);">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 38px; height: 38px; font-size: 0.95rem; background-color: var(--tt-cream); color: var(--tt-charcoal); border: 1px solid var(--tt-border);">
                     {{ rev.user.first_name|default:rev.user.username|slice:":1"|upper }}
                   </div>
                   <div>
                     <strong class="d-block small text-dark">{{ rev.user.get_full_name|default:rev.user.username }}</strong>
-                    <small class="text-muted">{{ rev.created_at|date:"M d, Y" }}</small>
+                    <small class="text-muted">{{ rev.created_at|date:"d M Y" }}</small>
                   </div>
                 </div>
 
-                <div class="text-warning small">
+                <div class="text-warning small d-inline-flex gap-0.5">
                   {% for i in "12345" %}
-                    {% if forloop.counter <= rev.rating %}★{% else %}☆{% endif %}
+                    {% if forloop.counter <= rev.rating %}
+                      <i class="bi bi-star-fill"></i>
+                    {% else %}
+                      <i class="bi bi-star text-muted"></i>
+                    {% endif %}
                   {% endfor %}
                 </div>
               </div>
 
-              <p class="small text-dark mb-0 leading-relaxed">
+              <p class="small text-dark mb-0" style="line-height: 1.6;">
                 {{ rev.comment }}
               </p>
               {% if rev.meal %}
               <div class="mt-2 text-muted small" style="font-size: 0.78rem;">
-                Meal verified: <em class="text-dark">{{ rev.meal.name }}</em>
+                <i class="bi bi-check-circle-fill text-success me-1"></i>Verified meal: <strong class="text-dark">{{ rev.meal.name }}</strong>
               </div>
               {% endif %}
             </div>
             {% endfor %}
           </div>
           {% else %}
-          <div class="p-5 text-center bg-white rounded-4 border" style="border-color: var(--tt-border) !important;">
-            <p class="text-muted mb-0">No reviews submitted yet for this chef. Be the first to subscribe or order!</p>
+          <div class="p-5 text-center bg-white rounded-4 border shadow-xs" style="border-color: var(--tt-border) !important;">
+            <i class="bi bi-chat-heart text-muted fs-1 mb-2 d-block"></i>
+            <h5 class="fw-bold text-dark mb-1">No Reviews Yet</h5>
+            <p class="text-muted small mb-0">Be the first diner to subscribe or order and share your honest feedback with the community!</p>
           </div>
           {% endif %}
         </div>
@@ -288,4 +262,46 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Interactive Star Rating Picker
+  document.addEventListener('DOMContentLoaded', function () {
+    const starContainer = document.getElementById('starPickerContainer');
+    const ratingInput = document.getElementById('ratingInput');
+    if (!starContainer || !ratingInput) return;
+
+    const stars = starContainer.querySelectorAll('.star-item');
+
+    function updateStars(val) {
+      stars.forEach(s => {
+        const starVal = parseInt(s.getAttribute('data-value'), 10);
+        if (starVal <= val) {
+          s.classList.remove('bi-star', 'text-muted');
+          s.classList.add('bi-star-fill');
+        } else {
+          s.classList.remove('bi-star-fill');
+          s.classList.add('bi-star', 'text-muted');
+        }
+      });
+    }
+
+    stars.forEach(s => {
+      s.addEventListener('click', function () {
+        const val = parseInt(this.getAttribute('data-value'), 10);
+        ratingInput.value = val;
+        updateStars(val);
+      });
+      s.addEventListener('mouseenter', function () {
+        const val = parseInt(this.getAttribute('data-value'), 10);
+        updateStars(val);
+      });
+    });
+
+    starContainer.addEventListener('mouseleave', function () {
+      updateStars(parseInt(ratingInput.value, 10) || 5);
+    });
+
+    updateStars(parseInt(ratingInput.value, 10) || 5);
+  });
+</script>
 {% endblock %}

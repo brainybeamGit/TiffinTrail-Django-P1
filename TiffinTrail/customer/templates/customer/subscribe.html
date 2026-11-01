@@ -1,20 +1,20 @@
 {% extends 'customer/base.html' %}
 {% load static %}
 
-{% block title %}Subscribe to Meal Plan | TiffinTrail{% endblock %}
+{% block title %}Configure Subscription | TiffinTrail{% endblock %}
 
 {% block content %}
 <div class="py-4 border-bottom bg-white">
   <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-1 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'customer:plans' %}">Meal Plans</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Setup Subscription</li>
+      <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:plans' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Meal Plans</a></li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">Setup Subscription</li>
       </ol>
     </nav>
-    <h1 class="fs-2 fw-bold mb-0">Configure Your Tiffin Subscription</h1>
-    <p class="text-muted small mb-0">Select your preferences, delivery slot, and address to start enjoying daily home-cooked meals.</p>
+    <h1 class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">Configure Your Tiffin Subscription</h1>
+    <p class="text-muted small mb-0">Select your preferred home chef, delivery slot, and address to start receiving healthy homemade meals.</p>
   </div>
 </div>
 
@@ -24,26 +24,30 @@
     <div class="row g-4">
       <!-- Left Column: Configuration Form -->
       <div class="col-lg-7">
-        <div class="p-4 bg-white rounded-3 border shadow-sm mb-4">
-          <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2">1. Chef & Plan Selection</h5>
+        <!-- 1. Chef & Plan -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+          <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-person-badge text-warning"></i>
+            1. Chef & Meal Plan Selection
+          </h5>
 
           <!-- Chef Choice -->
           <div class="mb-3">
-            <label class="form-label small fw-bold">Select Home Chef</label>
-            <select name="chef_id" id="chefSelect" class="form-select" required>
+            <label class="form-label small fw-semibold text-muted">Select Home Chef</label>
+            <select name="chef_id" id="chefSelect" class="form-select rounded-3" required>
               {% for ch in available_chefs %}
               <option value="{{ ch.id }}" {% if chef and chef.id == ch.id %}selected{% endif %}>
-                {{ ch.business_name }} ({{ ch.cuisines }}) - ★ {{ ch.rating }}
+                {{ ch.business_name }} ({{ ch.cuisines }}) - {{ ch.rating|floatformat:1 }} Rating
               </option>
               {% endfor %}
             </select>
-            <div class="form-text small">Your meals will be freshly prepared by this verified home chef.</div>
+            <div class="form-text small text-muted">Your meals will be freshly prepared by this verified neighborhood home chef.</div>
           </div>
 
           <!-- Plan Choice -->
-          <div class="mb-3">
-            <label class="form-label small fw-bold">Select Subscription Package</label>
-            <select name="plan_id" id="planSelect" class="form-select" required>
+          <div class="mb-0">
+            <label class="form-label small fw-semibold text-muted">Select Subscription Package</label>
+            <select name="plan_id" id="planSelect" class="form-select rounded-3" required>
               {% for pl in available_plans %}
               <option value="{{ pl.id }}"
                       data-name="{{ pl.name }}"
@@ -54,54 +58,62 @@
                       data-schedule="{{ pl.delivery_schedule }}"
                       data-savings="{{ pl.savings|default:0 }}"
                       {% if plan and plan.id == pl.id %}selected{% endif %}>
-                {{ pl.name }} ({{ pl.duration_days }} days · {{ pl.total_meals }} meals) - ₹{{ pl.price|floatformat:0 }}
+                {{ pl.name }} ({{ pl.duration_days }} days · {{ pl.total_meals }} meals) - ₹{{ pl.price|floatformat:2 }}
               </option>
               {% endfor %}
             </select>
           </div>
         </div>
 
-        <div class="p-4 bg-white rounded-3 border shadow-sm mb-4">
-          <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2">2. Schedule & Dietary Preferences</h5>
+        <!-- 2. Schedule & Dietary -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+          <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-clock-history text-primary"></i>
+            2. Schedule & Dietary Preferences
+          </h5>
 
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Start Date</label>
+              <label class="form-label small fw-semibold text-muted">Subscription Start Date</label>
               {{ form.start_date }}
-              <div class="form-text small">Choose when your first meal should be delivered.</div>
+              <div class="form-text small text-muted">Date when your first tiffin will be dispatched.</div>
               {% if form.start_date.errors %}
               <div class="text-danger small mt-1">{{ form.start_date.errors.0 }}</div>
               {% endif %}
             </div>
 
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Preferred Delivery Slot</label>
+              <label class="form-label small fw-semibold text-muted">Preferred Delivery Slot</label>
               {{ form.delivery_slot }}
             </div>
 
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Dietary Category</label>
+              <label class="form-label small fw-semibold text-muted">Dietary Classification</label>
               {{ form.dietary_preference }}
             </div>
 
             <div class="col-12">
-              <label class="form-label small fw-bold">Special Customization / Allergy Notes (Optional)</label>
+              <label class="form-label small fw-semibold text-muted">Special Dietary / Allergy Instructions (Optional)</label>
               {{ form.notes }}
-              <div class="form-text small">e.g. Mild spice only, no peanuts, less oil in rotis.</div>
+              <div class="form-text small text-muted">e.g. Mild spice, no peanuts, less oil in rotis.</div>
             </div>
           </div>
         </div>
 
-        <div class="p-4 bg-white rounded-3 border shadow-sm mb-4">
-          <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2">3. Delivery Address & Contact</h5>
+        <!-- 3. Delivery Address -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+          <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-geo-alt-fill text-danger"></i>
+            3. Delivery Address & Recipient
+          </h5>
 
           <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Recipient Full Name</label>
+              <label class="form-label small fw-semibold text-muted">Recipient Full Name</label>
               {{ form.recipient_name }}
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Phone Number</label>
+              <label class="form-label small fw-semibold text-muted">Recipient Phone Number</label>
               {{ form.recipient_phone }}
             </div>
           </div>
@@ -109,13 +121,13 @@
           <!-- Saved Addresses or New -->
           {% if user_addresses %}
           <div class="mb-3">
-            <label class="form-label small fw-bold d-block">Choose Saved Delivery Address</label>
+            <label class="form-label small fw-semibold text-muted d-block">Saved Addresses</label>
             {% for addr in user_addresses %}
             <div class="form-check p-3 border rounded-3 mb-2 bg-light">
               <input class="form-check-input" type="radio" name="address_choice" id="addrRadio{{ addr.id }}" value="{{ addr.id }}" {% if addr.is_default %}checked{% endif %}>
               <label class="form-check-label w-100" for="addrRadio{{ addr.id }}">
                 <div class="d-flex justify-content-between align-items-center">
-                  <strong class="small">{{ addr.title }}</strong>
+                  <strong class="small text-dark">{{ addr.title }}</strong>
                   {% if addr.is_default %}<span class="badge bg-success-subtle text-success small">Default</span>{% endif %}
                 </div>
                 <div class="small text-muted">{{ addr.formatted }}</div>
@@ -125,8 +137,8 @@
 
             <div class="form-check p-2">
               <input class="form-check-input" type="radio" name="address_choice" id="addrNew" value="new">
-              <label class="form-check-label small fw-semibold" for="addrNew">
-                + Deliver to a different or new address
+              <label class="form-check-label small fw-semibold text-dark" for="addrNew">
+                + Deliver to a new address
               </label>
             </div>
           </div>
@@ -135,19 +147,19 @@
           <div id="ttNewAddressFields" {% if user_addresses %}style="display: none;"{% endif %}>
             <div class="row g-2">
               <div class="col-12">
-                <label class="form-label small fw-bold">Street Address / Flat / Building</label>
+                <label class="form-label small fw-semibold text-muted">Street Address / Flat / Building</label>
                 {{ form.street_address }}
               </div>
               <div class="col-md-5">
-                <label class="form-label small fw-bold">Area / Locality</label>
+                <label class="form-label small fw-semibold text-muted">Area / Locality</label>
                 {{ form.area }}
               </div>
               <div class="col-md-4">
-                <label class="form-label small fw-bold">City</label>
+                <label class="form-label small fw-semibold text-muted">City</label>
                 {{ form.city }}
               </div>
               <div class="col-md-3">
-                <label class="form-label small fw-bold">Pincode</label>
+                <label class="form-label small fw-semibold text-muted">Pincode</label>
                 {{ form.pincode }}
               </div>
               <div class="col-12 mt-2">
@@ -162,18 +174,22 @@
           </div>
         </div>
 
-        <div class="p-4 bg-white rounded-3 border shadow-sm">
-          <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2">4. Payment Mode</h5>
+        <!-- 4. Payment Mode -->
+        <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+          <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-credit-card text-success"></i>
+            4. Payment Mode
+          </h5>
           <div class="d-grid gap-2">
             <div class="form-check p-3 border rounded-3 bg-light">
               <input class="form-check-input" type="radio" name="payment_method" id="payOnline" value="online" checked>
               <label class="form-check-label w-100" for="payOnline">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                  <strong class="d-flex align-items-center gap-1.5 small text-success">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                  <strong class="d-inline-flex align-items-center gap-1.5 small text-success">
+                    <i class="bi bi-shield-lock-fill"></i>
                     Instant Online Payment (UPI / Cards / NetBanking)
                   </strong>
-                  <span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill small fw-semibold">
+                  <span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill small fw-semibold">
                     Razorpay Secured
                   </span>
                 </div>
@@ -184,8 +200,8 @@
             <div class="form-check p-3 border rounded-3">
               <input class="form-check-input" type="radio" name="payment_method" id="payCod" value="cod">
               <label class="form-check-label w-100" for="payCod">
-                <strong class="d-flex align-items-center gap-1.5 small text-dark">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <strong class="d-inline-flex align-items-center gap-1.5 small text-dark">
+                  <i class="bi bi-cash-stack text-secondary"></i>
                   Pay at First Delivery (Cash or UPI)
                 </strong>
                 <small class="text-muted d-block mt-1">Hand payment over to the delivery partner during your first tiffin arrival.</small>
@@ -193,10 +209,10 @@
             </div>
 
             <!-- Razorpay Test Mode Guidance Box -->
-            <div class="alert py-2 px-3 rounded-3 small mb-0 d-flex align-items-start gap-2 border-0" style="font-size: 0.8rem; background-color: #f0fdf4; color: #166534; border-left: 3px solid #16a34a !important;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" class="flex-shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <div class="alert py-2.5 px-3 rounded-3 small mb-0 d-flex align-items-start gap-2 border-0" style="font-size: 0.8rem; background-color: #f0fdf4; color: #166534; border-left: 3px solid #16a34a !important;">
+              <i class="bi bi-info-circle-fill flex-shrink-0 mt-0.5 text-success"></i>
               <div>
-                <strong>Razorpay Test Mode Info:</strong> Online payment test karne ke liye Razorpay popup me <strong>Netbanking</strong> (kisi bhi bank) select karke <strong>"Success"</strong> par click karein, ya UPI me <code>success@razorpay</code> use karein.
+                <strong>Payment Information:</strong> For test mode, choose <strong>Netbanking</strong> in Razorpay and select <strong>"Success"</strong>, or use UPI ID <code>success@razorpay</code>.
               </div>
             </div>
           </div>
@@ -205,58 +221,65 @@
 
       <!-- Right Column: Summary Card -->
       <div class="col-lg-5">
-        <div class="tt-summary-card position-sticky" style="top: 90px;">
-          <h5 class="fw-bold fs-6 mb-3 pb-2 border-bottom">Subscription Summary</h5>
+        <div class="card border-0 shadow-sm rounded-4 p-4 position-sticky" style="top: 90px; border: 1px solid var(--tt-border) !important; background: #ffffff;">
+          <h5 class="fw-bold fs-6 mb-3 pb-2 border-bottom text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-receipt text-warning"></i>
+            Subscription Summary
+          </h5>
 
           <div id="summaryPlanContent">
             {% if plan %}
             <div class="mb-3">
               <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="fw-bold" id="summaryPlanName">{{ plan.name }}</span>
-                <span class="badge bg-light text-dark border" id="summaryPlanType">{{ plan.get_plan_type_display }}</span>
+                <span class="badge bg-light text-dark border font-monospace small" id="summaryPlanType">{{ plan.get_plan_type_display|upper }}</span>
+                <span class="text-muted small" id="summaryPlanDuration">{{ plan.duration_days }} Days · {{ plan.total_meals }} Meals</span>
               </div>
-              <div class="small text-muted mb-2" id="summaryPlanMeta">Duration: {{ plan.duration_days }} days · {{ plan.total_meals }} total meals</div>
-              <div class="p-2 bg-light rounded-2 small text-muted" id="summaryPlanSchedule">
-                {{ plan.delivery_schedule }}
-              </div>
-            </div>
-
-            <div class="d-flex justify-content-between py-2 border-top small">
-              <span>Base Subscription Price</span>
-              <span id="summaryBasePrice">₹{{ plan.price|floatformat:2 }}</span>
-            </div>
-
-            <div id="summarySavingsRow" class="d-flex justify-content-between py-2 border-top small text-success fw-semibold {% if not plan.savings %}d-none{% endif %}">
-              <span>Package Discount</span>
-              <span id="summarySavingsAmount">- ₹{{ plan.savings|default:0|floatformat:2 }}</span>
-            </div>
-
-            <div class="d-flex justify-content-between py-2 border-top small">
-              <span>Thermal Packaging & Delivery</span>
-              <span class="text-success fw-bold">FREE</span>
-            </div>
-
-            <div class="d-flex justify-content-between py-3 border-top fs-5 fw-bold">
-              <span>Total Payable Amount</span>
-              <span class="text-success" id="summaryTotalAmount">₹{{ plan.price|floatformat:2 }}</span>
+              <h5 class="fw-bold mb-1 text-dark" id="summaryPlanName">{{ plan.name }}</h5>
+              <div class="small text-muted mb-2">Prepared by <strong class="text-dark" id="summaryChefName">{{ chef.business_name }}</strong></div>
+              <div class="small text-muted" id="summarySchedule"><i class="bi bi-clock me-1"></i>{{ plan.delivery_schedule }}</div>
             </div>
             {% else %}
-            <p class="small text-muted" id="summaryEmptyNotice">Select a plan from the dropdown to review the itemized pricing.</p>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="badge bg-light text-dark border font-monospace small" id="summaryPlanType">WEEKLY</span>
+                <span class="text-muted small" id="summaryPlanDuration">7 Days · 7 Meals</span>
+              </div>
+              <h5 class="fw-bold mb-1 text-dark" id="summaryPlanName">Select a Meal Plan</h5>
+              <div class="small text-muted mb-2">Prepared by <strong class="text-dark" id="summaryChefName">Home Chef</strong></div>
+              <div class="small text-muted" id="summarySchedule"><i class="bi bi-clock me-1"></i>Monday to Sunday</div>
+            </div>
             {% endif %}
+
+            <div class="border-top pt-3 my-3">
+              <div class="d-flex justify-content-between py-1 small">
+                <span class="text-muted">Package Base Price</span>
+                <span class="text-dark fw-semibold" id="summaryBasePrice">₹{{ plan.price|default:0|floatformat:2 }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 small">
+                <span class="text-muted">Delivery & Thermal Packaging</span>
+                <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill">FREE</span>
+              </div>
+              <div class="d-flex justify-content-between py-1 small" id="summarySavingsRow" {% if not plan.savings %}style="display: none;"{% endif %}>
+                <span class="text-success">Package Discount Savings</span>
+                <span class="text-success fw-semibold" id="summarySavingsAmount">- ₹{{ plan.savings|default:0|floatformat:2 }}</span>
+              </div>
+              <div class="d-flex justify-content-between py-3 mt-2 border-top border-bottom">
+                <strong class="fs-5" style="color: var(--tt-charcoal);">Total Payable</strong>
+                <strong class="fs-5" style="color: var(--tt-charcoal);" id="summaryTotalAmount">₹{{ plan.price|default:0|floatformat:2 }}</strong>
+              </div>
+            </div>
           </div>
 
-          <button type="button" id="subSubmitBtn" class="btn btn-tt-primary w-100 py-3 fs-6 rounded-3 mt-3 d-flex align-items-center justify-content-center gap-2 shadow-sm">
-            <span id="subSubmitSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-            <svg id="subSubmitIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <span id="subSubmitBtnText">Pay ₹{{ plan.price|floatformat:2 }} via Razorpay</span>
+          <button type="submit" id="submitSubscriptionBtn" class="btn btn-tt-primary w-100 py-3 rounded-3 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-xs">
+            <i class="bi bi-lock-fill"></i>
+            <span id="submitBtnText">Pay via Razorpay</span>
           </button>
 
-          <div class="text-center mt-3 text-muted small d-flex flex-column align-items-center gap-1" style="font-size: 0.78rem;">
-            <div class="d-flex align-items-center gap-1">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              <span>256-Bit SSL Encrypted &amp; Secure Razorpay Checkout</span>
-            </div>
-            <span>Pause or skip days anytime with 24 hours notice.</span>
+          <div class="mt-3 text-center">
+            <span class="small text-muted d-inline-flex align-items-center gap-1.5" style="font-size: 0.75rem;">
+              <i class="bi bi-shield-check text-success"></i>
+              Cancel or pause anytime · 100% Secure Checkout
+            </span>
           </div>
         </div>
       </div>
@@ -265,148 +288,144 @@
 </div>
 
 <!-- Razorpay Checkout SDK -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="{% static 'js/checkout.js' %}"></script>
 
 <script>
-  // Address selection toggle
-  document.querySelectorAll('input[name="address_choice"]').forEach(function(radio) {
-    radio.addEventListener('change', function() {
-      const newFields = document.getElementById('ttNewAddressFields');
-      if (newFields) {
-        newFields.style.display = this.value === 'new' ? 'block' : 'none';
-      }
-    });
-  });
-
-  const subscribeForm = document.getElementById('subscribeForm');
+  // Dynamic Plan & Chef Selection Handler
   const planSelect = document.getElementById('planSelect');
-  const payOnline = document.getElementById('payOnline');
-  const payCod = document.getElementById('payCod');
-  const submitBtn = document.getElementById('subSubmitBtn');
-  const submitBtnText = document.getElementById('subSubmitBtnText');
-  const submitSpinner = document.getElementById('subSubmitSpinner');
-  const submitIcon = document.getElementById('subSubmitIcon');
+  const chefSelect = document.getElementById('chefSelect');
+  const summaryPlanType = document.getElementById('summaryPlanType');
+  const summaryPlanDuration = document.getElementById('summaryPlanDuration');
+  const summaryPlanName = document.getElementById('summaryPlanName');
+  const summaryChefName = document.getElementById('summaryChefName');
+  const summarySchedule = document.getElementById('summarySchedule');
+  const summaryBasePrice = document.getElementById('summaryBasePrice');
+  const summaryTotalAmount = document.getElementById('summaryTotalAmount');
+  const summarySavingsRow = document.getElementById('summarySavingsRow');
+  const summarySavingsAmount = document.getElementById('summarySavingsAmount');
+  const submitBtnText = document.getElementById('submitBtnText');
+  const submitBtn = document.getElementById('submitSubscriptionBtn');
+  const subscribeForm = document.getElementById('subscribeForm');
 
-  function updateSummary() {
+  function updatePlanSummary() {
     if (!planSelect) return;
     const opt = planSelect.options[planSelect.selectedIndex];
     if (!opt) return;
 
-    const name = opt.dataset.name || opt.text;
-    const price = parseFloat(opt.dataset.price) || 0;
-    const duration = opt.dataset.duration || '';
-    const meals = opt.dataset.meals || '';
-    const type = opt.dataset.type || '';
-    const schedule = opt.dataset.schedule || '';
-    const savings = parseFloat(opt.dataset.savings) || 0;
+    const name = opt.getAttribute('data-name') || '';
+    const price = parseFloat(opt.getAttribute('data-price') || 0);
+    const duration = opt.getAttribute('data-duration') || '';
+    const meals = opt.getAttribute('data-meals') || '';
+    const type = opt.getAttribute('data-type') || '';
+    const schedule = opt.getAttribute('data-schedule') || '';
+    const savings = parseFloat(opt.getAttribute('data-savings') || 0);
 
-    const planNameEl = document.getElementById('summaryPlanName');
-    const planTypeEl = document.getElementById('summaryPlanType');
-    const planMetaEl = document.getElementById('summaryPlanMeta');
-    const planScheduleEl = document.getElementById('summaryPlanSchedule');
-    const basePriceEl = document.getElementById('summaryBasePrice');
-    const totalAmountEl = document.getElementById('summaryTotalAmount');
-    const savingsRowEl = document.getElementById('summarySavingsRow');
-    const savingsAmountEl = document.getElementById('summarySavingsAmount');
+    if (summaryPlanType) summaryPlanType.textContent = type.toUpperCase();
+    if (summaryPlanDuration) summaryPlanDuration.textContent = `${duration} Days · ${meals} Meals`;
+    if (summaryPlanName) summaryPlanName.textContent = name;
+    if (summarySchedule) summarySchedule.innerHTML = `<i class="bi bi-clock me-1"></i>${schedule}`;
+    if (summaryBasePrice) summaryBasePrice.textContent = `₹${price.toFixed(2)}`;
+    if (summaryTotalAmount) summaryTotalAmount.textContent = `₹${price.toFixed(2)}`;
 
-    if (planNameEl) planNameEl.textContent = name;
-    if (planTypeEl) planTypeEl.textContent = type;
-    if (planMetaEl) planMetaEl.textContent = `Duration: ${duration} days · ${meals} total meals`;
-    if (planScheduleEl) planScheduleEl.textContent = schedule;
-    if (basePriceEl) basePriceEl.textContent = `₹${price.toFixed(2)}`;
-    if (totalAmountEl) totalAmountEl.textContent = `₹${price.toFixed(2)}`;
-
-    if (savingsRowEl) {
+    if (summarySavingsRow && summarySavingsAmount) {
       if (savings > 0) {
-        savingsRowEl.classList.remove('d-none');
-        if (savingsAmountEl) savingsAmountEl.textContent = `- ₹${savings.toFixed(2)}`;
+        summarySavingsRow.style.display = 'flex';
+        summarySavingsAmount.textContent = `- ₹${savings.toFixed(2)}`;
       } else {
-        savingsRowEl.classList.add('d-none');
+        summarySavingsRow.style.display = 'none';
       }
     }
-    updateButtonLabel();
+
+    updateSubmitBtnLabel();
   }
 
-  function updateButtonLabel() {
-    const isOnline = payOnline ? payOnline.checked : true;
-    const opt = planSelect ? planSelect.options[planSelect.selectedIndex] : null;
-    const price = opt ? parseFloat(opt.dataset.price) || 0 : 0;
-
-    if (isOnline) {
-      submitBtnText.textContent = `Pay ₹${price.toFixed(2)} via Razorpay`;
-    } else {
-      submitBtnText.textContent = "Confirm & Activate Subscription (Pay at First Delivery)";
+  function updateChefSummary() {
+    if (!chefSelect || !summaryChefName) return;
+    const opt = chefSelect.options[chefSelect.selectedIndex];
+    if (opt) {
+      summaryChefName.textContent = opt.text.split('(')[0].trim();
     }
   }
 
-  if (planSelect) planSelect.addEventListener('change', updateSummary);
-  if (payOnline) payOnline.addEventListener('change', updateButtonLabel);
-  if (payCod) payCod.addEventListener('change', updateButtonLabel);
+  function updateSubmitBtnLabel() {
+    const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'online';
+    const opt = planSelect ? planSelect.options[planSelect.selectedIndex] : null;
+    const price = opt ? parseFloat(opt.getAttribute('data-price') || 0) : 0;
+
+    if (selectedMethod === 'cod') {
+      submitBtnText.textContent = 'Confirm Subscription (Pay at Delivery)';
+    } else {
+      submitBtnText.textContent = `Pay ₹${price.toFixed(2)} via Razorpay`;
+    }
+  }
+
+  if (planSelect) planSelect.addEventListener('change', updatePlanSummary);
+  if (chefSelect) chefSelect.addEventListener('change', updateChefSummary);
+
+  document.querySelectorAll('input[name="payment_method"]').forEach(r => {
+    r.addEventListener('change', updateSubmitBtnLabel);
+  });
+
+  // Toggle Address radio
+  const addrNewRadio = document.getElementById('addrNew');
+  const newAddrFields = document.getElementById('ttNewAddressFields');
+  document.querySelectorAll('input[name="address_choice"]').forEach(r => {
+    r.addEventListener('change', function () {
+      if (newAddrFields) {
+        newAddrFields.style.display = (this.value === 'new') ? 'block' : 'none';
+      }
+    });
+  });
 
   // Initialize display
-  updateSummary();
+  updatePlanSummary();
+  updateChefSummary();
 
-  function setBtnLoading(msg) {
-    submitBtn.disabled = true;
-    submitSpinner.classList.remove('d-none');
-    submitIcon.classList.add('d-none');
-    submitBtnText.textContent = msg;
-  }
-
-  function resetBtn() {
-    submitBtn.disabled = false;
-    submitSpinner.classList.add('d-none');
-    submitIcon.classList.remove('d-none');
-    updateButtonLabel();
-  }
-
+  // Helper validation before Razorpay or COD
   function validateSubscriptionDetails() {
-    const startDate = document.querySelector('input[name="start_date"]');
-    const nameInput = document.querySelector('input[name="recipient_name"]');
-    const phoneInput = document.querySelector('input[name="recipient_phone"]');
+    const chefId = chefSelect ? chefSelect.value : '';
+    const planId = planSelect ? planSelect.value : '';
+    const startDate = document.querySelector('[name="start_date"]')?.value || '';
+    const recipName = document.querySelector('[name="recipient_name"]')?.value || '';
+    const recipPhone = document.querySelector('[name="recipient_phone"]')?.value || '';
 
-    if (startDate && !startDate.value) {
-      alert("Please select a subscription start date.");
-      startDate.focus();
+    if (!chefId || !planId) {
+      alert("Please select both a home chef and a meal plan.");
       return false;
     }
-
-    if (!nameInput || !nameInput.value.trim()) {
-      alert("Please enter the recipient's name.");
-      if (nameInput) nameInput.focus();
+    if (!startDate) {
+      alert("Please specify a subscription start date.");
       return false;
     }
-
-    if (!phoneInput || !phoneInput.value.trim()) {
-      alert("Please enter a valid mobile phone number.");
-      if (phoneInput) phoneInput.focus();
+    if (!recipName.trim() || !recipPhone.trim()) {
+      alert("Please provide the recipient's name and contact phone number.");
       return false;
     }
 
     const addrChoice = document.querySelector('input[name="address_choice"]:checked')?.value;
-    if (addrChoice && addrChoice !== 'new') {
-      return true;
+    if (addrChoice === 'new' || !addrChoice) {
+      const street = document.querySelector('[name="street_address"]')?.value || '';
+      const area = document.querySelector('[name="area"]')?.value || '';
+      const city = document.querySelector('[name="city"]')?.value || '';
+      const pin = document.querySelector('[name="pincode"]')?.value || '';
+      if (!street.trim() || !area.trim() || !city.trim() || !pin.trim()) {
+        alert("Please complete all address fields (Street, Area, City, and Pincode).");
+        return false;
+      }
     }
-
-    const streetInput = document.querySelector('input[name="street_address"]');
-    const pincodeInput = document.querySelector('input[name="pincode"]');
-
-    if (!streetInput || !streetInput.value.trim()) {
-      alert("Please enter your street address / flat details.");
-      if (streetInput) streetInput.focus();
-      return false;
-    }
-
-    if (!pincodeInput || !pincodeInput.value.trim()) {
-      alert("Please enter delivery area pincode.");
-      if (pincodeInput) pincodeInput.focus();
-      return false;
-    }
-
     return true;
   }
 
-  // Prevent accidental enter submission if online payment is chosen
+  function setBtnLoading(msg) {
+    submitBtn.disabled = true;
+    submitBtnText.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${msg}`;
+  }
+
+  function resetBtn() {
+    submitBtn.disabled = false;
+    updateSubmitBtnLabel();
+  }
+
   subscribeForm.addEventListener('submit', function(e) {
     const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'online';
     if (selectedMethod === 'online') {
@@ -424,16 +443,16 @@
 
     const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'online';
 
-    // 1. CASH ON DELIVERY: Normal submit
+    // 1. COD: Normal submit
     if (selectedMethod === 'cod') {
       setBtnLoading('Activating Subscription...');
       subscribeForm.submit();
       return;
     }
 
-    // 2. ONLINE PAYMENT: Razorpay modal FIRST. Subscription created ONLY AFTER payment completes.
+    // 2. ONLINE PAYMENT: Razorpay modal
     if (typeof Razorpay === 'undefined') {
-      alert("Razorpay checkout script load nahi ho paayi. Kripya apna internet / ad-blocker check karein ya page refresh karein.");
+      alert("Razorpay checkout script could not be loaded. Please check your internet connection or reload the page.");
       return;
     }
 
@@ -480,17 +499,14 @@
           contact: data.customer_phone || ''
         },
         theme: {
-          color: '#16a34a'
+          color: '#253746'
         },
         modal: {
           ondismiss: function() {
-            // User cancelled/closed popup without paying -> Subscription is NOT created
             resetBtn();
           }
         },
         handler: function(response) {
-          // Payment successfully authorized by Razorpay!
-          // Now verify signature and activate the Subscription in DB.
           setBtnLoading('Payment Received! Activating Subscription...');
 
           const verifyData = new FormData(subscribeForm);

@@ -7,291 +7,18 @@
   <title>{% block title %}Chef Studio | TiffinTrail{% endblock %}</title>
   <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="{% static 'css/design-system.css' %}?v=7.0">
+  <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/animations.css' %}">
-  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=7.0">
-  <style>
-    /* Table Action Buttons & Cell Polish */
-    .tt-actions-cell {
-      white-space: nowrap !important;
-      text-align: right !important;
-      padding-right: 14px !important;
-    }
-    .tt-actions-group {
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: flex-end !important;
-      gap: 6px !important;
-      flex-wrap: nowrap !important;
-    }
-    .tt-btn-action {
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 5px !important;
-      padding: 5px 12px !important;
-      font-size: 0.78rem !important;
-      font-weight: 600 !important;
-      line-height: 1.3 !important;
-      border-radius: 6px !important;
-      text-decoration: none !important;
-      cursor: pointer !important;
-      transition: all 0.15s ease-in-out !important;
-      white-space: nowrap !important;
-      outline: none !important;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
-    }
-    .tt-btn-action-primary {
-      background-color: #eff6ff !important;
-      color: #1d4ed8 !important;
-      border: 1px solid #bfdbfe !important;
-    }
-    .tt-btn-action-primary:hover {
-      background-color: #1d4ed8 !important;
-      color: #ffffff !important;
-      border-color: #1d4ed8 !important;
-      box-shadow: 0 2px 4px rgba(29, 78, 216, 0.25) !important;
-    }
-    .tt-btn-action-danger {
-      background-color: #fef2f2 !important;
-      color: #dc2626 !important;
-      border: 1px solid #fecaca !important;
-    }
-    .tt-btn-action-danger:hover {
-      background-color: #dc2626 !important;
-      color: #ffffff !important;
-      border-color: #dc2626 !important;
-      box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25) !important;
-    }
-    .tt-btn-action-secondary {
-      background-color: #f8fafc !important;
-      color: #475569 !important;
-      border: 1px solid #e2e8f0 !important;
-    }
-    .tt-btn-action-secondary:hover {
-      background-color: #e2e8f0 !important;
-      color: #1e293b !important;
-    }
-
-    .tt-table-responsive,
-    .table-responsive {
-      width: 100% !important;
-      overflow-x: auto !important;
-      overflow-y: hidden !important;
-      -webkit-overflow-scrolling: touch !important;
-      scrollbar-width: thin !important;
-      scrollbar-color: #94a3b8 #f1f5f9 !important;
-      cursor: default !important;
-      user-select: auto !important;
-      -webkit-user-select: auto !important;
-      padding-bottom: 6px !important;
-    }
-
-    /* Visible Horizontal Scrollbar at Bottom */
-    .tt-table-responsive::-webkit-scrollbar,
-    .table-responsive::-webkit-scrollbar {
-      display: block !important;
-      height: 8px !important;
-    }
-    .tt-table-responsive::-webkit-scrollbar-track,
-    .table-responsive::-webkit-scrollbar-track {
-      background: #f1f5f9 !important;
-      border-radius: 4px !important;
-      border: 1px solid #e2e8f0 !important;
-    }
-    .tt-table-responsive::-webkit-scrollbar-thumb,
-    .table-responsive::-webkit-scrollbar-thumb {
-      background: #94a3b8 !important;
-      border-radius: 4px !important;
-    }
-    .tt-table-responsive::-webkit-scrollbar-thumb:hover,
-    .table-responsive::-webkit-scrollbar-thumb:hover {
-      background: #64748b !important;
-    }
-    }
-  
-/* Status Badges with Circle Indicators */
-.tt-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  padding: 4px 11px !important;
-  border-radius: 999px !important;
-  font-size: 0.74rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.02em !important;
-  line-height: 1.25 !important;
-  white-space: nowrap !important;
-  border: 1px solid transparent !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
-}
-
-.tt-badge::before {
-  content: "" !important;
-  display: inline-block !important;
-  width: 7px !important;
-  height: 7px !important;
-  border-radius: 50% !important;
-  flex-shrink: 0 !important;
-}
-
-/* Cancelled / Rejected / Failed / Suspended */
-.tt-badge-cancelled,
-.tt-badge-rejected,
-.tt-badge-failed,
-.tt-badge-suspended,
-.tt-badge-danger {
-  background-color: #FEF2F2 !important;
-  color: #991B1B !important;
-  border-color: #FECACA !important;
-}
-.tt-badge-cancelled::before,
-.tt-badge-rejected::before,
-.tt-badge-failed::before,
-.tt-badge-suspended::before,
-.tt-badge-danger::before {
-  background-color: #DC2626 !important;
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
-}
-
-/* Delivered / Completed / Approved / Active / Paid / Resolved */
-.tt-badge-delivered,
-.tt-badge-completed,
-.tt-badge-approved,
-.tt-badge-active,
-.tt-badge-paid,
-.tt-badge-resolved,
-.tt-badge-success {
-  background-color: #F0FDF4 !important;
-  color: #166534 !important;
-  border-color: #BBF7D0 !important;
-}
-.tt-badge-delivered::before,
-.tt-badge-completed::before,
-.tt-badge-approved::before,
-.tt-badge-active::before,
-.tt-badge-paid::before,
-.tt-badge-resolved::before,
-.tt-badge-success::before {
-  background-color: #16A34A !important;
-  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
-}
-
-/* Pending / Order Received / Under Review / Resubmission */
-.tt-badge-pending,
-.tt-badge-under_review,
-.tt-badge-resubmission,
-.tt-badge-warning {
-  background-color: #FFFBEB !important;
-  color: #92400E !important;
-  border-color: #FDE68A !important;
-}
-.tt-badge-pending::before,
-.tt-badge-under_review::before,
-.tt-badge-resubmission::before,
-.tt-badge-warning::before {
-  background-color: #D97706 !important;
-  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2) !important;
-}
-
-/* Confirmed / Preparing / Cooking / In Prep / In Progress */
-.tt-badge-confirmed,
-.tt-badge-preparing,
-.tt-badge-in_progress,
-.tt-badge-info {
-  background-color: #EFF6FF !important;
-  color: #1E40AF !important;
-  border-color: #BFDBFE !important;
-}
-.tt-badge-confirmed::before,
-.tt-badge-preparing::before,
-.tt-badge-in_progress::before,
-.tt-badge-info::before {
-  background-color: #2563EB !important;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
-}
-
-/* Out for Delivery */
-.tt-badge-out_for_delivery {
-  background-color: #F0FDFA !important;
-  color: #115E59 !important;
-  border-color: #99F6E4 !important;
-}
-.tt-badge-out_for_delivery::before {
-  background-color: #0D9488 !important;
-  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2) !important;
-}
-
-/* Open Complaint */
-.tt-badge-open {
-  background-color: #FEF2F2 !important;
-  color: #991B1B !important;
-  border-color: #FECACA !important;
-}
-.tt-badge-open::before {
-  background-color: #DC2626 !important;
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
-}
-
-/* Closed */
-.tt-badge-closed {
-  background-color: #F8FAFC !important;
-  color: #475569 !important;
-  border-color: #E2E8F0 !important;
-}
-.tt-badge-closed::before {
-  background-color: #94A3B8 !important;
-}
-
-/* Veg & Non-Veg */
-.tt-badge-veg {
-  background-color: #F0FDF4 !important;
-  color: #166534 !important;
-  border-color: #86EFAC !important;
-}
-.tt-badge-veg::before {
-  background-color: #16A34A !important;
-  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
-}
-
-.tt-badge-nonveg {
-  background-color: #FEF2F2 !important;
-  color: #991B1B !important;
-  border-color: #FECACA !important;
-}
-.tt-badge-nonveg::before {
-  background-color: #DC2626 !important;
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
-}
-
-.badge.rounded-pill.bg-danger-subtle {
-  background-color: #FEF2F2 !important;
-  color: #991B1B !important;
-  border: 1px solid #FECACA !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-}
-.badge.rounded-pill.bg-danger-subtle::before {
-  content: "" !important;
-  display: inline-block !important;
-  width: 6px !important;
-  height: 6px !important;
-  border-radius: 50% !important;
-  background-color: #DC2626 !important;
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
-}
-</style>
+  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=8.0">
   {% block extra_css %}{% endblock %}
 </head>
 <body class="tt-chef-body">
 <div class="tt-layout">
-  <!-- Sidebar -->
+  <!-- Fixed Collapsible Chef Sidebar -->
   <aside class="tt-sidebar" id="ttSidebar">
-    <!-- Brand -->
-    <a class="tt-brand" href="{% url 'chef:dashboard' %}">
-      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" class="tt-brand-logo" style="width: 42px; height: 42px; object-fit: contain; border-radius: 10px;">
+    <!-- Brand Header -->
+    <a class="tt-brand" href="{% url 'chef:dashboard' %}" title="TiffinTrail Chef Studio">
+      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" class="tt-brand-logo">
       <div class="tt-brand-text">
         <span class="tt-brand-name">TiffinTrail</span>
         <span class="tt-brand-subtitle">Chef Studio</span>
@@ -312,76 +39,89 @@
           {% if current_chef.is_accepting_orders %}
             <span class="tt-status-dot"></span> Accepting Orders
           {% else %}
-            <span class="tt-status-dot inactive"></span> Paused
+            <span class="tt-status-dot inactive"></span> Kitchen Paused
           {% endif %}
         </div>
       </div>
     </div>
     {% endif %}
 
-    <!-- Navigation Menu -->
-    <div class="tt-nav-label">MAIN WORKSPACE</div>
+    <!-- Navigation Module 1: OVERVIEW -->
+    <div class="tt-nav-label">OVERVIEW</div>
     <nav class="tt-nav">
-      <a class="tt-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'chef:dashboard' %}">
-        <span>Dashboard Overview</span>
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'chef:dashboard' %}" title="Dashboard Overview">
+        <span>Dashboard</span>
       </a>
-      <a class="tt-nav-link {% if request.resolver_match.url_name in 'profile profile_edit' %}active{% endif %}" href="{% url 'chef:profile' %}">
+    </nav>
+
+    <!-- Navigation Module 2: MY BUSINESS -->
+    <div class="tt-nav-label">MY BUSINESS</div>
+    <nav class="tt-nav">
+      <a class="tt-nav-link {% if request.resolver_match.url_name in 'profile profile_edit' %}active{% endif %}" href="{% url 'chef:profile' %}" title="My Kitchen Profile">
         <span>My Profile</span>
       </a>
-      <a class="tt-nav-link {% if 'menu' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:daily_menu' %}">
-        <span>Daily Menu & Calendar</span>
+      <a class="tt-nav-link {% if 'meal' in request.resolver_match.url_name and request.resolver_match.url_name != 'meal_add' %}active{% endif %}" href="{% url 'chef:meals' %}" title="Homestyle Dishes Catalog">
+        <span>My Meals</span>
       </a>
-      <a class="tt-nav-link {% if 'meal' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:meals' %}">
-        <span>Manage Meals</span>
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'meal_add' %}active{% endif %}" href="{% url 'chef:meal_add' %}" title="Create New Recipe">
+        <span>Add New Meal</span>
       </a>
-      <a class="tt-nav-link {% if 'categories' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:categories' %}">
-        <span>Meal Categories</span>
+      <a class="tt-nav-link {% if 'menu' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:daily_menu' %}" title="Daily Menu & Availability Calendar">
+        <span>Daily Menu</span>
+      </a>
+      <a class="tt-nav-link {% if 'categories' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:categories' %}" title="Dish Categories">
+        <span>Categories</span>
+      </a>
+      <a class="tt-nav-link {% if 'plan' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:plans' %}" title="Recurring Meal Packages">
+        <span>Meal Plans</span>
       </a>
     </nav>
 
-    <div class="tt-nav-label">ORDERS & CUSTOMERS</div>
+    <!-- Navigation Module 3: ORDERS & DINERS -->
+    <div class="tt-nav-label">ORDERS & DINERS</div>
     <nav class="tt-nav">
-      <a class="tt-nav-link {% if 'orders' in request.resolver_match.url_name or 'deliveries' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:orders' %}">
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'orders' %}active{% endif %}" href="{% url 'chef:orders' %}" title="Incoming Daily Orders">
         <span>Incoming Orders</span>
       </a>
-      <a class="tt-nav-link {% if 'subscription' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:subscriptions' %}">
-        <span>Subscription Diners</span>
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'deliveries' %}active{% endif %}" href="{% url 'chef:deliveries' %}" title="Delivery Management">
+        <span>Delivery Management</span>
       </a>
-      <a class="tt-nav-link {% if 'plan' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:plans' %}">
-        <span>Subscription Plans</span>
+      <a class="tt-nav-link {% if 'subscription' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:subscriptions' %}" title="Active Subscription Diners">
+        <span>Subscription Diners</span>
       </a>
     </nav>
 
-    <div class="tt-nav-label">FINANCE & FEEDBACK</div>
+    <!-- Navigation Module 4: FINANCIALS & FEEDBACK -->
+    <div class="tt-nav-label">FINANCIALS & FEEDBACK</div>
     <nav class="tt-nav">
-      <a class="tt-nav-link {% if request.resolver_match.url_name == 'earnings' %}active{% endif %}" href="{% url 'chef:earnings' %}">
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'earnings' %}active{% endif %}" href="{% url 'chef:earnings' %}" title="Earnings & Settlements">
         <span>Earnings & Payouts</span>
       </a>
-      <a class="tt-nav-link {% if request.resolver_match.url_name in 'reviews feedback' %}active{% endif %}" href="{% url 'chef:reviews' %}">
-        <span>Reviews & Ratings</span>
+      <a class="tt-nav-link {% if request.resolver_match.url_name in 'reviews feedback' %}active{% endif %}" href="{% url 'chef:reviews' %}" title="Customer Reviews & Ratings">
+        <span>Customer Reviews</span>
       </a>
-      <a class="tt-nav-link {% if 'notification' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:notifications' %}">
+      <a class="tt-nav-link {% if 'notification' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'chef:notifications' %}" title="Kitchen Alerts">
         <span>Notifications</span>
         {% if chef_unread_count > 0 %}
           <span class="tt-badge-count">{{ chef_unread_count }}</span>
         {% endif %}
       </a>
-      <a class="tt-nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}" href="{% url 'chef:settings' %}">
+      <a class="tt-nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}" href="{% url 'chef:settings' %}" title="Kitchen Settings">
         <span>Kitchen Settings</span>
       </a>
     </nav>
 
-    <!-- Bottom Actions -->
+    <!-- Sidebar Bottom Section -->
     <div class="tt-sidebar-bottom">
       {% if current_chef %}
-      <a class="tt-sidebar-link-btn" href="{% url 'customer:chef_detail' current_chef.id %}" target="_blank">
-        <span>Preview Public Kitchen ↗</span>
+      <a class="tt-sidebar-link-btn" href="{% url 'customer:chef_detail' current_chef.id %}" target="_blank" title="View Public Kitchen Profile">
+        <span>Preview Public Kitchen</span>
       </a>
       {% endif %}
-      <a class="tt-sidebar-link-btn" href="{% url 'customer:home' %}">
+      <a class="tt-sidebar-link-btn" href="{% url 'customer:home' %}" title="Switch to Diner Portal">
         <span>Switch to Diner Site</span>
       </a>
-      <a class="tt-sidebar-link-btn text-danger" href="{% url 'chef:logout' %}">
+      <a class="tt-sidebar-link-btn text-danger" href="{% url 'chef:logout' %}" title="Sign Out">
         <span>Sign Out</span>
       </a>
     </div>
@@ -389,10 +129,12 @@
 
   <!-- Main Content Wrap -->
   <main class="tt-main">
-    <!-- Topbar -->
+    <!-- Sticky Glass Topbar -->
     <header class="tt-topbar">
       <div class="tt-topbar-left">
-        <button class="tt-menu-toggle" id="ttMenuToggle" type="button" aria-label="Toggle Navigation"></button>
+        <button class="tt-menu-toggle" id="ttMenuToggle" type="button" aria-label="Toggle Navigation" title="Toggle Navigation Sidebar">
+          <i class="bi bi-list"></i>
+        </button>
         <div>
           <span class="tt-eyebrow">{% block eyebrow %}CHEF MANAGEMENT PORTAL{% endblock %}</span>
           <h1 class="tt-page-title">{% block page_heading %}Dashboard{% endblock %}</h1>
@@ -413,7 +155,7 @@
 
         <!-- Notification Bell -->
         <a class="tt-topbar-notif" href="{% url 'chef:notifications' %}" title="Notifications">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <i class="bi bi-bell-fill"></i>
           {% if chef_unread_count > 0 %}
             <span class="tt-notif-dot">{{ chef_unread_count }}</span>
           {% endif %}
@@ -429,28 +171,29 @@
             {% endif %}
             <span class="d-none d-sm-inline fw-semibold">{{ current_chef.business_name|default:request.user.username }}</span>
           </a>
-          <ul class="dropdown-menu dropdown-menu-end shadow-sm border">
-            <li><h6 class="dropdown-header">Chef Account</h6></li>
-            <li><a class="dropdown-item" href="{% url 'chef:profile' %}">My Kitchen Profile</a></li>
-            <li><a class="dropdown-item" href="{% url 'chef:settings' %}">Kitchen Settings</a></li>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3 mt-2">
+            <li><h6 class="dropdown-header text-uppercase small fw-bold">Chef Account</h6></li>
+            <li><a class="dropdown-item py-2" href="{% url 'chef:profile' %}"><i class="bi bi-shop me-2 text-secondary"></i>My Kitchen Profile</a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'chef:settings' %}"><i class="bi bi-gear me-2 text-secondary"></i>Kitchen Settings</a></li>
             {% if current_chef %}
-            <li><a class="dropdown-item" href="{% url 'customer:chef_detail' current_chef.id %}" target="_blank">View Public Profile ↗</a></li>
+            <li><a class="dropdown-item py-2" href="{% url 'customer:chef_detail' current_chef.id %}" target="_blank"><i class="bi bi-box-arrow-up-right me-2 text-secondary"></i>View Public Profile</a></li>
             {% endif %}
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="{% url 'chef:logout' %}">Sign Out</a></li>
+            <li><a class="dropdown-item py-2 text-danger" href="{% url 'chef:logout' %}"><i class="bi bi-box-arrow-right me-2 text-danger"></i>Sign Out</a></li>
           </ul>
         </div>
       </div>
     </header>
 
-    <!-- Page Body -->
+    <!-- Page Body Content -->
     <section class="tt-content">
       <!-- Flash Messages -->
       {% if messages %}
         {% for message in messages %}
-          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-3 shadow-xs border-0 d-flex align-items-center gap-2 mb-4" role="alert">
+            <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill text-success{% elif message.tags == 'danger' or message.tags == 'error' %}bi-exclamation-triangle-fill text-danger{% else %}bi-info-circle-fill text-primary{% endif %} fs-5"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
         {% endfor %}
       {% endif %}
@@ -471,26 +214,7 @@
 <!-- Scripts -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/animations.js' %}"></script>
-<script src="{% static 'js/chef.js' %}?v=7.0"></script>
+<script src="{% static 'js/chef.js' %}?v=8.0"></script>
 {% block extra_js %}{% endblock %}
-
-<!-- Table Wheel Scroll Protection (Forces Vertical Page Scroll) -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  var tables = document.querySelectorAll('.tt-table-responsive, .table-responsive');
-  tables.forEach(function (table) {
-    table.addEventListener('wheel', function (e) {
-      if (!e.shiftKey && Math.abs(e.deltaY) > 0) {
-        e.preventDefault();
-        window.scrollBy({
-          top: e.deltaY,
-          left: 0,
-          behavior: 'auto'
-        });
-      }
-    }, { passive: false });
-  });
-});
-</script>
 </body>
 </html>

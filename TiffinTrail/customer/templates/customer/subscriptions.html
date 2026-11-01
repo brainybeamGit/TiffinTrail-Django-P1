@@ -7,19 +7,19 @@
 <div class="py-4 border-bottom bg-white">
   <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-1 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'customer:profile' %}" class="text-decoration-none" style="color: var(--tt-primary);">Account</a></li>
+      <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:profile' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Account</a></li>
         <li class="breadcrumb-item active text-muted" aria-current="page">Subscriptions</li>
       </ol>
     </nav>
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
       <div>
-        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-text-main);">My Tiffin Subscriptions</h1>
-        <p class="text-muted small mb-0">Track active daily meal schedules, pause deliveries, or modify plans.</p>
+        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">My Tiffin Subscriptions</h1>
+        <p class="text-muted small mb-0">Track active daily meal schedules, pause deliveries when traveling, or manage plan renewals.</p>
       </div>
-      <a href="{% url 'customer:plans' %}" class="btn btn-tt-primary btn-sm px-3 py-2 rounded-3 d-inline-flex align-items-center gap-1.5">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <a href="{% url 'customer:plans' %}" class="btn btn-tt-primary btn-sm px-3 py-2 rounded-3 d-inline-flex align-items-center gap-1.5 fw-semibold shadow-xs">
+        <i class="bi bi-plus-circle"></i>
         <span>Subscribe to New Plan</span>
       </a>
     </div>
@@ -29,7 +29,7 @@
 <div class="container py-5">
   <!-- Status Filter Pills -->
   <div class="d-flex flex-wrap gap-2 mb-4">
-    <a href="{% url 'customer:my_subscriptions' %}?status=all" class="tt-filter-pill {% if status_filter == 'all' %}active{% endif %}">
+    <a href="{% url 'customer:my_subscriptions' %}?status=all" class="tt-filter-pill {% if status_filter == 'all' or not status_filter %}active{% endif %}">
       All ({{ subscriptions.count }})
     </a>
     <a href="{% url 'customer:my_subscriptions' %}?status=active" class="tt-filter-pill {% if status_filter == 'active' %}active{% endif %}">
@@ -50,31 +50,32 @@
   <div class="row g-4">
     {% for sub in subscriptions %}
     <div class="col-lg-6">
-      <div class="card border-0 shadow-sm rounded-4 p-4 h-100 d-flex flex-column" style="border: 1px solid var(--tt-border) !important;">
+      <div class="card border-0 shadow-sm rounded-4 p-4 h-100 d-flex flex-column" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
         <div class="d-flex justify-content-between align-items-start mb-3">
           <div>
             <span class="badge bg-light text-dark border font-monospace small mb-1">{{ sub.subscription_number }}</span>
-            <h3 class="h5 fw-bold mb-0 text-dark">{{ sub.plan.name }}</h3>
-            <div class="small text-muted">Prepared by <strong class="text-dark">{{ sub.chef.business_name }}</strong></div>
+            <h3 class="h5 fw-bold mb-0" style="color: var(--tt-charcoal);">{{ sub.plan.name }}</h3>
+            <div class="small text-muted mt-0.5">Prepared by <strong class="text-dark">{{ sub.chef.business_name }}</strong></div>
           </div>
 
           {% if sub.status == 'active' %}
-          <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-1.5">
-            <span class="rounded-circle" style="width: 6px; height: 6px; background-color: var(--tt-fresh-green);"></span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-1.5 fw-semibold">
+            <i class="bi bi-check-circle-fill"></i>
             Active Delivery
           </span>
           {% elif sub.status == 'paused' %}
-          <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-1.5">
-            <span class="rounded-circle" style="width: 6px; height: 6px; background-color: var(--tt-accent);"></span>
+          <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-1.5 fw-semibold">
+            <i class="bi bi-pause-circle-fill"></i>
             Paused
           </span>
           {% elif sub.status == 'completed' %}
-          <span class="badge bg-secondary-subtle text-secondary px-3 py-1.5 rounded-pill small">
+          <span class="badge bg-secondary-subtle text-secondary px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-1.5">
+            <i class="bi bi-flag-fill"></i>
             Completed
           </span>
           {% elif sub.status == 'cancelled' %}
-          <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-1.5">
-            <span class="rounded-circle" style="width: 6px; height: 6px; background-color: #dc2626;"></span>
+          <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-1.5 fw-semibold">
+            <i class="bi bi-x-circle-fill"></i>
             Cancelled
           </span>
           {% else %}
@@ -87,11 +88,11 @@
         <div class="row g-2 mb-3 small bg-light p-3 rounded-3 border" style="border-color: var(--tt-border) !important;">
           <div class="col-6">
             <span class="text-muted d-block">Start Date:</span>
-            <strong class="text-dark">{{ sub.start_date|date:"M d, Y" }}</strong>
+            <strong class="text-dark">{{ sub.start_date|date:"d M Y" }}</strong>
           </div>
           <div class="col-6">
             <span class="text-muted d-block">End / Renewal:</span>
-            <strong class="text-dark">{{ sub.end_date|date:"M d, Y" }}</strong>
+            <strong class="text-dark">{{ sub.end_date|date:"d M Y" }}</strong>
           </div>
           <div class="col-6">
             <span class="text-muted d-block">Delivery Slot:</span>
@@ -104,12 +105,12 @@
         </div>
 
         <div class="small text-muted mb-3 d-flex align-items-center gap-1.5">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          <span><strong>Delivery Location:</strong> {{ sub.delivery_address_text|truncatechars:65 }}</span>
+          <i class="bi bi-geo-alt-fill text-danger flex-shrink-0"></i>
+          <span><strong>Delivery To:</strong> {{ sub.delivery_address_text|truncatechars:65 }}</span>
         </div>
 
         <div class="border-top pt-3 mt-auto d-flex flex-wrap align-items-center justify-content-between gap-2">
-          <div class="fw-bold h5 mb-0" style="color: var(--tt-primary);">
+          <div class="fw-bold h5 mb-0" style="color: var(--tt-charcoal);">
             ₹{{ sub.total_amount|floatformat:2 }}
           </div>
 
@@ -117,22 +118,22 @@
             {% if sub.can_pause %}
             <form action="{% url 'customer:subscription_pause' sub.pk %}" method="post" class="d-inline m-0">
               {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-outline-warning rounded-3" onclick="return confirm('Pause deliveries for this subscription?');">
-                Pause
+              <button type="submit" class="btn btn-sm btn-outline-warning rounded-3 d-inline-flex align-items-center gap-1" onclick="return confirm('Pause deliveries for this subscription? You can resume whenever you are ready.');">
+                <i class="bi bi-pause-circle"></i> Pause
               </button>
             </form>
             {% elif sub.can_resume %}
             <form action="{% url 'customer:subscription_resume' sub.pk %}" method="post" class="d-inline m-0">
               {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-outline-success rounded-3">
-                Resume
+              <button type="submit" class="btn btn-sm btn-outline-success rounded-3 d-inline-flex align-items-center gap-1">
+                <i class="bi bi-play-circle"></i> Resume
               </button>
             </form>
             {% endif %}
 
-            <a href="{% url 'customer:subscription_detail' sub.pk %}" class="btn btn-sm btn-tt-outline rounded-3 d-inline-flex align-items-center gap-1">
+            <a href="{% url 'customer:subscription_detail' sub.pk %}" class="btn btn-sm btn-tt-outline rounded-3 d-inline-flex align-items-center gap-1 fw-semibold">
               <span>View Details</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <i class="bi bi-chevron-right"></i>
             </a>
           </div>
         </div>
@@ -142,14 +143,16 @@
   </div>
   {% else %}
   <div class="text-center py-5 bg-white rounded-4 border shadow-sm p-5 max-w-600 mx-auto" style="border-color: var(--tt-border) !important;">
-    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 72px; height: 72px; background-color: var(--tt-cream); color: var(--tt-primary);">
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+    <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 72px; height: 72px; background-color: var(--tt-cream); color: var(--tt-charcoal);">
+      <i class="bi bi-calendar2-range text-muted fs-1"></i>
     </div>
-    <h4 class="fw-bold mt-2 text-dark">No Subscriptions Found</h4>
+    <h4 class="fw-bold mt-2" style="color: var(--tt-charcoal);">No Subscriptions Found</h4>
     <p class="text-muted small mx-auto" style="max-width: 440px;">
       You don't have any {{ status_filter }} meal plan subscriptions at the moment. Browse available home-cooked weekly and monthly plans.
     </p>
-    <a href="{% url 'customer:plans' %}" class="btn btn-sm btn-tt-primary mt-2 px-4 py-2 rounded-3">Explore Meal Plans</a>
+    <a href="{% url 'customer:plans' %}" class="btn btn-sm btn-tt-primary mt-2 px-4 py-2 rounded-3 fw-semibold">
+      <i class="bi bi-search me-1"></i> Explore Meal Plans
+    </a>
   </div>
   {% endif %}
 </div>

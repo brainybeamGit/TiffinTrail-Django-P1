@@ -7,38 +7,20 @@
   <title>Verify Chef OTP & Reset Password | TiffinTrail</title>
   <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=7.0">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <style>
-    body.tt-chef-login-bg {
-      background: linear-gradient(135deg, #0a1f0d 0%, #153e19 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-    .tt-login-box {
-      max-width: 440px;
-      width: 100%;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-      overflow: hidden;
-    }
-  </style>
+  <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/chef.css' %}">
 </head>
-<body class="tt-chef-login-bg">
-  <div class="tt-login-box">
+<body class="tt-chef-auth-body">
+  <div class="tt-auth-card">
     <!-- Header -->
-    <div class="p-4 text-center" style="background: linear-gradient(135deg, #1b5e20, #2e7d32); color: white;">
-      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" style="width: 54px; height: 54px; object-fit: contain; border-radius: 12px;" class="mx-auto mb-2 d-block">
-      <h4 class="fw-bold mb-1">Chef Studio</h4>
-      <p class="small text-white-50 mb-0">OTP Verification</p>
+    <div class="tt-auth-header">
+      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" class="tt-auth-header-logo">
+      <h3 class="tt-auth-title">Chef Studio</h3>
+      <p class="tt-auth-subtitle">OTP Verification & Security</p>
     </div>
 
-    <!-- Form -->
-    <div class="p-4">
+    <!-- Form Content -->
+    <div class="tt-auth-body-content">
       {% if messages %}
         {% for message in messages %}
           <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show small" role="alert">
@@ -50,13 +32,13 @@
 
       <div class="text-center mb-3">
         <p class="small text-muted mb-2">
-          Aapke Chef email par bheja gaya 6-digit OTP code enter karein.
+          Enter the 6-digit OTP verification code sent to your registered email address.
         </p>
         {% if email %}
           <div class="d-inline-flex align-items-center gap-2 bg-light border rounded-pill px-3 py-1 text-muted small">
-            <i class="bi bi-envelope text-success"></i>
+            <i class="bi bi-envelope text-warning"></i>
             <span class="fw-semibold text-dark">{{ masked_email|default:email }}</span>
-            <a href="{% url 'chef:forgot_password' %}" class="text-decoration-none text-success ms-1" title="Change email" style="font-size: 0.8rem;">Change</a>
+            <a href="{% url 'chef:forgot_password' %}" class="text-decoration-none text-primary ms-1" title="Change email" style="font-size: 0.8rem;">Change</a>
           </div>
         {% endif %}
       </div>
@@ -65,15 +47,15 @@
         {% csrf_token %}
 
         {% if not email %}
-        <div class="mb-3">
-          <label class="tt-form-label fw-bold">Registered Chef Email</label>
-          <div class="input-group">
-            <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
-            <input type="email" name="email" class="form-control" placeholder="chef@example.com" value="{{ email }}" required>
+          <div class="mb-3">
+            <label class="tt-form-label fw-bold">Registered Chef Email</label>
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0"><i class="bi bi-envelope text-muted"></i></span>
+              <input type="email" name="email" class="form-control border-start-0 ps-0" placeholder="chef@example.com" value="{{ email }}" required>
+            </div>
           </div>
-        </div>
         {% else %}
-        <input type="hidden" name="email" value="{{ email }}">
+          <input type="hidden" name="email" value="{{ email }}">
         {% endif %}
 
         <!-- 6-digit OTP Input -->
@@ -81,16 +63,16 @@
           <label class="tt-form-label fw-bold text-center d-block">Enter 6-Digit OTP</label>
           <input type="text" 
                  name="otp" 
-                 class="form-control form-control-lg text-center fw-bold text-dark border-2 border-success" 
+                 class="form-control form-control-lg text-center fw-bold text-dark border-2" 
                  placeholder="000000" 
                  maxlength="6" 
                  pattern="[0-9]{6}" 
                  inputmode="numeric" 
                  autocomplete="one-time-code" 
-                 style="letter-spacing: 12px; font-size: 1.6rem; font-family: monospace;" 
+                 style="letter-spacing: 10px; font-size: 1.6rem; font-family: monospace; border-color: var(--tt-gold);" 
                  required 
                  autofocus>
-          <div class="form-text text-center" style="font-size: 0.78rem;">
+          <div class="tt-help-text text-center">
             OTP is valid for 10 minutes.
           </div>
         </div>
@@ -99,8 +81,8 @@
         <div class="mb-3">
           <label class="tt-form-label fw-bold">New Password</label>
           <div class="input-group">
-            <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
-            <input type="password" name="new_password" class="form-control" placeholder="Minimum 8 characters" minlength="8" required>
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-lock text-muted"></i></span>
+            <input type="password" name="new_password" class="form-control border-start-0 ps-0" placeholder="Minimum 8 characters" minlength="8" required>
           </div>
         </div>
 
@@ -108,26 +90,26 @@
         <div class="mb-4">
           <label class="tt-form-label fw-bold">Confirm New Password</label>
           <div class="input-group">
-            <span class="input-group-text bg-light"><i class="bi bi-lock-fill"></i></span>
-            <input type="password" name="confirm_password" class="form-control" placeholder="Re-enter new password" minlength="8" required>
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-shield-check text-muted"></i></span>
+            <input type="password" name="confirm_password" class="form-control border-start-0 ps-0" placeholder="Re-enter new password" minlength="8" required>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-success w-100 fw-bold py-2 shadow-sm mb-3">
-          Reset Chef Password & Sign In &rarr;
+        <button type="submit" class="btn btn-warning tt-btn-gold w-100 py-2.5 shadow-sm mb-3 d-flex align-items-center justify-content-center gap-2">
+          <span>Reset Password & Sign In</span> <i class="bi bi-arrow-right"></i>
         </button>
 
         <!-- Resend OTP Link -->
         <div class="d-flex justify-content-between align-items-center pt-2 border-top small">
           <span class="text-muted">Didn't receive code?</span>
-          <a href="{% url 'chef:resend_otp' %}" class="fw-bold text-success text-decoration-none">
-            <i class="bi bi-arrow-repeat me-1"></i>Resend OTP
+          <a href="{% url 'chef:resend_otp' %}" class="fw-bold text-dark text-decoration-none d-inline-flex align-items-center gap-1">
+            <i class="bi bi-arrow-repeat"></i> Resend OTP
           </a>
         </div>
 
         <div class="text-center mt-3 small">
-          <a href="{% url 'chef:login' %}" class="text-muted text-decoration-none">
-            &larr; Back to Chef Studio Login
+          <a href="{% url 'chef:login' %}" class="text-muted text-decoration-none d-inline-flex align-items-center gap-1">
+            <i class="bi bi-arrow-left"></i> Back to Chef Studio Login
           </a>
         </div>
       </form>
@@ -137,4 +119,3 @@
   <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
-

@@ -11,45 +11,48 @@
     <!-- Kitchen Availability Setting -->
     <div class="tt-card mb-4">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"><i class="bi bi-fire me-1"></i>Kitchen Operating State</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-fire text-warning"></i> Kitchen Operating State
+        </h5>
       </div>
       <div class="tt-card-body">
         <form method="post" id="kitchenToggleForm">
           {% csrf_token %}
           <input type="hidden" name="action" value="toggle_orders">
 
-          <div class="tt-toggle-row {% if chef.is_accepting_orders %}is-on tt-toggle-row-warning{% else %}is-off{% endif %}">
-            <div class="tt-toggle-row-left">
-              <div class="tt-toggle-row-icon {% if chef.is_accepting_orders %}icon-amber{% else %}icon-red{% endif %}">
-                {% if chef.is_accepting_orders %}<i class="bi bi-circle-fill text-success me-1" style="font-size: 0.6rem;"></i>{% else %}⏸️{% endif %}
+          <div class="p-3 bg-light rounded border d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: {% if chef.is_accepting_orders %}#dcfce7; color: #16a34a;{% else %}#fee2e2; color: #dc2626;{% endif %} font-size: 1.25rem;">
+                {% if chef.is_accepting_orders %}
+                  <i class="bi bi-check-circle-fill"></i>
+                {% else %}
+                  <i class="bi bi-pause-circle-fill"></i>
+                {% endif %}
               </div>
               <div>
-                <p class="tt-toggle-row-title">
-                  Accepting Orders
+                <div class="d-flex align-items-center gap-2">
+                  <strong class="text-dark fs-6">Accepting Customer Orders</strong>
                   {% if chef.is_accepting_orders %}
-                    <span class="tt-toggle-row-status status-warning-on">Live</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">Live</span>
                   {% else %}
-                    <span class="tt-toggle-row-status status-off">Paused</span>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Paused</span>
                   {% endif %}
-                </p>
-                <p class="tt-toggle-row-desc">
+                </div>
+                <div class="text-muted small mt-0.5">
                   {% if chef.is_accepting_orders %}
-                    Your kitchen is open — customers can place new orders right now.
+                    Your kitchen is open — diners can discover your dishes and place orders right now.
                   {% else %}
-                    Kitchen is paused — customers see you as temporarily closed.
+                    Kitchen is paused — diners see your kitchen as temporarily closed.
                   {% endif %}
-                </p>
+                </div>
               </div>
             </div>
-            <label class="tt-toggle-switch tt-toggle-warning" for="kitchenToggle"
-              title="{% if chef.is_accepting_orders %}Click to pause ordering{% else %}Click to resume ordering{% endif %}">
-              <input type="checkbox" id="kitchenToggle"
-                {% if chef.is_accepting_orders %}checked{% endif %}
-                onchange="this.form.submit()">
+
+            <label class="tt-toggle-switch" for="kitchenToggle" title="{% if chef.is_accepting_orders %}Click to pause ordering{% else %}Click to resume ordering{% endif %}">
+              <input type="checkbox" id="kitchenToggle" {% if chef.is_accepting_orders %}checked{% endif %} onchange="this.form.submit()">
               <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
             </label>
           </div>
-
         </form>
       </div>
     </div>
@@ -57,7 +60,9 @@
     <!-- Security & Password Change -->
     <div class="tt-card mb-4">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Change Account Password</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-shield-lock text-warning"></i> Change Account Password
+        </h5>
       </div>
       <div class="tt-card-body">
         <form method="post" novalidate>
@@ -89,7 +94,9 @@
             {% endif %}
           </div>
 
-          <button type="submit" class="btn btn-primary fw-semibold">Update Password</button>
+          <button type="submit" class="btn btn-warning tt-btn-gold fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+            <i class="bi bi-check2-circle"></i> Update Password
+          </button>
         </form>
       </div>
     </div>
@@ -97,28 +104,31 @@
     <!-- Bank Details & Settlement Notice -->
     <div class="tt-card">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Direct Bank Settlement Account</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-bank text-warning"></i> Direct Bank Settlement Account
+        </h5>
       </div>
       <div class="tt-card-body small">
         <p class="text-muted">
           Your weekly earnings are deposited into your registered bank account after platform fee deduction.
         </p>
-        <div class="p-3 bg-light rounded border">
-          <div class="d-flex justify-content-between py-1 border-bottom">
+        <div class="p-3 bg-light rounded border mb-3">
+          <div class="d-flex justify-content-between py-1.5 border-bottom">
             <span class="text-muted">Account Holder:</span>
-            <strong>{{ chef.user.get_full_name|default:chef.business_name }}</strong>
+            <strong class="text-dark">{{ chef.user.get_full_name|default:chef.business_name }}</strong>
           </div>
-          <div class="d-flex justify-content-between py-1 border-bottom">
+          <div class="d-flex justify-content-between py-1.5 border-bottom">
             <span class="text-muted">FSSAI Registration:</span>
-            <strong>{{ chef.fssai_license }}</strong>
+            <strong class="font-monospace text-dark">{{ chef.fssai_license }}</strong>
           </div>
-          <div class="d-flex justify-content-between py-1">
+          <div class="d-flex justify-content-between py-1.5">
             <span class="text-muted">Platform Commission:</span>
             <strong class="text-success">{{ chef.commission_rate }}%</strong>
           </div>
         </div>
-        <div class="text-muted mt-2 small">
-          To update your registered bank account or FSSAI documentation, please submit a verification ticket to platform support.
+        <div class="text-muted small d-flex align-items-center gap-2">
+          <i class="bi bi-info-circle text-info"></i>
+          <span>To update your registered bank account or FSSAI documentation, please submit a verification ticket to platform support.</span>
         </div>
       </div>
     </div>

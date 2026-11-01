@@ -7,18 +7,20 @@
 <div class="py-4 border-bottom bg-white">
   <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-1 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
+      <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
         <li class="breadcrumb-item active text-muted" aria-current="page">Subscription Plans</li>
       </ol>
     </nav>
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
       <div>
-        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-text-main);">Daily, Weekly & Monthly Meal Subscriptions</h1>
-        <p class="text-muted small mb-0">Consistent, comforting home-cooked meals without the daily ordering hassle.</p>
+        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">Daily, Weekly & Monthly Meal Subscriptions</h1>
+        <p class="text-muted small mb-0">Consistent, comforting home-cooked meals prepared with care, without the daily ordering hassle.</p>
       </div>
       <div class="d-flex gap-2 flex-wrap">
-        <a href="{% url 'customer:plans' %}" class="tt-filter-pill {% if not plan_type %}active{% endif %}">All Plans</a>
+        <a href="{% url 'customer:plans' %}" class="tt-filter-pill {% if not plan_type %}active{% endif %}">
+          <i class="bi bi-grid-fill me-1"></i> All Plans
+        </a>
         <a href="{% url 'customer:plans' %}?type=daily" class="tt-filter-pill {% if plan_type == 'daily' %}active{% endif %}">Daily</a>
         <a href="{% url 'customer:plans' %}?type=weekly" class="tt-filter-pill {% if plan_type == 'weekly' %}active{% endif %}">Weekly (7-Day)</a>
         <a href="{% url 'customer:plans' %}?type=monthly" class="tt-filter-pill {% if plan_type == 'monthly' %}active{% endif %}">Monthly (30-Day)</a>
@@ -34,43 +36,46 @@
       {% include 'customer/partials/plan_card.html' with plan=plan %}
     </div>
     {% empty %}
-    <div class="col-12 text-center py-5 bg-white rounded-4 border" style="border-color: var(--tt-border) !important;">
-      <p class="text-muted mb-0">No plans found matching the selected filter.</p>
+    <div class="col-12 text-center py-5 bg-white rounded-4 border shadow-sm p-5" style="border-color: var(--tt-border) !important;">
+      <i class="bi bi-calendar2-x text-muted fs-1 d-block mb-2"></i>
+      <h5 class="fw-bold text-dark mb-1">No Meal Plans Found</h5>
+      <p class="text-muted small mb-3">No plans match the selected category right now. Browse our full kitchen menu or view available home chefs.</p>
+      <a href="{% url 'customer:plans' %}" class="btn btn-sm btn-tt-primary rounded-3 px-3 py-2 fw-semibold">View All Plans</a>
     </div>
     {% endfor %}
   </div>
 
   <!-- Subscription Benefits Infobox -->
   <div class="mt-5 p-4 p-md-5 rounded-4 bg-white border shadow-sm" style="border-color: var(--tt-border) !important;">
-    <h3 class="h4 fw-bold text-center mb-4 text-dark">Why Subscribe to a TiffinTrail Meal Plan?</h3>
+    <h3 class="h4 fw-bold text-center mb-4" style="color: var(--tt-charcoal);">Why Subscribe to a TiffinTrail Meal Plan?</h3>
     <div class="row g-4 text-center">
       <div class="col-md-3">
-        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 text-success" style="width: 54px; height: 54px; background-color: var(--tt-primary-light);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 58px; height: 58px; background-color: var(--tt-cream); color: var(--tt-charcoal); border: 1px solid var(--tt-border);">
+          <i class="bi bi-piggy-bank fs-4 text-success"></i>
         </div>
-        <h6 class="fw-bold mb-1 text-dark">Guaranteed Savings</h6>
-        <p class="small text-muted mb-0">Save up to 27% compared to individual daily meal ordering, plus free delivery.</p>
+        <h6 class="fw-bold mb-1" style="color: var(--tt-charcoal);">Guaranteed Savings</h6>
+        <p class="small text-muted mb-0">Save significantly compared to ordering single dishes daily, with zero recurring delivery fees.</p>
       </div>
       <div class="col-md-3">
-        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 text-success" style="width: 54px; height: 54px; background-color: var(--tt-primary-light);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 58px; height: 58px; background-color: var(--tt-cream); color: var(--tt-charcoal); border: 1px solid var(--tt-border);">
+          <i class="bi bi-arrow-repeat fs-4 text-primary"></i>
         </div>
-        <h6 class="fw-bold mb-1 text-dark">Rotating Daily Menu</h6>
-        <p class="small text-muted mb-0">Never get bored. Chefs rotate dals, seasonal vegetables, and gravies every single day.</p>
+        <h6 class="fw-bold mb-1" style="color: var(--tt-charcoal);">Rotating Daily Menu</h6>
+        <p class="small text-muted mb-0">Never get bored. Chefs rotate seasonal vegetables, authentic dals, and home gravies daily.</p>
       </div>
       <div class="col-md-3">
-        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 text-success" style="width: 54px; height: 54px; background-color: var(--tt-primary-light);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 58px; height: 58px; background-color: var(--tt-cream); color: var(--tt-charcoal); border: 1px solid var(--tt-border);">
+          <i class="bi bi-pause-circle fs-4 text-warning"></i>
         </div>
-        <h6 class="fw-bold mb-1 text-dark">Pause Whenever You Travel</h6>
-        <p class="small text-muted mb-0">Going away for the weekend? Pause with 24 hours notice and resume anytime without losing meals.</p>
+        <h6 class="fw-bold mb-1" style="color: var(--tt-charcoal);">Pause When Traveling</h6>
+        <p class="small text-muted mb-0">Going away for a few days? Pause with one click and resume without forfeiting paid meals.</p>
       </div>
       <div class="col-md-3">
-        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 text-success" style="width: 54px; height: 54px; background-color: var(--tt-primary-light);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 58px; height: 58px; background-color: var(--tt-cream); color: var(--tt-charcoal); border: 1px solid var(--tt-border);">
+          <i class="bi bi-shield-check fs-4 text-success"></i>
         </div>
-        <h6 class="fw-bold mb-1 text-dark">Custom Diet Preferences</h6>
-        <p class="small text-muted mb-0">Select Pure Veg, Jain (No onion/garlic), or Non-Veg during subscription setup.</p>
+        <h6 class="fw-bold mb-1" style="color: var(--tt-charcoal);">Dietary Customization</h6>
+        <p class="small text-muted mb-0">Select Pure Veg, Jain, or Non-Veg during checkout to suit your personal health requirements.</p>
       </div>
     </div>
   </div>

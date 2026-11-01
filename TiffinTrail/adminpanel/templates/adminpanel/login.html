@@ -4,45 +4,177 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Console Login | TiffinTrail</title>
+  <title>Admin Sign In | TiffinTrail Management Portal</title>
   <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+  
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=9.0">
+  
   <style>
-    body.tt-admin-login-bg {
-      background: linear-gradient(135deg, #091b0c 0%, #103214 100%);
+    body.tt-login-page {
+      background-color: var(--tt-bg);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 24px;
+      margin: 0;
     }
-    .tt-login-box {
-      max-width: 440px;
+    .tt-login-container {
       width: 100%;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+      max-width: 980px;
+      min-height: 580px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      border: 1px solid var(--tt-border);
+      box-shadow: 0 20px 45px -10px rgba(37, 55, 70, 0.18), 0 10px 20px -5px rgba(37, 55, 70, 0.08);
       overflow: hidden;
+      display: flex;
+    }
+    .tt-login-visual {
+      flex: 1;
+      background: linear-gradient(145deg, rgba(27, 41, 52, 0.94), rgba(37, 55, 70, 0.88)), url("{% static 'images/chef_cooking.jpg' %}") center/cover no-repeat;
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #FFFFFF;
+      position: relative;
+    }
+    .tt-login-form-side {
+      width: 440px;
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: #FFFFFF;
+    }
+    @media (max-width: 860px) {
+      .tt-login-visual {
+        display: none;
+      }
+      .tt-login-form-side {
+        width: 100%;
+        padding: 36px 24px;
+      }
+      .tt-login-container {
+        max-width: 460px;
+      }
+    }
+    .tt-auth-logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .tt-auth-brand-logo {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      border-radius: 10px;
+      border: 1.5px solid var(--tt-gold);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px;
+    }
+    .tt-login-input-group {
+      position: relative;
+    }
+    .tt-login-input-group .form-control {
+      padding-left: 42px !important;
+      height: 46px;
+      font-size: 0.9rem !important;
+      border-radius: 10px !important;
+    }
+    .tt-login-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 1.1rem;
+      z-index: 5;
+    }
+    .tt-password-toggle-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      z-index: 5;
+      padding: 4px;
+      font-size: 1.05rem;
+    }
+    .tt-password-toggle-btn:hover {
+      color: var(--tt-charcoal);
+    }
+    .tt-login-submit-btn {
+      height: 46px;
+      background-color: var(--tt-charcoal) !important;
+      border-color: var(--tt-charcoal) !important;
+      color: #FFFFFF !important;
+      font-size: 0.92rem !important;
+      font-weight: 700 !important;
+      border-radius: 10px !important;
+      transition: all 0.2s var(--tt-ease-smooth);
+    }
+    .tt-login-submit-btn:hover {
+      background-color: var(--tt-charcoal-dark) !important;
+      box-shadow: 0 6px 18px rgba(37, 55, 70, 0.3) !important;
+      transform: translateY(-1.5px);
     }
   </style>
 </head>
-<body class="tt-admin-login-bg">
-  <div class="tt-login-box">
-    <!-- Header -->
-    <div class="p-4 text-center" style="background: linear-gradient(135deg, #0f3d13, #1b5e20); color: white;">
-      <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" style="width: 54px; height: 54px; object-fit: contain; border-radius: 12px;" class="mx-auto mb-2 d-block">
-      <h4 class="fw-bold mb-1">TiffinTrail</h4>
-      <p class="small text-white-50 mb-0">Platform Admin Console</p>
+<body class="tt-login-page">
+  <div class="tt-login-container">
+    <!-- Visual Brand Left Pane -->
+    <div class="tt-login-visual">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-4">
+          <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" class="tt-auth-brand-logo">
+          <div>
+            <div class="fw-bold fs-5 tracking-tight">TiffinTrail</div>
+            <div class="text-white-50 small" style="font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;">Enterprise Administration</div>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <span class="badge mb-2 px-3 py-1" style="background: rgba(230, 173, 69, 0.25); color: var(--tt-gold); border: 1px solid rgba(230, 173, 69, 0.4);">
+            <i class="bi bi-shield-check me-1"></i>Secure Platform Management
+          </span>
+          <h2 class="display-6 fw-bold text-white mb-3" style="line-height: 1.25;">
+            Managing Authentic Homemade Culinary Care
+          </h2>
+          <p class="text-white-50 small mb-0" style="line-height: 1.7; max-width: 380px;">
+            Oversee real-time kitchen operations, verify home chefs, inspect meal subscriptions, and review platform commerce with complete administrative control.
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-4 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center text-white-50 small">
+        <div>&copy; {% now "Y" %} TiffinTrail Inc.</div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="tt-status-dot"></span> System Live & Secured
+        </div>
+      </div>
     </div>
 
-    <!-- Form -->
-    <div class="p-4">
+    <!-- Login Form Right Pane -->
+    <div class="tt-login-form-side">
+      <div class="mb-4">
+        <h3 class="fw-bold mb-1" style="color: var(--tt-charcoal);">Admin Sign In</h3>
+        <p class="text-muted small mb-0">Enter your administrative credentials to continue.</p>
+      </div>
+
+      <!-- Flash Messages -->
       {% if messages %}
         {% for message in messages %}
-          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show small" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          <div class="alert alert-{{ message.tags|default:'danger' }} alert-dismissible fade show small py-2 px-3 mb-3" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-1"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="padding: 0.65rem;"></button>
           </div>
         {% endfor %}
       {% endif %}
@@ -51,35 +183,42 @@
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ next }}">
 
+        <!-- Username -->
         <div class="mb-3">
           <label class="tt-form-label">Administrator Username</label>
-          <div class="input-group">
-            <span class="input-group-text bg-light"></span>
-            <input type="text" name="username" class="form-control" placeholder="e.g. admin" required autofocus>
+          <div class="tt-login-input-group">
+            <i class="bi bi-person tt-login-icon"></i>
+            <input type="text" name="username" class="form-control" placeholder="e.g. admin" required autofocus autocomplete="username">
           </div>
         </div>
 
+        <!-- Password -->
         <div class="mb-4">
           <label class="tt-form-label">Password</label>
-          <div class="input-group">
-            <span class="input-group-text bg-light"></span>
-            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+          <div class="tt-login-input-group">
+            <i class="bi bi-lock tt-login-icon"></i>
+            <input type="password" name="password" id="adminPasswordInput" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" class="tt-password-toggle-btn tt-password-toggle" aria-label="Toggle password visibility">
+              <i class="bi bi-eye"></i>
+            </button>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-success w-100 fw-bold py-2 shadow-sm mb-3">
-          Sign In to Admin Console →
+        <!-- Submit Button -->
+        <button type="submit" class="btn tt-login-submit-btn w-100 shadow-sm mb-3">
+          Sign In to Console &rarr;
         </button>
       </form>
 
-      <div class="text-center mt-3 pt-3 border-top small">
-        <a href="{% url 'customer:home' %}" class="text-decoration-none text-muted">
-          ← Return to Customer Website
+      <div class="text-center mt-3 pt-3 border-top border-light-subtle">
+        <a href="{% url 'customer:home' %}" class="small text-muted text-decoration-none d-inline-flex align-items-center gap-1 hover-gold">
+          <i class="bi bi-arrow-left"></i> Return to Customer Website
         </a>
       </div>
     </div>
   </div>
 
   <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/admin.js' %}?v=9.0"></script>
 </body>
 </html>

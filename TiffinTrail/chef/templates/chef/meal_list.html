@@ -3,20 +3,21 @@
 
 {% block title %}Manage Meals | TiffinTrail Chef Studio{% endblock %}
 {% block eyebrow %}HOMESTYLE MENU CATALOG{% endblock %}
-{% block page_heading %}Manage Meals{% endblock %}
+{% block page_heading %}Homestyle Meals Catalog{% endblock %}
 
 {% block content %}
 <!-- Top Header & Action Row -->
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-  <div>
-    <p class="text-muted mb-0">Total Dishes: <strong>{{ meals.count }}</strong></p>
+  <div class="d-flex align-items-center gap-2">
+    <span class="text-secondary">Kitchen Dishes:</span>
+    <span class="badge bg-white text-dark border px-3 py-1.5 fs-6 fw-semibold">{{ meals.count }} Total</span>
   </div>
   <div class="d-flex gap-2">
-    <a href="{% url 'chef:daily_menu' %}" class="btn btn-outline-success">
-       Schedule Daily Menu
+    <a href="{% url 'chef:daily_menu' %}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1.5">
+      <i class="bi bi-calendar3"></i> Schedule Daily Menu
     </a>
-    <a href="{% url 'chef:meal_add' %}" class="btn btn-success fw-semibold shadow-sm">
-       Add New Dish
+    <a href="{% url 'chef:meal_add' %}" class="btn btn-primary fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5">
+      <i class="bi bi-plus-lg"></i> Add New Dish
     </a>
   </div>
 </div>
@@ -27,8 +28,10 @@
     <form method="get" class="row g-2 align-items-center">
       <div class="col-md-4">
         <div class="input-group">
-          <span class="input-group-text bg-white"></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search dish name or description...">
+          <span class="input-group-text bg-white border-end-0 text-muted">
+            <i class="bi bi-search"></i>
+          </span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search dish name or description...">
         </div>
       </div>
 
@@ -54,22 +57,24 @@
       <div class="col-md-2">
         <select name="diet" class="form-select" onchange="this.form.submit()">
           <option value="">All Diets</option>
-          <option value="veg" {% if selected_diet == 'veg' %}selected{% endif %}>Vegetarian</option>
+          <option value="veg" {% if selected_diet == 'veg' %}selected{% endif %}>Pure Vegetarian</option>
           <option value="non_veg" {% if selected_diet == 'non_veg' %}selected{% endif %}>Non-Vegetarian</option>
         </select>
       </div>
 
-      <div class="col-md-1 d-flex gap-1">
-        <button type="submit" class="btn btn-primary w-100">Filter</button>
+      <div class="col-md-1 d-flex gap-2">
+        <button type="submit" class="btn btn-primary w-100 fw-medium">Filter</button>
         {% if search_query or selected_category or selected_meal_type or selected_diet %}
-          <a href="{% url 'chef:meals' %}" class="btn btn-outline-secondary" title="Reset Filters">✕</a>
+          <a href="{% url 'chef:meals' %}" class="btn btn-outline-secondary" title="Clear Filters">
+            <i class="bi bi-x-lg"></i>
+          </a>
         {% endif %}
       </div>
     </form>
   </div>
 </div>
 
-<!-- Meals Table -->
+<!-- Meals Table Card -->
 <div class="tt-card">
   <div class="tt-card-body p-0">
     <div class="tt-table-responsive">
@@ -83,7 +88,7 @@
             <th>Prep Time</th>
             <th>Daily Qty</th>
             <th>Availability</th>
-            <th class="text-end" >Actions</th>
+            <th class="text-end">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -92,13 +97,15 @@
               <td>
                 <div class="d-flex align-items-center gap-3">
                   {% if meal.image %}
-                    <img src="{{ meal.image.url }}" alt="{{ meal.name }}" class="tt-meal-thumb rounded border">
+                    <img src="{{ meal.image.url }}" alt="{{ meal.name }}" class="rounded-3 border" style="width: 48px; height: 48px; object-fit: cover;">
                   {% else %}
-                    <div class="tt-meal-thumb rounded border"></div>
+                    <div class="rounded-3 border bg-light d-flex align-items-center justify-content-center text-muted" style="width: 48px; height: 48px;">
+                      <i class="bi bi-cup-hot"></i>
+                    </div>
                   {% endif %}
                   <div>
                     <strong class="d-block text-dark">{{ meal.name }}</strong>
-                    <span class="text-muted small">{{ meal.cuisine }}</span>
+                    <span class="text-muted small">{{ meal.cuisine|default:"Homestyle" }}</span>
                   </div>
                 </div>
               </td>
@@ -110,27 +117,29 @@
               </td>
               <td>
                 {% if meal.is_veg %}
-                  <span class="tt-badge tt-badge-veg"> Pure Veg</span>
+                  <span class="tt-badge tt-badge-veg">Pure Veg</span>
                 {% else %}
-                  <span class="tt-badge tt-badge-nonveg"> Non-Veg</span>
+                  <span class="tt-badge tt-badge-nonveg">Non-Veg</span>
                 {% endif %}
               </td>
               <td>
-                <strong class="text-dark fs-6">₹{{ meal.price }}</strong>
+                <strong class="text-success fs-6">₹{{ meal.price|floatformat:2 }}</strong>
               </td>
               <td>
-                <span class="text-muted small"> {{ meal.preparation_time }} mins</span>
+                <span class="text-secondary small d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-stopwatch"></i> {{ meal.preparation_time }} mins
+                </span>
               </td>
               <td>
-                <span class="badge bg-light text-secondary border">{{ meal.available_quantity }} portions</span>
+                <span class="badge bg-light text-dark border">{{ meal.available_quantity }} portions</span>
               </td>
               <td>
-                <form action="{% url 'chef:meal_toggle' meal.id %}" method="post" class="d-inline">
+                <form action="{% url 'chef:meal_toggle' meal.id %}" method="post" class="d-inline m-0">
                   {% csrf_token %}
-                  <label class="tt-toggle-switch tt-toggle-sm" for="chefMealToggle{{ meal.id }}" title="{% if meal.is_available %}Mark as Unavailable{% else %}Mark as Available{% endif %}">
+                  <label class="tt-toggle-switch" for="chefMealToggle{{ meal.id }}" title="{% if meal.is_available %}Mark as Unavailable{% else %}Mark as Available{% endif %}">
                     <input type="checkbox" id="chefMealToggle{{ meal.id }}" {% if meal.is_available %}checked{% endif %} onchange="this.form.submit()">
                     <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
-                    <span class="tt-toggle-label" style="font-size:0.78rem;">{% if meal.is_available %}Available{% else %}Unavailable{% endif %}</span>
+                    <span class="tt-toggle-label small" style="font-size:0.78rem;">{% if meal.is_available %}Available{% else %}Unavailable{% endif %}</span>
                   </label>
                 </form>
               </td>
@@ -141,7 +150,7 @@
                     <i class="bi bi-pencil-square"></i> Edit
                   </a>
                   <a href="{% url 'chef:meal_delete' meal.id %}" class="btn btn-sm tt-btn-action tt-btn-action-danger" title="Delete Dish">
-                    <i class="bi bi-trash-fill"></i> Delete
+                    <i class="bi bi-trash3-fill"></i> Delete
                   </a>
                 </div>
               </td>
@@ -149,9 +158,12 @@
           {% empty %}
             <tr>
               <td colspan="8" class="text-center py-5 text-muted">
-                <h5>No meals found.</h5>
-                <p class="small mb-3">Add homestyle recipes to your kitchen menu so diners can order or subscribe!</p>
-                <a href="{% url 'chef:meal_add' %}" class="btn btn-sm btn-success"> Add First Meal</a>
+                <i class="bi bi-cup-hot fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                <h5 class="text-dark fw-bold mb-1">No meals found in your kitchen catalog.</h5>
+                <p class="small text-muted mb-3">Add homestyle recipes so diners can discover and order your dishes!</p>
+                <a href="{% url 'chef:meal_add' %}" class="btn btn-sm btn-primary rounded-pill px-3.5 py-2 fw-semibold shadow-sm">
+                  <i class="bi bi-plus-lg me-1"></i>Add First Meal
+                </a>
               </td>
             </tr>
           {% endfor %}

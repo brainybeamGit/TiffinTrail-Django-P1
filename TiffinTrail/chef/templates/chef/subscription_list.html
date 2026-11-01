@@ -13,16 +13,16 @@
       All ({{ status_counts.all }})
     </a>
     <a href="?status=active{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'active' %}active{% endif %}">
-       Active ({{ status_counts.active }})
+      <i class="bi bi-check-circle me-1"></i>Active ({{ status_counts.active }})
     </a>
     <a href="?status=paused{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'paused' %}active{% endif %}">
-       Paused ({{ status_counts.paused }})
+      <i class="bi bi-pause-circle me-1"></i>Paused ({{ status_counts.paused }})
     </a>
     <a href="?status=completed{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'completed' %}active{% endif %}">
-      ✓ Completed ({{ status_counts.completed }})
+      <i class="bi bi-check2-all me-1"></i>Completed ({{ status_counts.completed }})
     </a>
     <a href="?status=cancelled{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'cancelled' %}active{% endif %}">
-      ✕ Cancelled ({{ status_counts.cancelled }})
+      <i class="bi bi-x-circle me-1"></i>Cancelled ({{ status_counts.cancelled }})
     </a>
   </div>
 </div>
@@ -37,15 +37,17 @@
 
       <div class="col-md-9">
         <div class="input-group">
-          <span class="input-group-text bg-white"></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by Subscription # or Diner Name / Phone...">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search by Subscription # or Diner Name / Phone...">
         </div>
       </div>
 
       <div class="col-md-3 d-flex gap-1">
-        <button type="submit" class="btn btn-primary w-100">Search Subscribers</button>
+        <button type="submit" class="btn btn-primary w-100 fw-semibold">Search Subscribers</button>
         {% if search_query %}
-          <a href="{% url 'chef:subscriptions' %}?status={{ status_filter }}" class="btn btn-outline-secondary">✕</a>
+          <a href="{% url 'chef:subscriptions' %}?status={{ status_filter }}" class="btn btn-outline-secondary" title="Clear Search">
+            <i class="bi bi-x-lg"></i>
+          </a>
         {% endif %}
       </div>
     </form>
@@ -66,7 +68,7 @@
             <th>Diet</th>
             <th>Duration</th>
             <th>Status</th>
-            <th class="text-end" >Actions</th>
+            <th class="text-end">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -79,18 +81,22 @@
                 <div class="text-muted small">Started: {{ sub.start_date|date:"d M Y" }}</div>
               </td>
               <td>
-                <div class="fw-semibold">{{ sub.recipient_name }}</div>
+                <div class="fw-semibold text-dark">{{ sub.recipient_name }}</div>
                 <div class="text-muted small"><i class="bi bi-telephone me-1"></i>{{ sub.recipient_phone }}</div>
               </td>
               <td>
-                <strong>{{ sub.plan.name }}</strong>
-                <div class="text-success small fw-bold">₹{{ sub.total_amount }} <span class="text-muted fw-normal">({{ sub.plan.get_plan_type_display }})</span></div>
+                <strong class="text-dark">{{ sub.plan.name }}</strong>
+                <div class="text-success small fw-bold">₹{{ sub.total_amount|floatformat:2 }} <span class="text-muted fw-normal">({{ sub.plan.get_plan_type_display }})</span></div>
               </td>
               <td>
                 {% if 'Lunch' in sub.get_delivery_slot_display %}
-                  <span class="badge border" style="background: #fffbeb; color: #b45309; border-color: #fde68a;">☀️ Lunch</span>
+                  <span class="badge border" style="background: #fffbeb; color: #b45309; border-color: #fde68a;">
+                    <i class="bi bi-sun-fill text-warning me-1"></i>Lunch
+                  </span>
                 {% elif 'Dinner' in sub.get_delivery_slot_display %}
-                  <span class="badge border" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe;"><i class="bi bi-moon-stars-fill text-primary me-1"></i>Dinner</span>
+                  <span class="badge border" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe;">
+                    <i class="bi bi-moon-stars-fill text-primary me-1"></i>Dinner
+                  </span>
                 {% else %}
                   <span class="badge bg-light text-secondary border">{{ sub.get_delivery_slot_display }}</span>
                 {% endif %}
@@ -101,22 +107,22 @@
                 </span>
               </td>
               <td>
-                <div class="small text-nowrap">
+                <div class="small text-nowrap text-dark">
                   <i class="bi bi-calendar3 me-1 text-muted"></i>{{ sub.start_date|date:"d M" }} – {{ sub.end_date|date:"d M Y" }}
                 </div>
               </td>
               <td>
-                <span class="badge rounded-pill {% if sub.status == 'active' %}bg-success{% elif sub.status == 'paused' %}bg-warning text-dark{% elif sub.status == 'completed' %}bg-info text-dark{% else %}bg-secondary{% endif %} px-2 py-1">
+                <span class="badge rounded-pill {% if sub.status == 'active' %}bg-success{% elif sub.status == 'paused' %}bg-warning text-dark{% elif sub.status == 'completed' %}bg-info text-dark{% else %}bg-secondary{% endif %} px-2.5 py-1">
                   {{ sub.get_status_display }}
                 </span>
               </td>
               <td class="text-end tt-actions-cell">
                 <div class="tt-actions-group">
                   <a href="{% url 'chef:subscription_detail' sub.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
-                    <i class="bi bi-eye-fill"></i> Details
+                    <i class="bi bi-eye"></i> Details
                   </a>
                   <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteChefSubModal{{ sub.id }}" title="Delete Subscription">
-                    <i class="bi bi-trash-fill"></i> Delete
+                    <i class="bi bi-trash3"></i> Delete
                   </button>
                 </div>
 
@@ -127,12 +133,16 @@
                       <form action="{% url 'chef:subscription_delete' sub.id %}" method="post">
                         {% csrf_token %}
                         <div class="modal-header">
-                          <h5 class="modal-title fs-6 fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i> Delete Subscription Record</h5>
+                          <h5 class="modal-title fs-6 fw-bold text-danger d-flex align-items-center gap-2">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Delete Subscription Record
+                          </h5>
                           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                          <p class="mb-1">Are you sure you want to delete subscription <strong>#{{ sub.subscription_number }}</strong>?</p>
-                          <div class="small text-muted">Subscriber: {{ sub.recipient_name }} | Plan: {{ sub.plan.name }}</div>
+                          <p class="mb-1 text-dark">Are you sure you want to delete subscription <strong>#{{ sub.subscription_number }}</strong>?</p>
+                          <div class="small text-muted mt-2 p-2 bg-light rounded border">
+                            Subscriber: <strong>{{ sub.recipient_name }}</strong> · Plan: <strong>{{ sub.plan.name }}</strong>
+                          </div>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -147,7 +157,8 @@
           {% empty %}
             <tr>
               <td colspan="8" class="text-center py-5 text-muted">
-                <h5>No subscriptions found matching this filter.</h5>
+                <div class="mb-2"><i class="bi bi-calendar-heart fs-1 text-muted opacity-50"></i></div>
+                <h6 class="fw-bold">No subscriptions found matching this filter.</h6>
                 <p class="small mb-0">Subscribed customers will appear here when they enroll in your meal plans.</p>
               </td>
             </tr>
@@ -164,7 +175,7 @@
           {% if page_obj.has_previous %}
             <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}">Previous</a></li>
           {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          <li class="page-item active"><span class="page-link bg-dark border-dark">{{ page_obj.number }}</span></li>
           {% if page_obj.has_next %}
             <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}">Next</a></li>
           {% endif %}

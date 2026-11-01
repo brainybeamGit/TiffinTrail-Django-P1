@@ -8,73 +8,78 @@
   <div class="row justify-content-center">
     <div class="col-lg-7">
       <div class="text-center mb-4">
-        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: var(--tt-green-100); color: var(--tt-green-700); font-size: 2.5rem;">
-          ✓
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 80px; height: 80px; background: #dcfce7; color: #16a34a; font-size: 2.5rem;">
+          <i class="bi bi-check2-circle"></i>
         </div>
-        <h1 class="fs-2 fw-bold text-dark">Order Confirmed!</h1>
-        <p class="text-muted">Thank you, <strong>{{ order.recipient_name }}</strong>. Your meal has been received by {{ order.chef.business_name }}.</p>
-        <span class="badge bg-light text-dark border font-monospace fs-6 px-3 py-2">
+        <h1 class="h2 fw-bold text-dark mb-1">Order Confirmed!</h1>
+        <p class="text-muted">Thank you, <strong>{{ order.recipient_name }}</strong>. Your meal order has been transmitted to {{ order.chef.business_name }}.</p>
+        <span class="badge bg-light text-dark border font-monospace fs-6 px-3 py-2 rounded-pill">
           Order ID: {{ order.order_number }}
         </span>
       </div>
 
-      <div class="p-4 bg-white rounded-4 border shadow-sm mb-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
         <div class="d-flex justify-content-between align-items-center pb-3 border-bottom mb-3">
           <div>
-            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.72rem;">Home Chef Partner</small>
-            <h6 class="fw-bold mb-0">{{ order.chef.business_name }}</h6>
+            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.05em;">Home Chef Partner</small>
+            <h6 class="fw-bold mb-0 text-dark">{{ order.chef.business_name }}</h6>
           </div>
-          <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill small">
-             Order Received
+          <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-2 rounded-pill small d-inline-flex align-items-center gap-1.5 fw-semibold">
+            <i class="bi bi-hourglass-split"></i> Order Received
           </span>
         </div>
 
-        <h6 class="fw-bold mb-3 small text-uppercase text-muted">Ordered Items</h6>
+        <h6 class="fw-bold mb-3 small text-uppercase text-muted" style="letter-spacing: 0.05em;">Ordered Dishes</h6>
         <div class="d-grid gap-2 mb-3">
           {% for item in order.items.all %}
-          <div class="d-flex justify-content-between align-items-center small py-1">
-            <span>{{ item.quantity }}x {{ item.meal_name }}</span>
-            <span class="fw-bold">₹{{ item.subtotal|floatformat:2 }}</span>
+          <div class="d-flex justify-content-between align-items-center small py-1 border-bottom">
+            <span class="text-dark">{{ item.quantity }} × {{ item.meal_name }}</span>
+            <span class="fw-bold text-dark">₹{{ item.subtotal|floatformat:2 }}</span>
           </div>
           {% endfor %}
         </div>
 
-        <div class="border-top pt-3 small">
-          <div class="d-flex justify-content-between mb-1">
+        <div class="pt-2 small">
+          <div class="d-flex justify-content-between mb-1.5">
             <span class="text-muted">Item Subtotal:</span>
-            <span>₹{{ order.total_amount|floatformat:2 }}</span>
+            <span class="text-dark fw-semibold">₹{{ order.total_amount|floatformat:2 }}</span>
           </div>
-          <div class="d-flex justify-content-between mb-1">
+          <div class="d-flex justify-content-between mb-1.5">
             <span class="text-muted">Delivery Fee:</span>
-            <span>₹{{ order.delivery_fee|floatformat:2 }}</span>
+            {% if order.delivery_fee == 0 %}
+            <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill">FREE</span>
+            {% else %}
+            <span class="text-dark fw-semibold">₹{{ order.delivery_fee|floatformat:2 }}</span>
+            {% endif %}
           </div>
-          <div class="d-flex justify-content-between mb-1">
+          <div class="d-flex justify-content-between mb-1.5">
             <span class="text-muted">Taxes (GST):</span>
-            <span>₹{{ order.tax_amount|floatformat:2 }}</span>
+            <span class="text-dark fw-semibold">₹{{ order.tax_amount|floatformat:2 }}</span>
           </div>
           {% if order.discount_amount > 0 %}
-          <div class="d-flex justify-content-between mb-1 text-success fw-bold">
-            <span>Discount:</span>
+          <div class="d-flex justify-content-between mb-1.5 text-success fw-bold">
+            <span>Promotional Discount:</span>
             <span>- ₹{{ order.discount_amount|floatformat:2 }}</span>
           </div>
           {% endif %}
-          <div class="d-flex justify-content-between fs-5 fw-bold pt-2 border-top">
-            <span>Total Amount:</span>
-            <span class="text-success">₹{{ order.final_amount|floatformat:2 }}</span>
+          <div class="d-flex justify-content-between fs-5 fw-bold pt-2 my-2 border-top border-bottom">
+            <span style="color: var(--tt-charcoal);">Total Amount:</span>
+            <span style="color: var(--tt-charcoal);">₹{{ order.final_amount|floatformat:2 }}</span>
           </div>
         </div>
 
-        <div class="mt-4 p-3 bg-light rounded-3 small">
-          <div class="mb-1"><strong>Delivering to:</strong> {{ order.delivery_address_text }}</div>
-          <div><strong>Payment Mode:</strong> {{ order.get_payment_method_display }} ({{ order.get_payment_status_display }})</div>
+        <div class="mt-3 p-3 bg-light rounded-3 small border" style="border-color: var(--tt-border) !important;">
+          <div class="mb-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>Delivering to:</strong> {{ order.delivery_address_text }}</div>
+          <div><i class="bi bi-credit-card text-success me-1"></i><strong>Payment Mode:</strong> {{ order.get_payment_method_display }} ({{ order.get_payment_status_display }})</div>
         </div>
       </div>
 
       <div class="d-flex flex-wrap gap-2 justify-content-center">
-        <a href="{% url 'customer:order_detail' order.pk %}" class="btn btn-tt-primary px-4">
-          Track Live Order Status →
+        <a href="{% url 'customer:order_detail' order.pk %}" class="btn btn-tt-primary px-4 py-2.5 rounded-3 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+          <span>Track Live Order Status</span>
+          <i class="bi bi-arrow-right"></i>
         </a>
-        <a href="{% url 'customer:home' %}" class="btn btn-tt-outline">
+        <a href="{% url 'customer:home' %}" class="btn btn-tt-outline px-4 py-2.5 rounded-3 fw-semibold">
           Back to Homepage
         </a>
       </div>

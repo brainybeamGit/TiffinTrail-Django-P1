@@ -7,13 +7,15 @@
 
 {% block content %}
 <!-- Search & Status Filter Bar -->
-<div class="tt-card mb-4">
+<div class="tt-card tt-stagger-1 mb-4">
   <div class="tt-card-body p-3">
     <form method="get" class="row g-2 align-items-center">
       <div class="col-md-7">
         <div class="input-group">
-          <span class="input-group-text bg-white"></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by Diner Name, Username, or Email...">
+          <span class="input-group-text bg-white border-end-0 text-muted">
+            <i class="bi bi-search"></i>
+          </span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search by Diner Name, Username, or Email...">
         </div>
       </div>
 
@@ -26,9 +28,11 @@
       </div>
 
       <div class="col-md-2 d-flex gap-1">
-        <button type="submit" class="btn btn-primary w-100">Filter</button>
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="bi bi-funnel"></i> Filter
+        </button>
         {% if search_query or status_filter %}
-          <a href="{% url 'adminpanel:customers' %}" class="btn btn-outline-secondary" title="Reset">✕</a>
+          <a href="{% url 'adminpanel:customers' %}" class="btn btn-outline-secondary" title="Reset Filters"><i class="bi bi-x-lg"></i></a>
         {% endif %}
       </div>
     </form>
@@ -36,16 +40,20 @@
 </div>
 
 <!-- Customers Table -->
-<div class="tt-card">
+<div class="tt-card tt-stagger-2">
   <div class="tt-card-header d-flex justify-content-between align-items-center">
-    <h5 class="tt-card-title"> Registered Diners ({{ total_count }})</h5>
+    <h5 class="tt-card-title">
+      <i class="bi bi-people-fill text-primary"></i>
+      Registered Diners ({{ total_count }})
+    </h5>
+    <span class="text-muted small">Platform customer registry</span>
   </div>
   <div class="tt-card-body p-0">
     <div class="tt-table-responsive">
       <table class="tt-table">
         <thead>
           <tr>
-            <th>Diner ID & Name</th>
+            <th class="ps-3">Diner ID & Name</th>
             <th>Email</th>
             <th>Phone</th>
             <th>Registered Date</th>
@@ -53,13 +61,13 @@
             <th>Total Spending</th>
             <th>Active Subs</th>
             <th>Status</th>
-            <th class="text-end">Action</th>
+            <th class="pe-3 text-end">Action</th>
           </tr>
         </thead>
         <tbody>
           {% for row in page_obj %}
             <tr>
-              <td>
+              <td class="ps-3">
                 <a href="{% url 'adminpanel:customer_detail' row.user.id %}" class="fw-bold text-dark text-decoration-none">
                   #{{ row.user.id }} · {{ row.user.get_full_name|default:row.user.username }}
                 </a>
@@ -74,7 +82,7 @@
                 </span>
               </td>
               <td>
-                <strong class="text-success">₹{{ row.total_spent }}</strong>
+                <strong class="text-success">₹{{ row.total_spent|floatformat:2 }}</strong>
               </td>
               <td>
                 {% if row.active_subs > 0 %}
@@ -87,12 +95,12 @@
               </td>
               <td>
                 {% if row.user.is_active %}
-                  <span class="badge bg-success">Active</span>
+                  <span class="tt-badge tt-badge-active">Active</span>
                 {% else %}
-                  <span class="badge bg-danger">Deactivated</span>
+                  <span class="tt-badge tt-badge-cancelled">Deactivated</span>
                 {% endif %}
               </td>
-              <td class="text-end tt-actions-cell">
+              <td class="pe-3 text-end tt-actions-cell">
                 <div class="tt-actions-group">
                   <a href="{% url 'adminpanel:customer_detail' row.user.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
                     <i class="bi bi-person-lines-fill"></i> Profile & History
@@ -106,7 +114,9 @@
           {% empty %}
             <tr>
               <td colspan="9" class="text-center py-5 text-muted">
-                <h5>No customers found matching this filter.</h5>
+                <i class="bi bi-person-x d-block fs-2 text-muted mb-2"></i>
+                <h6 class="fw-bold text-dark mb-1">No customers found matching this filter.</h6>
+                <span class="small">Try adjusting search parameters or clear the active filter.</span>
               </td>
             </tr>
           {% endfor %}
@@ -122,7 +132,7 @@
           {% if page_obj.has_previous %}
             <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a></li>
           {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          <li class="page-item active"><span class="page-link bg-dark border-dark">{{ page_obj.number }}</span></li>
           {% if page_obj.has_next %}
             <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a></li>
           {% endif %}
@@ -131,6 +141,7 @@
     {% endif %}
   </div>
 </div>
+
 {% for row in page_obj %}
 <!-- Delete Customer Modal for {{ row.user.id }} -->
 <div class="modal fade" id="deleteCustModal{{ row.user.id }}" tabindex="-1" aria-labelledby="deleteCustModalLabel{{ row.user.id }}" aria-hidden="true">

@@ -2,14 +2,14 @@
 {% load static %}
 
 {% block title %}Platform Analytics | TiffinTrail Admin Console{% endblock %}
-{% block eyebrow %}ADVANCED ANALYTICS & CHARTS{% endblock %}
-{% block page_heading %}Platform Analytics & Charts{% endblock %}
+{% block eyebrow %}ADVANCED ANALYTICS & INTELLIGENCE{% endblock %}
+{% block page_heading %}Platform Analytics & Growth Trends{% endblock %}
 
 {% block content %}
 <!-- Timeframe Filter -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
   <div>
-    <p class="text-muted mb-0">Aggregated database analytics over selected timeframe.</p>
+    <p class="text-secondary mb-0">Aggregated database business metrics over the selected timeframe.</p>
   </div>
   <div class="tt-filter-nav">
     <a href="?days=7" class="tt-filter-btn {% if days_span == 7 %}active{% endif %}">Last 7 Days</a>
@@ -19,72 +19,88 @@
   </div>
 </div>
 
-<!-- Growth Summary Tiles -->
+<!-- Growth Summary KPIs -->
 <div class="row g-3 mb-4">
   <div class="col-sm-6 col-md-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">New Diners</span>
+    <div class="tt-kpi-card">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="tt-kpi-label">New Diners</span>
+        <div class="tt-kpi-icon-wrap" style="background: rgba(59, 130, 246, 0.12); color: #3b82f6;">
+          <i class="bi bi-people"></i>
+        </div>
       </div>
       <div>
-        <h3 class="tt-stat-value">+{{ customers_growth }}</h3>
-        <div class="tt-stat-meta text-muted">Registered in timeframe</div>
+        <h3 class="tt-kpi-value text-dark mb-0">+{{ customers_growth }}</h3>
+        <div class="tt-kpi-meta text-muted mt-1">Registered in timeframe</div>
       </div>
     </div>
   </div>
 
   <div class="col-sm-6 col-md-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Chef Kitchens Enrolled</span>
+    <div class="tt-kpi-card">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="tt-kpi-label text-success">Chef Kitchens Enrolled</span>
+        <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
+          <i class="bi bi-person-badge"></i>
+        </div>
       </div>
       <div>
-        <h3 class="tt-stat-value text-success">+{{ chefs_growth }}</h3>
-        <div class="tt-stat-meta text-muted">Applied in timeframe</div>
+        <h3 class="tt-kpi-value text-success mb-0">+{{ chefs_growth }}</h3>
+        <div class="tt-kpi-meta text-muted mt-1">Applied in timeframe</div>
       </div>
     </div>
   </div>
 
   <div class="col-sm-6 col-md-3">
-    <div class="tt-stat-card">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title">Period Orders</span>
+    <div class="tt-kpi-card">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="tt-kpi-label">Period Orders</span>
+        <div class="tt-kpi-icon-wrap" style="background: rgba(230, 173, 69, 0.15); color: #e6ad45;">
+          <i class="bi bi-bag-check"></i>
+        </div>
       </div>
       <div>
-        <h3 class="tt-stat-value">{{ total_orders_period }}</h3>
-        <div class="tt-stat-meta text-muted">Placed in period</div>
+        <h3 class="tt-kpi-value text-dark mb-0">{{ total_orders_period }}</h3>
+        <div class="tt-kpi-meta text-muted mt-1">Total placed in period</div>
       </div>
     </div>
   </div>
 
   <div class="col-sm-6 col-md-3">
-    <div class="tt-stat-card border-success">
-      <div class="tt-stat-header">
-        <span class="tt-stat-title text-success">Delivered Volume</span>
+    <div class="tt-kpi-card">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="tt-kpi-label text-success">Delivered Volume</span>
+        <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
+          <i class="bi bi-check2-circle"></i>
+        </div>
       </div>
       <div>
-        <h3 class="tt-stat-value text-success">{{ delivered_period }}</h3>
-        <div class="tt-stat-meta text-muted">Successfully fulfilled</div>
+        <h3 class="tt-kpi-value text-success mb-0">{{ delivered_period }}</h3>
+        <div class="tt-kpi-meta text-muted mt-1">Successfully fulfilled</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Offline SVG Activity Trend Chart -->
+<!-- Offline Activity & Revenue Trend Chart -->
 <div class="tt-card mb-4">
-  <div class="tt-card-header">
-    <h5 class="tt-card-title">Daily Order & Revenue Growth Trend</h5>
+  <div class="tt-card-header d-flex justify-content-between align-items-center">
+    <h5 class="tt-card-title d-flex align-items-center gap-2">
+      <i class="bi bi-bar-chart-line-fill text-warning"></i> Daily Order & Revenue Growth Trend
+    </h5>
     <span class="text-muted small">Daily activity over last {{ days_span }} days</span>
   </div>
   <div class="tt-card-body">
     <div class="tt-chart-container">
       <div class="tt-chart-bar-group" style="height: 220px;">
         {% for day in order_trend %}
-          <div class="tt-chart-col" title="{{ day.date }}: {{ day.orders }} orders (₹{{ day.revenue }})">
+          <div class="tt-chart-col" title="{{ day.date }}: {{ day.orders }} orders (₹{{ day.revenue|floatformat:2 }})">
             <span class="tt-chart-bar-val">₹{{ day.revenue|floatformat:0 }}</span>
             <div class="tt-chart-bar" style="height: {% if day.revenue > 0 %}{% widthratio day.revenue 1000 160 %}px{% else %}4px{% endif %};"></div>
             <span class="tt-chart-label">{{ day.date }}</span>
           </div>
+        {% empty %}
+          <div class="text-center py-5 text-muted w-100">No chart data available for this range.</div>
         {% endfor %}
       </div>
     </div>
@@ -97,7 +113,9 @@
   <div class="col-lg-6">
     <div class="tt-card h-100">
       <div class="tt-card-header">
-        <h5 class="tt-card-title">Highest Volume Home Chefs</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-trophy-fill text-warning"></i> Highest Volume Home Chefs
+        </h5>
       </div>
       <div class="tt-card-body p-0">
         <div class="tt-table-responsive">
@@ -113,14 +131,20 @@
               {% for c in top_chefs %}
                 <tr>
                   <td>
-                    <strong><a href="{% url 'adminpanel:chef_detail' c.id %}" class="text-dark">{{ c.business_name }}</a></strong>
+                    <strong>
+                      <a href="{% url 'adminpanel:chef_detail' c.id %}" class="text-dark text-decoration-none">
+                        <i class="bi bi-shop me-1 text-secondary"></i>{{ c.business_name }}
+                      </a>
+                    </strong>
                     <div class="text-muted small">{{ c.cuisines|truncatechars:30 }}</div>
                   </td>
                   <td>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle">{{ c.orders_count }} orders</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1">
+                      <i class="bi bi-check2 me-1"></i>{{ c.orders_count }} orders
+                    </span>
                   </td>
                   <td>
-                    <strong class="text-success">₹{{ c.total_rev|default:"0.00" }}</strong>
+                    <strong class="text-success fs-6">₹{{ c.total_rev|floatformat:2|default:"0.00" }}</strong>
                   </td>
                 </tr>
               {% empty %}
@@ -139,7 +163,9 @@
   <div class="col-lg-6">
     <div class="tt-card h-100">
       <div class="tt-card-header">
-        <h5 class="tt-card-title">Most Ordered Dishes</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-fire text-danger"></i> Most Ordered Dishes
+        </h5>
       </div>
       <div class="tt-card-body p-0">
         <div class="tt-table-responsive">
@@ -154,12 +180,16 @@
             <tbody>
               {% for m in top_meals %}
                 <tr>
-                  <td><strong>{{ m.meal_name }}</strong></td>
                   <td>
-                    <span class="badge bg-light text-dark border">{{ m.total_qty }} portions</span>
+                    <strong class="text-dark">{{ m.meal_name }}</strong>
                   </td>
                   <td>
-                    <strong class="text-success">₹{{ m.total_val }}</strong>
+                    <span class="badge bg-light text-dark border px-2.5 py-1">
+                      {{ m.total_qty }} portions
+                    </span>
+                  </td>
+                  <td>
+                    <strong class="text-success fs-6">₹{{ m.total_val|floatformat:2|default:"0.00" }}</strong>
                   </td>
                 </tr>
               {% empty %}

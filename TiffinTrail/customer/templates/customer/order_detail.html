@@ -7,40 +7,43 @@
 <div class="py-4 border-bottom bg-white">
   <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-1 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'customer:order_history' %}" class="text-decoration-none" style="color: var(--tt-primary);">Orders</a></li>
+      <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:order_history' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Orders</a></li>
         <li class="breadcrumb-item active text-muted" aria-current="page">{{ order.order_number }}</li>
       </ol>
     </nav>
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
       <div>
-        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-text-main);">Order: {{ order.order_number }}</h1>
-        <div class="small text-muted">Placed on {{ order.created_at|date:"F d, Y · h:i A" }} · Prepared by <strong>{{ order.chef.business_name }}</strong></div>
+        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">Order: {{ order.order_number }}</h1>
+        <div class="small text-muted">Placed on {{ order.created_at|date:"d M Y · h:i A" }} · Prepared by <strong>{{ order.chef.business_name }}</strong></div>
       </div>
       <div class="d-flex gap-2 flex-wrap align-items-center">
         {% if order.status == 'delivered' %}
           {% if review %}
           <a href="#feedback" class="btn btn-outline-success btn-sm rounded-3 d-inline-flex align-items-center gap-1.5 px-3">
-            <span>⭐ {{ review.rating }}★ Rated</span>
+            <i class="bi bi-star-fill text-warning"></i>
+            <span>{{ review.rating|floatformat:1 }} Rated</span>
           </a>
           {% else %}
           <a href="#feedback" class="btn btn-warning btn-sm rounded-3 fw-bold text-dark d-inline-flex align-items-center gap-1.5 px-3 shadow-xs">
-            <span>⭐ Rate This Meal</span>
+            <i class="bi bi-star"></i>
+            <span>Rate This Meal</span>
           </a>
           {% endif %}
         {% endif %}
 
         {% if order.can_cancel %}
-        <button type="button" class="btn btn-outline-danger btn-sm rounded-3" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
-          Cancel Order
+        <button type="button" class="btn btn-outline-danger btn-sm rounded-3 d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+          <i class="bi bi-x-circle"></i>
+          <span>Cancel Order</span>
         </button>
         {% endif %}
 
         <form action="{% url 'customer:order_reorder' order.pk %}" method="post" class="d-inline m-0">
           {% csrf_token %}
-          <button type="submit" class="btn btn-tt-primary btn-sm rounded-3 d-inline-flex align-items-center gap-1.5 px-3">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          <button type="submit" class="btn btn-tt-primary btn-sm rounded-3 d-inline-flex align-items-center gap-1.5 px-3 fw-semibold shadow-xs">
+            <i class="bi bi-arrow-repeat"></i>
             <span>Reorder Meals</span>
           </button>
         </form>
@@ -55,20 +58,20 @@
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4 pb-3 border-bottom">
       <div>
         <h5 class="fw-bold fs-6 mb-1 text-dark d-flex align-items-center gap-2">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--tt-primary)" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <i class="bi bi-stopwatch text-warning fs-5"></i>
           <span>Live Order Tracking</span>
         </h5>
         <div class="small text-muted">
-          Order #<span class="font-monospace text-dark fw-bold">{{ order.order_number }}</span> · Last updated: <span id="lastUpdatedText">{{ order.updated_at|date:"h:i A, M d" }}</span>
+          Order #<span class="font-monospace text-dark fw-bold">{{ order.order_number }}</span> · Last updated: <span id="lastUpdatedText">{{ order.updated_at|date:"h:i A, d M" }}</span>
         </div>
       </div>
       <div class="d-flex align-items-center gap-2 flex-wrap">
         <span class="badge bg-light text-dark border px-3 py-1.5 rounded-pill small d-inline-flex align-items-center gap-2">
-          <span class="tt-live-dot"></span>
+          <span class="rounded-circle" style="width: 8px; height: 8px; background-color: var(--tt-primary);"></span>
           <span id="liveStatusBadge" class="fw-semibold">{{ order.get_status_display }}</span>
         </span>
         <button type="button" id="refreshStatusBtn" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1.5" onclick="checkOrderStatus(true);">
-          <svg id="refreshSpinner" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          <i class="bi bi-arrow-clockwise" id="refreshSpinner"></i>
           <span>Refresh</span>
         </button>
       </div>
@@ -77,7 +80,7 @@
     {% if order.status == 'cancelled' %}
     <div class="alert alert-danger mb-0 rounded-4 border-0 p-3.5 d-flex align-items-center gap-3" style="background-color: #fee2e2; color: #991b1b;">
       <div class="rounded-circle p-2 bg-white text-danger d-flex align-items-center justify-content-center shadow-xs" style="width: 40px; height: 40px; flex-shrink: 0;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        <i class="bi bi-x-circle-fill fs-5"></i>
       </div>
       <div>
         <strong class="d-block mb-0.5">Order Cancelled</strong>
@@ -88,326 +91,118 @@
     <!-- Dynamic Status Callout Banner -->
     <div class="p-3.5 mb-4 rounded-4 border d-flex align-items-center gap-3" style="border-color: #e2e8f0 !important; {% if order.status == 'pending' %}background: #fffbeb; border-color: #fef3c7 !important;{% elif order.status == 'confirmed' %}background: #eff6ff; border-color: #dbeafe !important;{% elif order.status == 'preparing' %}background: #fff7ed; border-color: #ffedd5 !important;{% elif order.status == 'out_for_delivery' %}background: #f0fdf4; border-color: #dcfce7 !important;{% elif order.status == 'delivered' %}background: #f0fdf4; border-color: #bbf7d0 !important;{% else %}background: #f8fafc;{% endif %}">
       <div class="fs-2 lh-1">
-        {% if order.status == 'pending' %}⏳
-        {% elif order.status == 'confirmed' %}👨‍🍳
-        {% elif order.status == 'preparing' %}🍳
-        {% elif order.status == 'out_for_delivery' %}🛵
-        {% elif order.status == 'delivered' %}🍽️
-        {% else %}📋{% endif %}
+        {% if order.status == 'pending' %}<i class="bi bi-hourglass-split text-warning"></i>
+        {% elif order.status == 'confirmed' %}<i class="bi bi-check2-circle text-primary"></i>
+        {% elif order.status == 'preparing' %}<i class="bi bi-fire text-warning"></i>
+        {% elif order.status == 'out_for_delivery' %}<i class="bi bi-bicycle text-success"></i>
+        {% elif order.status == 'delivered' %}<i class="bi bi-bag-check-fill text-success"></i>
+        {% else %}<i class="bi bi-clock-history text-secondary"></i>{% endif %}
       </div>
       <div>
         <h6 class="fw-bold mb-1 text-dark">
           {% if order.status == 'pending' %}Order Received by Kitchen
           {% elif order.status == 'confirmed' %}Order Confirmed by Chef {{ order.chef.business_name }}
           {% elif order.status == 'preparing' %}Cooking Fresh in Progress
-          {% elif order.status == 'out_for_delivery' %}Dispatched & Out for Delivery
+          {% elif order.status == 'out_for_delivery' %}Dispatched &amp; Out for Delivery
           {% elif order.status == 'delivered' %}Order Delivered! Enjoy Your Meal
           {% else %}{{ order.get_status_display }}{% endif %}
         </h6>
         <p class="small text-muted mb-0">
-          {% if order.status == 'pending' %}Your order details have been sent to <strong>{{ order.chef.business_name }}</strong>. Chef will accept and start prep in minutes.
-          {% elif order.status == 'confirmed' %}<strong>{{ order.chef.business_name }}</strong> has accepted your order! Pantry supplies and cooking stations are ready.
+          {% if order.status == 'pending' %}Your order details have been received by <strong>{{ order.chef.business_name }}</strong>. Chef will accept and start prep in minutes.
+          {% elif order.status == 'confirmed' %}<strong>{{ order.chef.business_name }}</strong> has accepted your order! Cooking stations and pantry ingredients are ready.
           {% elif order.status == 'preparing' %}Chef is actively preparing your hot homestyle dishes using fresh ingredients with zero preservatives.
           {% elif order.status == 'out_for_delivery' %}Meals have been packaged in hygienic food-grade containers and are en route to <strong>{{ order.recipient_name }}</strong>.
-          {% elif order.status == 'delivered' %}Your order has been handed over safely. Thank you for supporting your local home chef!
+          {% elif order.status == 'delivered' %}Your order has been safely delivered. Thank you for supporting your local home chef!
           {% else %}Status updated by kitchen.{% endif %}
         </p>
       </div>
     </div>
 
-    <!-- Stepper Timeline with Connecting Bar -->
-    <div class="tt-timeline">
-      <div class="tt-timeline-progress d-none d-md-block" style="width: {% if order.progress_step == 1 %}0%{% elif order.progress_step == 2 %}25%{% elif order.progress_step == 3 %}50%{% elif order.progress_step == 4 %}75%{% elif order.progress_step >= 5 %}100%{% else %}0%{% endif %};"></div>
-
-      <!-- Step 1: Received -->
-      <div class="tt-timeline-step {% if order.progress_step > 1 %}completed{% elif order.progress_step == 1 %}active{% endif %}">
-        <div class="circle">
-          {% if order.progress_step > 1 %}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          {% else %}
-          1
-          {% endif %}
+    <!-- Stepper Timeline -->
+    <div class="row text-center g-2 py-3">
+      <div class="col">
+        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2 {% if order.progress_step >= 1 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px; font-weight: 700;">
+          {% if order.progress_step > 1 %}<i class="bi bi-check-lg"></i>{% else %}1{% endif %}
         </div>
-        <div class="label">Order Received</div>
-        <div class="sublabel d-none d-md-block">Payment verified</div>
+        <div class="small fw-bold text-dark">Received</div>
+        <div class="text-muted small d-none d-md-block" style="font-size: 0.72rem;">Order placed</div>
       </div>
-
-      <!-- Step 2: Confirmed -->
-      <div class="tt-timeline-step {% if order.progress_step > 2 %}completed{% elif order.progress_step == 2 %}active{% endif %}">
-        <div class="circle">
-          {% if order.progress_step > 2 %}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          {% else %}
-          2
-          {% endif %}
+      <div class="col">
+        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2 {% if order.progress_step >= 2 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px; font-weight: 700;">
+          {% if order.progress_step > 2 %}<i class="bi bi-check-lg"></i>{% else %}2{% endif %}
         </div>
-        <div class="label">Chef Confirmed</div>
-        <div class="sublabel d-none d-md-block">Accepted by kitchen</div>
+        <div class="small fw-bold text-dark">Confirmed</div>
+        <div class="text-muted small d-none d-md-block" style="font-size: 0.72rem;">Accepted by chef</div>
       </div>
-
-      <!-- Step 3: Cooking -->
-      <div class="tt-timeline-step {% if order.progress_step > 3 %}completed{% elif order.progress_step == 3 %}active{% endif %}">
-        <div class="circle">
-          {% if order.progress_step > 3 %}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          {% else %}
-          3
-          {% endif %}
+      <div class="col">
+        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2 {% if order.progress_step >= 3 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px; font-weight: 700;">
+          {% if order.progress_step > 3 %}<i class="bi bi-check-lg"></i>{% else %}3{% endif %}
         </div>
-        <div class="label">Cooking in Kitchen</div>
-        <div class="sublabel d-none d-md-block">Fresh preparation</div>
+        <div class="small fw-bold text-dark">Cooking</div>
+        <div class="text-muted small d-none d-md-block" style="font-size: 0.72rem;">Fresh preparation</div>
       </div>
-
-      <!-- Step 4: Out for Delivery -->
-      <div class="tt-timeline-step {% if order.progress_step > 4 %}completed{% elif order.progress_step == 4 %}active{% endif %}">
-        <div class="circle">
-          {% if order.progress_step > 4 %}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          {% else %}
-          4
-          {% endif %}
+      <div class="col">
+        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2 {% if order.progress_step >= 4 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px; font-weight: 700;">
+          {% if order.progress_step > 4 %}<i class="bi bi-check-lg"></i>{% else %}4{% endif %}
         </div>
-        <div class="label">Out for Delivery</div>
-        <div class="sublabel d-none d-md-block">En route to you</div>
+        <div class="small fw-bold text-dark">On the Way</div>
+        <div class="text-muted small d-none d-md-block" style="font-size: 0.72rem;">Out for delivery</div>
       </div>
-
-      <!-- Step 5: Delivered -->
-      <div class="tt-timeline-step {% if order.progress_step >= 5 %}completed{% endif %}">
-        <div class="circle">
-          {% if order.progress_step >= 5 %}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          {% else %}
-          5
-          {% endif %}
+      <div class="col">
+        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2 {% if order.progress_step >= 5 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px; font-weight: 700;">
+          {% if order.progress_step >= 5 %}<i class="bi bi-check-lg"></i>{% else %}5{% endif %}
         </div>
-        <div class="label">Delivered</div>
-        <div class="sublabel d-none d-md-block">Handed over safely</div>
+        <div class="small fw-bold text-dark">Delivered</div>
+        <div class="text-muted small d-none d-md-block" style="font-size: 0.72rem;">Handed over</div>
       </div>
     </div>
     {% endif %}
-
-    <!-- Chef & Kitchen Details Inside Tracking -->
-    <div class="mt-4 pt-3 border-top">
-      <div class="p-3 rounded-4 bg-light d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3" style="border: 1px solid #e9ecef;">
-        <div class="d-flex align-items-center gap-3">
-          {% if order.chef.profile_image %}
-          <img src="{{ order.chef.profile_image.url }}" alt="{{ order.chef.business_name }}" class="rounded-circle border" style="width: 54px; height: 54px; object-fit: cover;">
-          {% else %}
-          <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center shadow-xs border fw-bold fs-5" style="width: 54px; height: 54px; flex-shrink: 0; color: var(--tt-primary) !important;">
-            👨‍🍳
-          </div>
-          {% endif %}
-          <div>
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-              <strong class="text-dark fs-6">{{ order.chef.business_name }}</strong>
-              <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small" title="FSSAI: {{ order.chef.fssai_license }}">✓ FSSAI Registered</span>
-              <span class="badge bg-white text-dark border rounded-pill small">⭐ {{ order.chef.rating }} ({{ order.chef.review_count }} reviews)</span>
-            </div>
-            <div class="small text-muted mt-0.5">
-              <span>📍 {{ order.chef.kitchen_address }}</span>
-              {% if order.chef.cuisines %}
-              <span class="mx-1">·</span>
-              <span>🥘 {{ order.chef.cuisines }}</span>
-              {% endif %}
-            </div>
-          </div>
-        </div>
-
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          {% if order.chef.phone %}
-          <a href="tel:{{ order.chef.phone }}" class="btn btn-sm btn-outline-success rounded-3 d-inline-flex align-items-center gap-1.5 px-3 py-1.5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-            <span>Call Kitchen</span>
-          </a>
-          {% endif %}
-          <a href="{% url 'customer:chef_detail' order.chef.pk %}" class="btn btn-sm btn-tt-outline rounded-3 d-inline-flex align-items-center gap-1.5 px-3 py-1.5">
-            <span>View Chef Kitchen</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </a>
-        </div>
-      </div>
-    </div>
   </div>
-
-  {% if order.status == 'delivered' %}
-  <!-- Order Feedback & Rating Section -->
-  <div id="feedback" class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid {% if review %}#bbf7d0{% else %}#fde68a{% endif %} !important; background: {% if review %}#f0fdf4{% else %}#fffdf7{% endif %};">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-3 border-bottom" style="border-color: {% if review %}#dcfce7{% else %}#fef3c7{% endif %} !important;">
-      <div class="d-flex align-items-center gap-3">
-        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-xs" style="width: 46px; height: 46px; background: {% if review %}#dcfce7{% else %}#fef3c7{% endif %}; font-size: 22px;">
-          {% if review %}⭐{% else %}🍽️{% endif %}
-        </div>
-        <div>
-          <h5 class="fw-bold fs-6 mb-0.5 text-dark">
-            {% if review %}Your Review for {{ order.chef.business_name }}{% else %}Order Delivered! How was your food?{% endif %}
-          </h5>
-          <p class="small text-muted mb-0">
-            {% if review %}
-              Submitted on {{ review.created_at|date:"M d, Y · h:i A" }}
-            {% else %}
-              Aapka khana kaisa laga? Apne home chef ke sath rating aur honest feedback share karein.
-            {% endif %}
-          </p>
-        </div>
-      </div>
-      {% if review %}
-      <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-white text-dark border px-3 py-1.5 rounded-pill fw-bold fs-6 shadow-xs" style="color: #d97706 !important;">
-          ★ {{ review.rating }} / 5 Stars
-        </span>
-        <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3" data-bs-toggle="collapse" data-bs-target="#editReviewForm">
-          Edit Review
-        </button>
-      </div>
-      {% endif %}
-    </div>
-
-    {% if review %}
-    <!-- Display Existing Submitted Review -->
-    <div class="pt-3">
-      <div class="p-3 bg-white rounded-3 border" style="border-color: #dcfce7 !important;">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <div class="text-warning fs-5">
-            {% for i in "12345" %}
-              {% if forloop.counter <= review.rating %}★{% else %}<span class="text-black-50 opacity-25">★</span>{% endif %}
-            {% endfor %}
-          </div>
-          {% if review.meal %}
-          <span class="badge bg-light text-secondary border small">Dish: {{ review.meal.name }}</span>
-          {% endif %}
-        </div>
-        <p class="mb-0 text-dark" style="font-size: 0.95rem; font-style: italic;">
-          &ldquo;{{ review.comment }}&rdquo;
-        </p>
-      </div>
-
-      <!-- Collapsible Edit Form -->
-      <div class="collapse mt-3" id="editReviewForm">
-        <div class="p-4 bg-white rounded-4 border shadow-xs">
-          <h6 class="fw-bold mb-3 text-dark">Update Your Review</h6>
-          <form action="{% url 'customer:submit_order_feedback' order.pk %}" method="post">
-            {% csrf_token %}
-            
-            <div class="mb-3">
-              <label class="form-label small fw-bold d-block">Your Rating</label>
-              <div class="tt-star-rating">
-                <input type="radio" id="edit_star5" name="rating" value="5" {% if review.rating == 5 %}checked{% endif %}><label for="edit_star5" title="5 Stars">&#9733;</label>
-                <input type="radio" id="edit_star4" name="rating" value="4" {% if review.rating == 4 %}checked{% endif %}><label for="edit_star4" title="4 Stars">&#9733;</label>
-                <input type="radio" id="edit_star3" name="rating" value="3" {% if review.rating == 3 %}checked{% endif %}><label for="edit_star3" title="3 Stars">&#9733;</label>
-                <input type="radio" id="edit_star2" name="rating" value="2" {% if review.rating == 2 %}checked{% endif %}><label for="edit_star2" title="2 Stars">&#9733;</label>
-                <input type="radio" id="edit_star1" name="rating" value="1" {% if review.rating == 1 %}checked{% endif %}><label for="edit_star1" title="1 Star">&#9733;</label>
-              </div>
-            </div>
-
-            {% if items.count > 1 %}
-            <div class="mb-3">
-              <label class="form-label small fw-bold">Select Specific Dish (Optional)</label>
-              <select name="meal_id" class="form-select form-select-sm">
-                <option value="">Whole Order & Kitchen Experience</option>
-                {% for itm in items %}
-                  {% if itm.meal %}
-                  <option value="{{ itm.meal.pk }}" {% if review.meal_id == itm.meal.pk %}selected{% endif %}>{{ itm.meal_name }}</option>
-                  {% endif %}
-                {% endfor %}
-              </select>
-            </div>
-            {% endif %}
-
-            <div class="mb-3">
-              <label class="form-label small fw-bold">Feedback / Comments</label>
-              <textarea name="comment" rows="3" class="form-control" placeholder="Taste, freshness, packaging kaisa tha..." required>{{ review.comment }}</textarea>
-            </div>
-
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-tt-primary btn-sm rounded-pill px-4">
-                Update Feedback &rarr;
-              </button>
-              <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-toggle="collapse" data-bs-target="#editReviewForm">
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    {% else %}
-    <!-- Feedback Form (New Review) -->
-    <div class="pt-3">
-      <form action="{% url 'customer:submit_order_feedback' order.pk %}" method="post">
-        {% csrf_token %}
-
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label small fw-bold d-block text-dark mb-1">Your Food Rating</label>
-            <div class="tt-star-rating">
-              <input type="radio" id="star5" name="rating" value="5" checked><label for="star5" title="5 Stars - Outstanding">&#9733;</label>
-              <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 Stars - Very Good">&#9733;</label>
-              <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 Stars - Good">&#9733;</label>
-              <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 Stars - Fair">&#9733;</label>
-              <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 Star - Poor">&#9733;</label>
-            </div>
-            <div class="form-text small text-muted">Click stars to rate (1 to 5)</div>
-          </div>
-
-          {% if items.count > 1 %}
-          <div class="col-md-4">
-            <label class="form-label small fw-bold text-dark mb-1">Dish (Optional)</label>
-            <select name="meal_id" class="form-select form-select-sm">
-              <option value="">Whole Order & Kitchen Experience</option>
-              {% for itm in items %}
-                {% if itm.meal %}
-                <option value="{{ itm.meal.pk }}">{{ itm.meal_name }}</option>
-                {% endif %}
-              {% endfor %}
-            </select>
-          </div>
-          {% endif %}
-
-          <div class="col-12">
-            <label class="form-label small fw-bold text-dark mb-1">Your Honest Review</label>
-            <textarea name="comment" rows="3" class="form-control rounded-3" placeholder="Taste, portion size, hygiene aur packaging kaisa laga? Apna feedback likhein..." required></textarea>
-          </div>
-
-          <div class="col-12">
-            <button type="submit" class="btn btn-tt-primary btn-sm rounded-pill px-4 py-2 d-inline-flex align-items-center gap-1.5 shadow-xs">
-              <span>Submit Order Feedback &rarr;</span>
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-    {% endif %}
-  </div>
-  {% endif %}
 
   <div class="row g-4">
-    <!-- Left Column: Order Items -->
+    <!-- Left Column: Items & Details -->
     <div class="col-lg-8">
-      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important;">
-        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark">Items Ordered ({{ items.count }})</h5>
+      <!-- Chef Partner Card -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-xs flex-shrink-0" style="width: 50px; height: 50px; font-size: 1.25rem; background-color: var(--tt-charcoal); color: var(--tt-gold);">
+            {{ order.chef.business_name|slice:":1"|upper }}
+          </div>
+          <div>
+            <h6 class="fw-bold mb-0 text-dark">{{ order.chef.business_name }}</h6>
+            <div class="small text-muted">{{ order.chef.cuisines|default:"Homestyle Cuisine" }} · FSSAI Certified Kitchen</div>
+            <a href="{% url 'customer:chef_detail' order.chef.pk %}" class="small text-decoration-none fw-semibold" style="color: var(--tt-primary);">
+              View Kitchen Menu <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dishes Breakdown -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
+          <i class="bi bi-basket3 text-warning"></i>
+          Ordered Dishes
+        </h5>
         <div class="table-responsive">
-          <table class="table mb-0 align-middle">
-            <thead class="bg-light small">
-              <tr>
-                <th class="py-2.5 px-3 text-muted fw-semibold">Item</th>
-                <th class="py-2.5 text-center text-muted fw-semibold">Price</th>
-                <th class="py-2.5 text-center text-muted fw-semibold">Quantity</th>
-                <th class="py-2.5 text-end text-muted fw-semibold">Subtotal</th>
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr class="small text-muted border-bottom">
+                <th>Dish</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Quantity</th>
+                <th class="text-end">Subtotal</th>
               </tr>
             </thead>
             <tbody>
-              {% for itm in items %}
-              <tr>
-                <td class="py-3 px-3">
-                  <strong class="d-block small text-dark">{{ itm.meal_name }}</strong>
-                  {% if itm.meal %}
-                  <a href="{% url 'customer:meal_detail' itm.meal.pk %}" class="small text-decoration-none" style="color: var(--tt-primary);">View Dish Details</a>
-                  {% endif %}
+              {% for item in order.items.all %}
+              <tr class="small">
+                <td>
+                  <strong class="text-dark">{{ item.meal_name }}</strong>
                 </td>
-                <td class="py-3 text-center small text-muted">₹{{ itm.unit_price|floatformat:2 }}</td>
-                <td class="py-3 text-center small fw-bold text-dark">{{ itm.quantity }}</td>
-                <td class="py-3 text-end small fw-bold" style="color: var(--tt-primary);">₹{{ itm.subtotal|floatformat:2 }}</td>
+                <td class="text-center text-muted">₹{{ item.unit_price|floatformat:2 }}</td>
+                <td class="text-center fw-semibold text-dark">{{ item.quantity }}</td>
+                <td class="text-end fw-bold text-dark">₹{{ item.subtotal|floatformat:2 }}</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -415,81 +210,129 @@
         </div>
       </div>
 
-      <!-- Delivery Information -->
-      <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important;">
-        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark">Delivery & Customer Details</h5>
-        <div class="row g-3 small">
-          <div class="col-md-6">
-            <span class="text-muted d-block">Recipient Name:</span>
-            <strong class="text-dark">{{ order.recipient_name }}</strong>
-          </div>
-          <div class="col-md-6">
-            <span class="text-muted d-block">Phone Number:</span>
-            <strong class="text-dark">{{ order.recipient_phone }}</strong>
-          </div>
-          <div class="col-12">
-            <span class="text-muted d-block">Delivery Address:</span>
-            <strong class="text-dark">{{ order.delivery_address_text }}</strong>
-          </div>
+      <!-- Delivery Info -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
+          <i class="bi bi-geo-alt-fill text-danger"></i>
+          Delivery Information
+        </h5>
+        <div class="small">
+          <div class="mb-2"><strong class="text-muted">Recipient:</strong> <span class="text-dark">{{ order.recipient_name }} ({{ order.recipient_phone }})</span></div>
+          <div class="mb-2"><strong class="text-muted">Delivery Address:</strong> <span class="text-dark">{{ order.delivery_address_text }}</span></div>
           {% if order.delivery_notes %}
-          <div class="col-12">
-            <span class="text-muted d-block">Special Delivery Notes:</span>
-            <em class="text-secondary">"{{ order.delivery_notes }}"</em>
+          <div class="p-2.5 bg-light rounded-3 mt-2 border">
+            <strong class="text-muted">Notes:</strong> <em class="text-secondary">"{{ order.delivery_notes }}"</em>
           </div>
           {% endif %}
         </div>
       </div>
+
+      <!-- Feedback / Review Section (When Delivered) -->
+      {% if order.status == 'delivered' %}
+      <div class="card border-0 shadow-sm rounded-4 p-4" id="feedback" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
+          <i class="bi bi-star-half text-warning"></i>
+          {% if review %}Your Review for this Meal{% else %}Rate Your Meal Experience{% endif %}
+        </h5>
+
+        {% if review %}
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <div class="text-warning small d-inline-flex gap-0.5">
+            {% for i in "12345" %}
+              {% if forloop.counter <= review.rating %}
+                <i class="bi bi-star-fill"></i>
+              {% else %}
+                <i class="bi bi-star text-muted"></i>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <span class="small text-muted">{{ review.created_at|date:"d M Y" }}</span>
+        </div>
+        <p class="small text-dark mb-0">{{ review.comment }}</p>
+        {% else %}
+        <form action="{% url 'customer:add_review' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="order_id" value="{{ order.pk }}">
+          <input type="hidden" name="chef_id" value="{{ order.chef.pk }}">
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-muted">Select Star Rating</label>
+            <div class="d-flex gap-1 fs-4" style="cursor: pointer; color: #f59e0b;" id="orderStarPicker">
+              <i class="bi bi-star-fill star-pick-item" data-value="1"></i>
+              <i class="bi bi-star-fill star-pick-item" data-value="2"></i>
+              <i class="bi bi-star-fill star-pick-item" data-value="3"></i>
+              <i class="bi bi-star-fill star-pick-item" data-value="4"></i>
+              <i class="bi bi-star-fill star-pick-item" data-value="5"></i>
+            </div>
+            <input type="hidden" name="rating" id="orderRatingInput" value="5">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold text-muted">Your Honest Experience</label>
+            <textarea name="comment" rows="3" class="form-control form-control-sm rounded-3" placeholder="Share your experience about the warmth, taste, spice balance, and delivery..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-sm btn-tt-primary rounded-3 px-4 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-xs">
+            <i class="bi bi-send-check"></i>
+            <span>Submit Review</span>
+          </button>
+        </form>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
 
-    <!-- Right Column: Billing Breakdown -->
+    <!-- Right Column: Bill Details -->
     <div class="col-lg-4">
-      <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: linear-gradient(180deg, #ffffff 0%, #fafcfa 100%);">
-        <h5 class="fw-bold fs-6 mb-3 pb-2 border-bottom text-dark">Payment Receipt</h5>
+      <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <h5 class="fw-bold fs-6 mb-3 pb-2 border-bottom text-dark d-flex align-items-center gap-2">
+          <i class="bi bi-receipt text-warning"></i>
+          Bill Breakdown
+        </h5>
 
         <div class="d-flex justify-content-between py-2 small">
           <span class="text-muted">Item Subtotal</span>
-          <span class="text-dark">₹{{ order.total_amount|floatformat:2 }}</span>
+          <span class="fw-semibold text-dark">₹{{ order.total_amount|floatformat:2 }}</span>
         </div>
 
         <div class="d-flex justify-content-between py-2 small">
-          <span class="text-muted">Delivery Partner Fee</span>
-          <span>
-            {% if order.delivery_fee == 0 %}
-            <strong class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill">FREE</strong>
-            {% else %}
-            ₹{{ order.delivery_fee|floatformat:2 }}
-            {% endif %}
-          </span>
+          <span class="text-muted">Delivery Fee</span>
+          {% if order.delivery_fee == 0 %}
+          <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill">FREE</span>
+          {% else %}
+          <span class="fw-semibold text-dark">₹{{ order.delivery_fee|floatformat:2 }}</span>
+          {% endif %}
         </div>
 
         <div class="d-flex justify-content-between py-2 small">
-          <span class="text-muted">Taxes (5% GST)</span>
-          <span class="text-dark">₹{{ order.tax_amount|floatformat:2 }}</span>
+          <span class="text-muted">Kitchen Taxes (5% GST)</span>
+          <span class="fw-semibold text-dark">₹{{ order.tax_amount|floatformat:2 }}</span>
         </div>
 
         {% if order.discount_amount > 0 %}
-        <div class="d-flex justify-content-between py-2 small fw-bold" style="color: var(--tt-primary);">
-          <span>Coupon Discount</span>
-          <span>- ₹{{ order.discount_amount|floatformat:2 }}</span>
+        <div class="d-flex justify-content-between py-2 small text-success border-top">
+          <span>Promotional Discount</span>
+          <span class="fw-bold">- ₹{{ order.discount_amount|floatformat:2 }}</span>
         </div>
         {% endif %}
 
-        <div class="d-flex justify-content-between py-3 my-2 border-top border-bottom fs-5 fw-bold text-dark">
-          <span>Total Paid</span>
-          <span style="color: var(--tt-primary);">₹{{ order.final_amount|floatformat:2 }}</span>
+        <div class="d-flex justify-content-between py-3 my-2 border-top border-bottom fs-5 fw-bold">
+          <span style="color: var(--tt-charcoal);">Total Paid</span>
+          <span style="color: var(--tt-charcoal);">₹{{ order.final_amount|floatformat:2 }}</span>
         </div>
 
         <div class="pt-2 small text-muted">
           <div class="mb-1"><strong>Payment Method:</strong> <span class="text-dark">{{ order.get_payment_method_display }}</span></div>
           <div class="mb-1"><strong>Payment Status:</strong> <span class="text-dark">{{ order.get_payment_status_display }}</span></div>
           {% if order.payment_transaction_id %}
-          <div class="font-monospace small mt-1">Txn: {{ order.payment_transaction_id }}</div>
+          <div class="font-monospace small mt-1">Txn ID: {{ order.payment_transaction_id }}</div>
           {% endif %}
         </div>
 
         <div class="mt-4 pt-2 text-center">
-          <button type="button" class="btn btn-sm btn-outline-secondary w-100 rounded-3 d-inline-flex align-items-center justify-content-center gap-1.5 py-2" onclick="window.print();">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          <button type="button" class="btn btn-sm btn-outline-secondary w-100 rounded-3 d-inline-flex align-items-center justify-content-center gap-1.5 py-2 fw-semibold" onclick="window.print();">
+            <i class="bi bi-printer"></i>
             <span>Print Receipt</span>
           </button>
         </div>
@@ -511,11 +354,11 @@
         </div>
         <div class="modal-body">
           <p class="small text-muted mb-3">
-            You can cancel orders while they are pending or awaiting chef confirmation before food preparation begins.
+            You can cancel orders while they are pending or awaiting chef confirmation before kitchen food preparation commences.
           </p>
           <div class="mb-3">
             <label class="form-label small fw-semibold text-muted">Reason for cancellation:</label>
-            <textarea name="reason" rows="2" class="form-control form-control-sm rounded-3" placeholder="e.g. Changed my mind, schedule conflict" required></textarea>
+            <textarea name="reason" rows="2" class="form-control form-control-sm rounded-3" placeholder="e.g. Schedule changed, ordered by mistake" required></textarea>
           </div>
         </div>
         <div class="modal-footer border-top">
@@ -529,6 +372,7 @@
 {% endif %}
 
 <script>
+  // Live Status Polling
   let currentOrderStatus = "{{ order.status }}";
   const orderEndpoint = "{% url 'customer:order_detail' order.pk %}?format=json";
 
@@ -547,7 +391,6 @@
     .then(data => {
       if (data && data.order_status) {
         if (data.order_status !== currentOrderStatus) {
-          // Chef has updated the status - reload cleanly to re-render stepper & banners
           window.location.reload();
           return;
         }
@@ -571,30 +414,47 @@
       checkOrderStatus(false);
     }, 10000);
   }
+
+  // Star Picker Handler
+  document.addEventListener('DOMContentLoaded', function () {
+    const picker = document.getElementById('orderStarPicker');
+    const input = document.getElementById('orderRatingInput');
+    if (!picker || !input) return;
+
+    const stars = picker.querySelectorAll('.star-pick-item');
+    function update(val) {
+      stars.forEach(s => {
+        const v = parseInt(s.getAttribute('data-value'), 10);
+        if (v <= val) {
+          s.classList.remove('bi-star', 'text-muted');
+          s.classList.add('bi-star-fill');
+        } else {
+          s.classList.remove('bi-star-fill');
+          s.classList.add('bi-star', 'text-muted');
+        }
+      });
+    }
+
+    stars.forEach(s => {
+      s.addEventListener('click', function () {
+        const val = parseInt(this.getAttribute('data-value'), 10);
+        input.value = val;
+        update(val);
+      });
+      s.addEventListener('mouseenter', function () {
+        const val = parseInt(this.getAttribute('data-value'), 10);
+        update(val);
+      });
+    });
+
+    picker.addEventListener('mouseleave', function () {
+      update(parseInt(input.value, 10) || 5);
+    });
+
+    update(parseInt(input.value, 10) || 5);
+  });
 </script>
 <style>
-  /* Interactive 5-star rating */
-  .tt-star-rating {
-    display: inline-flex;
-    flex-direction: row-reverse;
-    font-size: 1.85rem;
-    line-height: 1;
-  }
-  .tt-star-rating input {
-    display: none;
-  }
-  .tt-star-rating label {
-    color: #d1d5db;
-    cursor: pointer;
-    padding: 0 4px;
-    transition: color 0.15s ease-in-out;
-  }
-  .tt-star-rating label:hover,
-  .tt-star-rating label:hover ~ label,
-  .tt-star-rating input:checked ~ label {
-    color: #f59e0b;
-  }
-
   .rotate-spin {
     animation: spinAnim 0.7s linear infinite;
   }

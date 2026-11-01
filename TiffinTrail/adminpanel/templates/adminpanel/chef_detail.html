@@ -6,110 +6,107 @@
 {% block page_heading %}{{ chef.business_name }}{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-  <a href="{% url 'adminpanel:chefs' %}" class="btn btn-sm btn-outline-secondary">← Back to Chefs</a>
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 tt-stagger-1">
+  <a href="{% url 'adminpanel:chefs' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Back to Chefs
+  </a>
   <div class="d-flex align-items-center gap-2">
     <span class="text-muted small">Verification Status:</span>
     <span class="tt-badge tt-badge-{{ chef.verification_status }} fs-6 px-3 py-1">
       {{ chef.get_verification_status_display }}
     </span>
     {% if chef.is_active %}
-      <span class="badge bg-success px-3 py-2">Active</span>
+      <span class="tt-badge tt-badge-active px-3 py-1">Active</span>
     {% else %}
-      <span class="badge bg-danger px-3 py-2">Suspended</span>
+      <span class="tt-badge tt-badge-cancelled px-3 py-1">Suspended</span>
     {% endif %}
   </div>
 </div>
 
-<div class="row g-4 mb-4">
+<div class="row g-4 mb-4 tt-stagger-2">
   <!-- Left Side: Chef Info & Verification Form -->
   <div class="col-lg-5">
     <!-- Verification Action Box -->
-    <div class="tt-card mb-4 border-primary">
-      <div class="tt-card-header bg-primary text-white">
-        <h5 class="tt-card-title text-white"> Chef Verification & Actions</h5>
+    <div class="tt-card mb-4">
+      <div class="tt-card-header" style="background-color: var(--tt-charcoal); color: #FFFFFF;">
+        <h5 class="tt-card-title text-white">
+          <i class="bi bi-patch-check-fill" style="color: var(--tt-gold);"></i>
+          Chef Verification & Actions
+        </h5>
       </div>
       <div class="tt-card-body">
         <form action="{% url 'adminpanel:chef_verify_action' chef.id %}" method="post">
           {% csrf_token %}
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Platform Commission Rate (%)</label>
+            <label class="tt-form-label">Platform Commission Rate (%)</label>
             <div class="input-group">
               <input type="number" step="0.50" min="0" max="50" name="commission_rate" value="{{ chef.commission_rate }}" class="form-control">
-              <span class="input-group-text">%</span>
+              <span class="input-group-text bg-light text-muted fw-bold">%</span>
             </div>
-            <div class="text-muted small mt-1">Platform fee deducted from completed orders.</div>
+            <div class="tt-help-text">Platform fee automatically deducted from completed diner orders.</div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Reviewer Notes / Rejection Reason</label>
-            <textarea name="rejection_reason" rows="3" class="form-control" placeholder="Required if rejecting or requesting resubmission...">{{ chef.rejection_reason }}</textarea>
+            <label class="tt-form-label">Reviewer Notes / Rejection Reason</label>
+            <textarea name="rejection_reason" rows="3" class="form-control" placeholder="Required if rejecting or requesting document resubmission...">{{ chef.rejection_reason }}</textarea>
           </div>
 
           <div class="d-grid gap-2">
-            <button type="submit" name="action" value="approve" class="btn btn-success fw-bold py-2">
-              ✓ Approve Chef Application
+            <button type="submit" name="action" value="approve" class="btn btn-success fw-bold py-2 shadow-sm">
+              <i class="bi bi-check2-circle me-1"></i> Approve Chef Application
             </button>
             <div class="row g-2">
               <div class="col-6">
                 <button type="submit" name="action" value="under_review" class="btn btn-outline-primary w-100 btn-sm">
-                   Under Review
+                  <i class="bi bi-eye me-1"></i> Under Review
                 </button>
               </div>
               <div class="col-6">
-                <button type="submit" name="action" value="resubmission" class="btn btn-outline-warning w-100 btn-sm">
-                   Request Info
+                <button type="submit" name="action" value="resubmission" class="btn btn-warning w-100 btn-sm">
+                  <i class="bi bi-arrow-repeat me-1"></i> Request Info
                 </button>
               </div>
             </div>
             <button type="submit" name="action" value="reject" class="btn btn-outline-danger btn-sm" onclick="return confirm('Reject this chef application?')">
-              ✕ Reject Application
+              <i class="bi bi-x-circle me-1"></i> Reject Application
             </button>
           </div>
         </form>
 
-        <hr class="my-3">
+        <hr class="my-4">
 
-        <!-- Suspend / Reactivate -->
+        <!-- Suspend / Reactivate Switch -->
         <form action="{% url 'adminpanel:chef_toggle_status' chef.id %}" method="post">
           {% csrf_token %}
-          <div class="tt-toggle-row {% if chef.is_active %}is-on{% else %}is-off{% endif %}"
-            {% if chef.is_active %}onclick="if(!confirm('Suspend this chef kitchen? Diners will not see their meals.')) { event.preventDefault(); }"{% endif %}>
-            <div class="tt-toggle-row-left">
-              <div class="tt-toggle-row-icon {% if chef.is_active %}icon-green{% else %}icon-red{% endif %}">
-                {% if chef.is_active %}<i class="bi bi-egg-fried me-1"></i>️{% else %}🔒{% endif %}
+          <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between" style="background-color: var(--tt-surface-muted);">
+            <div>
+              <div class="fw-bold small" style="color: var(--tt-charcoal);">
+                {% if chef.is_active %}
+                  <i class="bi bi-check-circle-fill text-success me-1"></i>Kitchen Live & Visible
+                {% else %}
+                  <i class="bi bi-slash-circle-fill text-danger me-1"></i>Kitchen Suspended
+                {% endif %}
               </div>
-              <div>
-                <p class="tt-toggle-row-title">
-                  Kitchen Status
-                  {% if chef.is_active %}
-                    <span class="tt-toggle-row-status status-on">Live</span>
-                  {% else %}
-                    <span class="tt-toggle-row-status status-off">Suspended</span>
-                  {% endif %}
-                </p>
-                <p class="tt-toggle-row-desc">
-                  {% if chef.is_active %}Kitchen is live and visible to diners.{% else %}Kitchen is suspended — not visible to diners.{% endif %}
-                </p>
+              <div class="text-muted" style="font-size: 0.72rem;">
+                {% if chef.is_active %}Kitchen is live and visible to diners.{% else %}Kitchen is suspended — not visible to diners.{% endif %}
               </div>
             </div>
-            <label class="tt-toggle-switch {% if not chef.is_active %}tt-toggle-danger{% endif %}" for="chefActiveToggle"
+            <label class="tt-toggle-switch tt-toggle-sm ms-2" for="chefActiveToggle"
               title="{% if chef.is_active %}Click to suspend this chef{% else %}Click to reactivate this chef{% endif %}">
               <input type="checkbox" id="chefActiveToggle"
                 {% if chef.is_active %}checked{% endif %}
-                onchange="this.form.submit()">
+                onchange="if(confirm('{% if chef.is_active %}Suspend this kitchen? Diners will not see their meals.{% else %}Reactivate this chef kitchen?{% endif %}')) { this.form.submit(); } else { this.checked = !this.checked; }">
               <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
             </label>
           </div>
         </form>
 
-
         <!-- Danger Zone: Permanent Deletion -->
-        <div class="mt-3 pt-3 border-top">
-          <label class="form-label small fw-bold text-danger d-block mb-1">Danger Zone</label>
+        <div class="mt-4 pt-3 border-top">
+          <label class="tt-form-label text-danger d-block mb-1">Danger Zone</label>
           <button type="button" class="btn btn-sm btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteChefModal">
-            <i class="bi bi-trash-fill me-1"></i>Delete Chef Permanently
+            <i class="bi bi-trash-fill me-1"></i> Delete Chef Permanently
           </button>
         </div>
       </div>
@@ -118,25 +115,28 @@
     <!-- Chef Kitchen Details -->
     <div class="tt-card mb-4">
       <div class="tt-card-header">
-        <h5 class="tt-card-title">‍ Kitchen Details</h5>
+        <h5 class="tt-card-title">
+          <i class="bi bi-shop text-primary"></i>
+          Kitchen Details
+        </h5>
       </div>
       <div class="tt-card-body small">
-        <div class="mb-2"><strong>Owner Name:</strong> {{ chef.user.get_full_name|default:chef.user.username }}</div>
-        <div class="mb-2"><strong>Email:</strong> {{ chef.user.email|default:"None" }}</div>
-        <div class="mb-2"><strong>Phone:</strong> {{ chef.phone|default:"None" }}</div>
-        <div class="mb-2"><strong>FSSAI License:</strong> <span class="font-monospace">{{ chef.fssai_license }}</span></div>
-        <div class="mb-2"><strong>Kitchen Address:</strong> {{ chef.kitchen_address }}</div>
-        <div class="mb-2"><strong>Service Areas:</strong> {{ chef.service_areas }}</div>
-        <div class="mb-2"><strong>Operating Days:</strong> {{ chef.working_days }} ({{ chef.working_hours }})</div>
-        <div class="mb-2"><strong>Specialties:</strong> {{ chef.specialties }}</div>
-        <div><strong>Bio:</strong> <span class="text-secondary">{{ chef.bio|default:"No bio provided" }}</span></div>
+        <div class="mb-2"><strong class="text-secondary">Owner Name:</strong> <span class="text-dark">{{ chef.user.get_full_name|default:chef.user.username }}</span></div>
+        <div class="mb-2"><strong class="text-secondary">Email:</strong> <span class="text-dark">{{ chef.user.email|default:"None" }}</span></div>
+        <div class="mb-2"><strong class="text-secondary">Phone:</strong> <span class="text-dark">{{ chef.phone|default:"None" }}</span></div>
+        <div class="mb-2"><strong class="text-secondary">FSSAI License:</strong> <span class="font-monospace text-dark">{{ chef.fssai_license }}</span></div>
+        <div class="mb-2"><strong class="text-secondary">Kitchen Address:</strong> <span class="text-dark">{{ chef.kitchen_address }}</span></div>
+        <div class="mb-2"><strong class="text-secondary">Service Areas:</strong> <span class="text-dark">{{ chef.service_areas }}</span></div>
+        <div class="mb-2"><strong class="text-secondary">Operating Days:</strong> <span class="text-dark">{{ chef.working_days }} ({{ chef.working_hours }})</span></div>
+        <div class="mb-2"><strong class="text-secondary">Specialties:</strong> <span class="text-dark">{{ chef.specialties }}</span></div>
+        <div><strong class="text-secondary">Bio:</strong> <span class="text-muted">{{ chef.bio|default:"No bio provided" }}</span></div>
 
         {% if chef.verification_document %}
           <div class="mt-3 pt-3 border-top">
-            <strong>Verification Document:</strong>
+            <strong class="text-secondary">Verification Document:</strong>
             <div class="mt-1">
               <a href="{{ chef.verification_document.url }}" target="_blank" class="btn btn-xs btn-outline-secondary">
-                 View Uploaded Document ↗
+                <i class="bi bi-file-earmark-pdf me-1"></i> View Uploaded Document ↗
               </a>
             </div>
           </div>
@@ -147,24 +147,27 @@
     <!-- Kitchen Branding & Photos Management -->
     <div class="tt-card mb-4">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"><i class="bi bi-camera me-1"></i>Kitchen Photos & Cover Banner</h5>
+        <h5 class="tt-card-title">
+          <i class="bi bi-camera text-secondary"></i>
+          Kitchen Photos & Cover Banner
+        </h5>
       </div>
       <div class="tt-card-body small">
         <div class="mb-3">
-          <label class="form-label fw-bold d-block mb-1">Cover Banner (Card Header)</label>
+          <label class="tt-form-label d-block mb-1">Cover Banner (Card Header)</label>
           {% if chef.cover_image %}
             <div class="rounded overflow-hidden border mb-2" style="max-height: 120px;">
               <img src="{{ chef.cover_image.url }}" alt="Cover" class="w-100" style="object-fit: cover; max-height: 120px;">
             </div>
           {% else %}
-            <div class="p-3 bg-light text-center text-muted rounded border mb-2">
+            <div class="p-3 text-center text-muted rounded border mb-2" style="background-color: var(--tt-surface-muted);">
               No cover banner uploaded yet.
             </div>
           {% endif %}
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-bold d-block mb-1">Profile Photo (Avatar Badge)</label>
+          <label class="tt-form-label d-block mb-1">Profile Photo (Avatar Badge)</label>
           {% if chef.profile_image %}
             <div class="d-flex align-items-center gap-2 mb-2">
               <img src="{{ chef.profile_image.url }}" alt="Profile" class="rounded-circle border" style="width: 50px; height: 50px; object-fit: cover;">
@@ -195,7 +198,10 @@
     <!-- Verification Audit Log -->
     <div class="tt-card">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Verification History</h5>
+        <h5 class="tt-card-title">
+          <i class="bi bi-clock-history text-secondary"></i>
+          Verification History
+        </h5>
       </div>
       <div class="tt-card-body p-0">
         <div class="d-flex flex-column">
@@ -207,7 +213,7 @@
               </div>
               <div class="text-muted">By: {{ log.admin.username|default:"System" }}</div>
               {% if log.notes %}
-                <div class="text-secondary mt-1 bg-light p-1 rounded">"{{ log.notes }}"</div>
+                <div class="text-secondary mt-1 p-1 rounded" style="background-color: var(--tt-surface-muted);">"{{ log.notes }}"</div>
               {% endif %}
             </div>
           {% empty %}
@@ -223,19 +229,19 @@
     <!-- Financial Performance Overview -->
     <div class="row g-3 mb-4">
       <div class="col-sm-4">
-        <div class="p-3 bg-white rounded border text-center">
+        <div class="tt-card mb-0 p-3 text-center">
           <div class="text-muted small">Gross Delivered Sales</div>
           <div class="fs-5 fw-bold text-dark mt-1">₹{{ gross_sales|floatformat:2 }}</div>
         </div>
       </div>
       <div class="col-sm-4">
-        <div class="p-3 bg-white rounded border text-center">
+        <div class="tt-card mb-0 p-3 text-center">
           <div class="text-muted small">Platform Fee ({{ chef.commission_rate|floatformat:2 }}%)</div>
           <div class="fs-5 fw-bold text-danger mt-1">-₹{{ platform_fee|floatformat:2 }}</div>
         </div>
       </div>
       <div class="col-sm-4">
-        <div class="p-3 bg-white rounded border text-center">
+        <div class="tt-card mb-0 p-3 text-center">
           <div class="text-muted small">Net Chef Payout</div>
           <div class="fs-5 fw-bold text-success mt-1">₹{{ net_earnings|floatformat:2 }}</div>
         </div>
@@ -245,28 +251,31 @@
     <!-- Chef Dishes Catalog -->
     <div class="tt-card mb-4">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title"> Homestyle Dishes ({{ meals.count }})</h5>
+        <h5 class="tt-card-title">
+          <i class="bi bi-egg-fried text-primary"></i>
+          Homestyle Dishes ({{ meals.count }})
+        </h5>
       </div>
       <div class="tt-card-body p-0">
         <div class="tt-table-responsive">
           <table class="tt-table">
             <thead>
               <tr>
-                <th>Dish</th>
+                <th class="ps-3">Dish</th>
                 <th>Slot</th>
                 <th>Price</th>
                 <th>Diet</th>
                 <th>Availability</th>
-                <th>Action</th>
+                <th class="pe-3 text-end">Action</th>
               </tr>
             </thead>
             <tbody>
               {% for meal in meals %}
                 <tr>
-                  <td><strong>{{ meal.name }}</strong></td>
+                  <td class="ps-3"><strong>{{ meal.name }}</strong></td>
                   <td>{{ meal.get_meal_type_display }}</td>
-                  <td>₹{{ meal.price }}</td>
-                  <td>{% if meal.is_veg %}<span class="badge bg-success">Veg</span>{% else %}<span class="badge bg-danger">Non-Veg</span>{% endif %}</td>
+                  <td><strong>₹{{ meal.price|floatformat:2 }}</strong></td>
+                  <td>{% if meal.is_veg %}<span class="tt-badge tt-badge-veg">Veg</span>{% else %}<span class="tt-badge tt-badge-nonveg">Non-Veg</span>{% endif %}</td>
                   <td>
                     {% if meal.is_available %}
                       <span class="badge bg-success-subtle text-success">Available</span>
@@ -274,11 +283,11 @@
                       <span class="badge bg-secondary-subtle text-muted">Unavailable</span>
                     {% endif %}
                   </td>
-                  <td><a href="{% url 'adminpanel:meal_detail' meal.id %}" class="btn btn-xs btn-outline-primary">Manage</a></td>
+                  <td class="pe-3 text-end"><a href="{% url 'adminpanel:meal_detail' meal.id %}" class="btn btn-xs btn-outline-primary">Manage</a></td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="6" class="text-center py-3 text-muted small">No dishes added by this chef yet.</td>
+                  <td colspan="6" class="text-center py-4 text-muted small">No dishes added by this chef yet.</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -290,32 +299,35 @@
     <!-- Recent Orders -->
     <div class="tt-card">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Recent Orders (Total: {{ total_orders_count }})</h5>
+        <h5 class="tt-card-title">
+          <i class="bi bi-receipt-cutoff text-primary"></i>
+          Recent Orders (Total: {{ total_orders_count }})
+        </h5>
       </div>
       <div class="tt-card-body p-0">
         <div class="tt-table-responsive">
           <table class="tt-table">
             <thead>
               <tr>
-                <th>Order #</th>
+                <th class="ps-3">Order #</th>
                 <th>Diner</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Action</th>
+                <th class="pe-3 text-end">Action</th>
               </tr>
             </thead>
             <tbody>
               {% for ord in orders %}
                 <tr>
-                  <td><strong>{{ ord.order_number }}</strong></td>
+                  <td class="ps-3"><strong>{{ ord.order_number }}</strong></td>
                   <td>{{ ord.recipient_name }}</td>
-                  <td>₹{{ ord.final_amount }}</td>
+                  <td><strong>₹{{ ord.final_amount|floatformat:2 }}</strong></td>
                   <td><span class="tt-badge tt-badge-{{ ord.status }}">{{ ord.get_status_display }}</span></td>
-                  <td><a href="{% url 'adminpanel:order_detail' ord.id %}" class="btn btn-xs btn-outline-primary">View</a></td>
+                  <td class="pe-3 text-end"><a href="{% url 'adminpanel:order_detail' ord.id %}" class="btn btn-xs btn-outline-primary">View</a></td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="5" class="text-center py-3 text-muted small">No orders for this kitchen yet.</td>
+                  <td colspan="5" class="text-center py-4 text-muted small">No orders for this kitchen yet.</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -370,5 +382,4 @@
     </div>
   </div>
 </div>
-
 {% endblock %}

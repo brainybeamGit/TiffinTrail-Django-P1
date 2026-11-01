@@ -10,8 +10,12 @@
   <div class="col-lg-8">
     <div class="tt-card">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title"> New Customer Grievance / Ticket</h5>
-        <a href="{% url 'adminpanel:complaints' %}" class="btn btn-sm btn-outline-secondary">← Back to Complaints</a>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-plus-circle text-warning"></i> New Customer Grievance / Support Ticket
+        </h5>
+        <a href="{% url 'adminpanel:complaints' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Complaints
+        </a>
       </div>
 
       <div class="tt-card-body">
@@ -22,42 +26,51 @@
             <div class="col-md-6">
               <label class="tt-form-label">Customer *</label>
               {{ form.customer }}
+              {% if form.customer.errors %}<div class="text-danger small mt-1">{{ form.customer.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-md-6">
               <label class="tt-form-label">Related Chef Kitchen</label>
               {{ form.chef }}
+              {% if form.chef.errors %}<div class="text-danger small mt-1">{{ form.chef.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-md-6">
               <label class="tt-form-label">Related Order</label>
               {{ form.order }}
+              {% if form.order.errors %}<div class="text-danger small mt-1">{{ form.order.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-md-6">
               <label class="tt-form-label">Category *</label>
               {{ form.category }}
+              {% if form.category.errors %}<div class="text-danger small mt-1">{{ form.category.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-md-8">
               <label class="tt-form-label">Subject *</label>
               {{ form.subject }}
+              {% if form.subject.errors %}<div class="text-danger small mt-1">{{ form.subject.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-md-4">
               <label class="tt-form-label">Priority Level *</label>
               {{ form.priority }}
+              {% if form.priority.errors %}<div class="text-danger small mt-1">{{ form.priority.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-12">
               <label class="tt-form-label">Grievance Description *</label>
               {{ form.description }}
+              {% if form.description.errors %}<div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>{% endif %}
             </div>
           </div>
 
           <div class="d-flex justify-content-end gap-3 pt-3 border-top">
             <a href="{% url 'adminpanel:complaints' %}" class="btn btn-outline-secondary">Cancel</a>
-            <button type="submit" class="btn btn-success px-4 fw-semibold">Open Ticket</button>
+            <button type="submit" class="btn btn-success px-4 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+              <i class="bi bi-send-check"></i> Open Ticket
+            </button>
           </div>
         </form>
       </div>

@@ -10,8 +10,12 @@
   <div class="col-lg-10">
     <div class="tt-card">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title"> Dish Details & Pricing</h5>
-        <a href="{% url 'chef:meals' %}" class="btn btn-sm btn-outline-secondary">← Back to Meals</a>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-egg-fried text-warning"></i> Dish Details & Pricing Configuration
+        </h5>
+        <a href="{% url 'chef:meals' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Meals
+        </a>
       </div>
 
       <div class="tt-card-body">
@@ -20,7 +24,11 @@
 
           <!-- Section 1: Basic Dish Info -->
           <div class="row g-3 mb-4">
-            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">1. Dish Identity</h6></div>
+            <div class="col-12">
+              <h6 class="fw-bold border-bottom pb-2 d-flex align-items-center gap-2" style="color: var(--tt-charcoal);">
+                <i class="bi bi-card-text text-secondary"></i> 1. Dish Identity
+              </h6>
+            </div>
 
             <div class="col-md-8">
               <label class="tt-form-label">Dish Name *</label>
@@ -48,25 +56,31 @@
 
             <div class="col-md-4">
               <label class="tt-form-label">Dietary Classification</label>
-              <div class="form-check p-2 bg-light rounded border mt-1">
-                {{ form.is_veg }}
-                <label class="form-check-label fw-semibold ms-2" for="{{ form.is_veg.id_for_label }}">
-                   Pure Vegetarian
-                </label>
+              <div class="p-2.5 rounded-3 border d-flex align-items-center" style="background-color: var(--tt-surface-muted);">
+                <div class="form-check m-0">
+                  {{ form.is_veg }}
+                  <label class="form-check-label fw-semibold ms-2 text-dark" for="{{ form.is_veg.id_for_label }}">
+                    Pure Vegetarian
+                  </label>
+                </div>
               </div>
             </div>
 
             <div class="col-12">
               <label class="tt-form-label">Dish Description *</label>
               {{ form.description }}
-              <div class="tt-help-text">Describe the texture, flavors, accompaniments (e.g. served with 3 rotis, pickle & salad).</div>
+              <div class="tt-help-text">Describe the texture, authentic spices, accompaniments (e.g. served with 3 rotis, pickle & seasonal salad).</div>
               {% if form.description.errors %}<div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>{% endif %}
             </div>
           </div>
 
           <!-- Section 2: Pricing, Quantities & Prep -->
           <div class="row g-3 mb-4">
-            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">2. Pricing & Kitchen Preparation</h6></div>
+            <div class="col-12">
+              <h6 class="fw-bold border-bottom pb-2 d-flex align-items-center gap-2" style="color: var(--tt-charcoal);">
+                <i class="bi bi-cash-coin text-secondary"></i> 2. Pricing & Kitchen Preparation
+              </h6>
+            </div>
 
             <div class="col-md-3">
               <label class="tt-form-label">Price per Portion (₹) *</label>
@@ -92,60 +106,53 @@
               {% if form.calories.errors %}<div class="text-danger small mt-1">{{ form.calories.errors.0 }}</div>{% endif %}
             </div>
 
-            <div class="col-md-6">
-              <div class="form-check form-switch p-3 bg-light rounded border">
-                {{ form.is_available }}
-                <label class="form-check-label fw-bold ms-2" for="{{ form.is_available.id_for_label }}">
-                  Currently Available for Order
-                </label>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="form-check form-switch p-3 bg-light rounded border">
-                {{ form.is_featured }}
-                <label class="form-check-label fw-bold ms-2" for="{{ form.is_featured.id_for_label }}">
-                  Feature as Kitchen Highlight
-                </label>
+            <div class="col-12">
+              <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between" style="background-color: var(--tt-surface-muted);">
+                <div>
+                  <div class="fw-bold small text-dark">Availability Toggle</div>
+                  <div class="text-muted small">Enable to make this dish discoverable and orderable by customers</div>
+                </div>
+                <div class="form-check form-switch m-0">
+                  {{ form.is_available }}
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Section 3: Ingredients & Food Photo -->
+          <!-- Section 3: Dish Photograph -->
           <div class="row g-3 mb-4">
-            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">3. Ingredients & Food Photo</h6></div>
-
-            <div class="col-md-6">
-              <label class="tt-form-label">Key Ingredients Used</label>
-              {{ form.ingredients }}
-              <div class="tt-help-text">e.g. Urad dal, fresh churned butter, whole wheat flour, rock salt</div>
-              {% if form.ingredients.errors %}<div class="text-danger small mt-1">{{ form.ingredients.errors.0 }}</div>{% endif %}
-            </div>
-
-            <div class="col-md-6">
-              <label class="tt-form-label">Allergen Information</label>
-              {{ form.allergen_info }}
-              <div class="tt-help-text">e.g. Contains dairy, peanuts, mustard oil</div>
-              {% if form.allergen_info.errors %}<div class="text-danger small mt-1">{{ form.allergen_info.errors.0 }}</div>{% endif %}
-            </div>
-
             <div class="col-12">
-              <label class="tt-form-label">Meal Food Photo</label>
+              <h6 class="fw-bold border-bottom pb-2 d-flex align-items-center gap-2" style="color: var(--tt-charcoal);">
+                <i class="bi bi-image text-secondary"></i> 3. Dish Photograph
+              </h6>
+            </div>
+
+            <div class="col-md-7">
+              <label class="tt-form-label">Upload Food Image</label>
               {{ form.image }}
-              <div class="tt-help-text">Upload a clear photo of your dish (JPG, PNG, WebP max 5MB).</div>
-              {% if is_edit and meal.image %}
-                <div class="mt-2">
-                  <span class="text-muted small d-block mb-1">Current Image:</span>
-                  <img src="{{ meal.image.url }}" alt="{{ meal.name }}" class="rounded border" style="width: 120px; height: 90px; object-fit: cover;">
-                </div>
-              {% endif %}
+              <div class="tt-help-text">High-resolution horizontal photo of the prepared dish (JPG, PNG or WEBP, max 5MB).</div>
               {% if form.image.errors %}<div class="text-danger small mt-1">{{ form.image.errors.0 }}</div>{% endif %}
             </div>
+
+            <div class="col-md-5 text-center">
+              <div class="p-3 border rounded-3 bg-light d-flex flex-column align-items-center justify-content-center" style="min-height: 140px;">
+                {% if meal and meal.image %}
+                  <img src="{{ meal.image.url }}" alt="{{ meal.name }}" class="img-fluid rounded border mb-2" style="max-height: 120px; object-fit: cover;">
+                  <span class="badge bg-white text-dark border small">Current Photo</span>
+                {% else %}
+                  <i class="bi bi-card-image fs-1 text-secondary opacity-50 mb-1"></i>
+                  <span class="text-muted small">Dish photo preview will appear here</span>
+                {% endif %}
+              </div>
+            </div>
           </div>
 
+          <!-- Form Actions -->
           <div class="d-flex justify-content-end gap-3 pt-3 border-top">
             <a href="{% url 'chef:meals' %}" class="btn btn-outline-secondary">Cancel</a>
-            <button type="submit" class="btn btn-success px-4 fw-semibold"> Save Dish</button>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+              <i class="bi bi-check2-circle"></i> Save Dish Details
+            </button>
           </div>
         </form>
       </div>

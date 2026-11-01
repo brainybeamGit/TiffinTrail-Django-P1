@@ -13,22 +13,22 @@
       All ({{ status_counts.all }})
     </a>
     <a href="?status=pending{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'pending' %}active{% endif %}">
-       Pending ({{ status_counts.pending }})
+      <i class="bi bi-clock-history me-1"></i>Pending ({{ status_counts.pending }})
     </a>
     <a href="?status=confirmed{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'confirmed' %}active{% endif %}">
-      ✓ Confirmed ({{ status_counts.confirmed }})
+      <i class="bi bi-check-circle me-1"></i>Confirmed ({{ status_counts.confirmed }})
     </a>
     <a href="?status=preparing{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'preparing' %}active{% endif %}">
-       In Prep ({{ status_counts.preparing }})
+      <i class="bi bi-fire me-1"></i>In Prep ({{ status_counts.preparing }})
     </a>
     <a href="?status=out_for_delivery{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'out_for_delivery' %}active{% endif %}">
-       Out for Delivery ({{ status_counts.out_for_delivery }})
+      <i class="bi bi-truck me-1"></i>Out for Delivery ({{ status_counts.out_for_delivery }})
     </a>
     <a href="?status=delivered{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'delivered' %}active{% endif %}">
-      ✓ Delivered ({{ status_counts.delivered }})
+      <i class="bi bi-check2-all me-1"></i>Delivered ({{ status_counts.delivered }})
     </a>
     <a href="?status=cancelled{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="tt-filter-btn {% if status_filter == 'cancelled' %}active{% endif %}">
-      ✕ Cancelled ({{ status_counts.cancelled }})
+      <i class="bi bi-x-circle me-1"></i>Cancelled ({{ status_counts.cancelled }})
     </a>
   </div>
 </div>
@@ -43,8 +43,8 @@
 
       <div class="col-md-6">
         <div class="input-group">
-          <span class="input-group-text bg-white"></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by Order # or Diner Name / Phone...">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search by Order # or Diner Name / Phone...">
         </div>
       </div>
 
@@ -58,9 +58,11 @@
       </div>
 
       <div class="col-md-2 d-flex gap-1">
-        <button type="submit" class="btn btn-primary w-100">Filter</button>
+        <button type="submit" class="btn btn-primary w-100 fw-semibold">Filter</button>
         {% if search_query or date_filter %}
-          <a href="{% url 'chef:orders' %}?status={{ status_filter }}" class="btn btn-outline-secondary" title="Clear">✕</a>
+          <a href="{% url 'chef:orders' %}?status={{ status_filter }}" class="btn btn-outline-secondary" title="Clear Filters">
+            <i class="bi bi-x-lg"></i>
+          </a>
         {% endif %}
       </div>
     </form>
@@ -80,31 +82,31 @@
             <th>Amount</th>
             <th>Payment</th>
             <th>Status</th>
-            <th class="text-end" >Action</th>
+            <th class="text-end">Action</th>
           </tr>
         </thead>
         <tbody>
           {% for order in page_obj %}
             <tr>
               <td>
-                <a href="{% url 'chef:order_detail' order.id %}" class="fw-bold text-decoration-none text-dark">
-                  {{ order.order_number }}
+                <a href="{% url 'chef:order_detail' order.id %}" class="fw-bold text-decoration-none text-dark d-flex align-items-center gap-1">
+                  <span>#{{ order.order_number }}</span>
                 </a>
                 <div class="text-muted small">{{ order.created_at|date:"d M Y, h:i A" }}</div>
               </td>
               <td>
-                <div class="fw-semibold">{{ order.recipient_name }}</div>
+                <div class="fw-semibold text-dark">{{ order.recipient_name }}</div>
                 <div class="text-muted small"><i class="bi bi-telephone me-1"></i>{{ order.recipient_phone }}</div>
               </td>
               <td>
                 <div class="small">
                   {% for item in order.items.all %}
-                    <div><strong>{{ item.quantity }}x</strong> {{ item.meal_name }} <span class="text-muted">(₹{{ item.subtotal }})</span></div>
+                    <div><strong>{{ item.quantity }}x</strong> {{ item.meal_name }} <span class="text-muted">(₹{{ item.subtotal|floatformat:2 }})</span></div>
                   {% endfor %}
                 </div>
               </td>
               <td>
-                <strong class="fs-6 text-dark text-nowrap">₹{{ order.final_amount }}</strong>
+                <strong class="fs-6 text-dark text-nowrap">₹{{ order.final_amount|floatformat:2 }}</strong>
               </td>
               <td>
                 <span class="badge {% if order.payment_status == 'paid' %}bg-success-subtle text-success border border-success-subtle{% else %}bg-warning-subtle text-warning border border-warning-subtle{% endif %}">
@@ -120,7 +122,7 @@
               <td class="text-end tt-actions-cell">
                 <div class="tt-actions-group">
                   <a href="{% url 'chef:order_detail' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
-                    <i class="bi bi-eye-fill"></i> View & Manage
+                    <i class="bi bi-eye"></i> View & Manage
                   </a>
                 </div>
               </td>
@@ -128,7 +130,9 @@
           {% empty %}
             <tr>
               <td colspan="7" class="text-center py-5 text-muted">
-                <h5>No orders found matching this filter.</h5>
+                <div class="mb-2"><i class="bi bi-inbox fs-1 text-muted opacity-50"></i></div>
+                <h6 class="fw-bold">No orders found matching this filter.</h6>
+                <p class="small mb-0">Incoming customer orders will appear here automatically.</p>
               </td>
             </tr>
           {% endfor %}
@@ -146,7 +150,7 @@
               <a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Previous</a>
             </li>
           {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          <li class="page-item active"><span class="page-link bg-dark border-dark">{{ page_obj.number }}</span></li>
           {% if page_obj.has_next %}
             <li class="page-item">
               <a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}{% if date_filter %}&date_range={{ date_filter }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">Next</a>

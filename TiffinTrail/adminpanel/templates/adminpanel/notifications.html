@@ -3,24 +3,27 @@
 
 {% block title %}Admin Notifications | TiffinTrail Admin Console{% endblock %}
 {% block eyebrow %}ALERTS & SYSTEM EVENTS{% endblock %}
-{% block page_heading %}Admin Notifications{% endblock %}
+{% block page_heading %}Admin Notifications Center{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-lg-10">
     <div class="tt-card">
-      <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title">
-           Notification Center
+      <div class="tt-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h5 class="tt-card-title d-flex align-items-center gap-2 mb-0">
+          <i class="bi bi-bell-fill text-warning"></i>
+          <span>Notification Center</span>
           {% if admin_unread_count > 0 %}
-            <span class="badge bg-danger ms-2">{{ admin_unread_count }} Unread</span>
+            <span class="badge bg-danger rounded-pill px-2.5 py-1 fs-6 ms-2">{{ admin_unread_count }} Unread</span>
           {% endif %}
         </h5>
 
         {% if admin_unread_count > 0 %}
-          <form action="{% url 'adminpanel:notifications_mark_all_read' %}" method="post">
+          <form action="{% url 'adminpanel:notifications_mark_all_read' %}" method="post" class="m-0">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-outline-secondary">Mark All as Read</button>
+            <button type="submit" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5">
+              <i class="bi bi-check2-all"></i> Mark All as Read
+            </button>
           </form>
         {% endif %}
       </div>
@@ -28,40 +31,58 @@
       <div class="tt-card-body p-0">
         <div class="d-flex flex-column">
           {% for notif in page_obj %}
-            <div class="p-3 border-bottom d-flex align-items-center justify-content-between {% if not notif.is_read %}bg-light border-start border-4 border-success{% endif %}">
+            <div class="p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3 {% if not notif.is_read %}border-start border-4 border-warning{% endif %}" style="{% if not notif.is_read %}background-color: rgba(230, 173, 69, 0.04);{% endif %} transition: background-color 0.2s ease;">
               <div class="d-flex align-items-start gap-3">
-                <div class="fs-4">
-                  {% if notif.notification_type == 'chef_reg' %}‍
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 44px; height: 44px; 
+                  {% if notif.notification_type == 'chef_reg' %}background: rgba(59, 130, 246, 0.12); color: #3b82f6;
+                  {% elif notif.notification_type == 'verification' %}background: rgba(230, 173, 69, 0.15); color: #e6ad45;
+                  {% elif notif.notification_type == 'complaint' %}background: rgba(220, 38, 38, 0.12); color: #dc2626;
+                  {% elif notif.notification_type == 'order' or notif.notification_type == 'payment' %}background: rgba(22, 163, 74, 0.12); color: #16a34a;
+                  {% else %}background: rgba(37, 55, 70, 0.12); color: #253746;{% endif %}">
+                  {% if notif.notification_type == 'chef_reg' %}
+                    <i class="bi bi-person-plus-fill fs-5"></i>
                   {% elif notif.notification_type == 'verification' %}
+                    <i class="bi bi-shield-check fs-5"></i>
                   {% elif notif.notification_type == 'complaint' %}
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
                   {% elif notif.notification_type == 'order' %}
+                    <i class="bi bi-bag-check-fill fs-5"></i>
                   {% elif notif.notification_type == 'payment' %}
-                  {% else %}{% endif %}
+                    <i class="bi bi-credit-card-fill fs-5"></i>
+                  {% else %}
+                    <i class="bi bi-bell-fill fs-5"></i>
+                  {% endif %}
                 </div>
                 <div>
                   <h6 class="mb-1 fw-bold text-dark">{{ notif.title }}</h6>
                   <p class="mb-1 text-secondary small">{{ notif.message }}</p>
-                  <span class="text-muted small">{{ notif.created_at|timesince }} ago</span>
+                  <span class="text-muted small d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-clock"></i> {{ notif.created_at|timesince }} ago
+                  </span>
                 </div>
               </div>
 
               <div class="d-flex align-items-center gap-2">
                 {% if notif.link %}
-                  <a href="{{ notif.link }}" class="btn btn-sm btn-outline-primary">View →</a>
+                  <a href="{{ notif.link }}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">
+                    View <i class="bi bi-arrow-right"></i>
+                  </a>
                 {% endif %}
                 {% if not notif.is_read %}
-                  <form action="{% url 'adminpanel:notification_mark_read' notif.id %}" method="post">
+                  <form action="{% url 'adminpanel:notification_mark_read' notif.id %}" method="post" class="m-0">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="Mark as read">✓</button>
+                    <button type="submit" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" title="Mark as read">
+                      <i class="bi bi-check2"></i>
+                    </button>
                   </form>
                 {% endif %}
               </div>
             </div>
           {% empty %}
             <div class="text-center py-5 text-muted">
-              <div class="fs-1 mb-2"></div>
-              <h5>No administrative alerts at this time.</h5>
-              <p class="small mb-0">Platform events, verification applications, and complaint notices will appear here.</p>
+              <i class="bi bi-bell-slash fs-1 d-block mb-3 text-secondary opacity-50"></i>
+              <h5 class="text-dark fw-bold mb-1">No administrative alerts at this time.</h5>
+              <p class="small text-muted mb-0">Platform events, verification applications, and complaint notices will appear here automatically.</p>
             </div>
           {% endfor %}
         </div>
@@ -72,11 +93,19 @@
             <span class="text-muted small">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
             <ul class="pagination pagination-sm mb-0">
               {% if page_obj.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                    <i class="bi bi-chevron-left"></i> Previous
+                  </a>
+                </li>
               {% endif %}
               <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
               {% if page_obj.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                    Next <i class="bi bi-chevron-right"></i>
+                  </a>
+                </li>
               {% endif %}
             </ul>
           </div>

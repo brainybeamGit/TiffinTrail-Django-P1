@@ -1,16 +1,18 @@
 {% extends 'chef/base.html' %}
 {% load static %}
 
-{% block title %}Order {{ order.order_number }} | TiffinTrail Chef Studio{% endblock %}
-{% block eyebrow %}ORDER FULFILLMENT{% endblock %}
-{% block page_heading %}Order {{ order.order_number }}{% endblock %}
+{% block title %}Order #{{ order.order_number }} | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}ORDER FULFILLMENT & KITCHEN ACTION{% endblock %}
+{% block page_heading %}Order #{{ order.order_number }}{% endblock %}
 
 {% block content %}
 <!-- Back link & Status Indicator Header -->
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-  <a href="{% url 'chef:orders' %}" class="btn btn-sm btn-outline-secondary">← Back to Orders</a>
+  <a href="{% url 'chef:orders' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+    <i class="bi bi-arrow-left"></i> Back to Orders
+  </a>
   <div class="d-flex align-items-center gap-2">
-    <span class="text-muted small">Current Status:</span>
+    <span class="text-muted small fw-semibold">Current Status:</span>
     <span class="tt-badge tt-badge-{{ order.status }} fs-6 px-3 py-1">
       {{ order.get_status_display }}
     </span>
@@ -20,26 +22,36 @@
 <!-- Workflow Stepper Indicator -->
 {% if order.status != 'cancelled' %}
   <div class="tt-card mb-4 p-3 bg-white">
-    <div class="d-flex justify-content-between align-items-center position-relative">
-      <div class="text-center" style="flex: 1;">
-        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center fw-bold {% if order.progress_step >= 1 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px;">1</div>
-        <div class="small mt-1 {% if order.progress_step >= 1 %}fw-bold text-success{% else %}text-muted{% endif %}">Received</div>
+    <div class="tt-stepper">
+      <div class="tt-step-item {% if order.progress_step > 1 %}is-completed{% elif order.progress_step == 1 %}is-current{% endif %}">
+        <div class="tt-step-bubble">
+          {% if order.progress_step > 1 %}<i class="bi bi-check-lg"></i>{% else %}1{% endif %}
+        </div>
+        <div class="tt-step-label">Received</div>
       </div>
-      <div class="text-center" style="flex: 1;">
-        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center fw-bold {% if order.progress_step >= 2 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px;">2</div>
-        <div class="small mt-1 {% if order.progress_step >= 2 %}fw-bold text-success{% else %}text-muted{% endif %}">Confirmed</div>
+      <div class="tt-step-item {% if order.progress_step > 2 %}is-completed{% elif order.progress_step == 2 %}is-current{% endif %}">
+        <div class="tt-step-bubble">
+          {% if order.progress_step > 2 %}<i class="bi bi-check-lg"></i>{% else %}2{% endif %}
+        </div>
+        <div class="tt-step-label">Confirmed</div>
       </div>
-      <div class="text-center" style="flex: 1;">
-        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center fw-bold {% if order.progress_step >= 3 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px;">3</div>
-        <div class="small mt-1 {% if order.progress_step >= 3 %}fw-bold text-success{% else %}text-muted{% endif %}">Cooking</div>
+      <div class="tt-step-item {% if order.progress_step > 3 %}is-completed{% elif order.progress_step == 3 %}is-current{% endif %}">
+        <div class="tt-step-bubble">
+          {% if order.progress_step > 3 %}<i class="bi bi-check-lg"></i>{% else %}3{% endif %}
+        </div>
+        <div class="tt-step-label">Cooking</div>
       </div>
-      <div class="text-center" style="flex: 1;">
-        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center fw-bold {% if order.progress_step >= 4 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px;">4</div>
-        <div class="small mt-1 {% if order.progress_step >= 4 %}fw-bold text-success{% else %}text-muted{% endif %}">Out for Delivery</div>
+      <div class="tt-step-item {% if order.progress_step > 4 %}is-completed{% elif order.progress_step == 4 %}is-current{% endif %}">
+        <div class="tt-step-bubble">
+          {% if order.progress_step > 4 %}<i class="bi bi-check-lg"></i>{% else %}4{% endif %}
+        </div>
+        <div class="tt-step-label">Out for Delivery</div>
       </div>
-      <div class="text-center" style="flex: 1;">
-        <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center fw-bold {% if order.progress_step >= 5 %}bg-success text-white{% else %}bg-light text-muted border{% endif %}" style="width: 36px; height: 36px;">5</div>
-        <div class="small mt-1 {% if order.progress_step >= 5 %}fw-bold text-success{% else %}text-muted{% endif %}">Delivered</div>
+      <div class="tt-step-item {% if order.progress_step >= 5 %}is-completed{% endif %}">
+        <div class="tt-step-bubble">
+          {% if order.progress_step >= 5 %}<i class="bi bi-check-lg"></i>{% else %}5{% endif %}
+        </div>
+        <div class="tt-step-label">Delivered</div>
       </div>
     </div>
   </div>
@@ -49,9 +61,12 @@
   <!-- Left Column: Ordered Items & Bill Summary -->
   <div class="col-lg-8">
     <div class="tt-card mb-4">
-      <div class="tt-card-header">
-        <h5 class="tt-card-title"> Meals in this Order</h5>
-        <span class="text-muted small">{{ items.count }} items</span>
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-bag-check text-warning"></i>
+          Meals in this Order
+        </h5>
+        <span class="text-muted small fw-semibold">{{ items.count }} items</span>
       </div>
       <div class="tt-card-body p-0">
         <div class="tt-table-responsive">
@@ -68,14 +83,21 @@
               {% for item in items %}
                 <tr>
                   <td>
-                    <strong>{{ item.meal_name }}</strong>
+                    <strong class="text-dark d-block">{{ item.meal_name }}</strong>
                     {% if item.meal %}
-                      <div class="text-muted small">Slot: {{ item.meal.get_meal_type_display }} · {% if item.meal.is_veg %}Veg{% else %}Non-veg{% endif %}</div>
+                      <div class="text-muted small">
+                        Slot: {{ item.meal.get_meal_type_display }} · 
+                        {% if item.meal.is_veg %}
+                          <span class="text-success fw-semibold">Veg</span>
+                        {% else %}
+                          <span class="text-danger fw-semibold">Non-veg</span>
+                        {% endif %}
+                      </div>
                     {% endif %}
                   </td>
-                  <td>₹{{ item.unit_price }}</td>
+                  <td>₹{{ item.unit_price|floatformat:2 }}</td>
                   <td><strong>x {{ item.quantity }}</strong></td>
-                  <td class="text-end fw-bold">₹{{ item.subtotal }}</td>
+                  <td class="text-end fw-bold text-dark">₹{{ item.subtotal|floatformat:2 }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -84,30 +106,30 @@
       </div>
 
       <!-- Financial Totals -->
-      <div class="p-3 bg-light border-top">
+      <div class="p-4 bg-light border-top">
         <div class="row justify-content-end">
-          <div class="col-md-6">
+          <div class="col-md-7 col-lg-6">
             <div class="d-flex justify-content-between py-1 small">
               <span class="text-muted">Food Subtotal:</span>
-              <span>₹{{ order.total_amount }}</span>
+              <span class="fw-semibold text-dark">₹{{ order.total_amount|floatformat:2 }}</span>
             </div>
             <div class="d-flex justify-content-between py-1 small">
               <span class="text-muted">Delivery Fee:</span>
-              <span>₹{{ order.delivery_fee }}</span>
+              <span class="fw-semibold text-dark">₹{{ order.delivery_fee|floatformat:2 }}</span>
             </div>
             <div class="d-flex justify-content-between py-1 small">
               <span class="text-muted">Taxes (GST 5%):</span>
-              <span>₹{{ order.tax_amount }}</span>
+              <span class="fw-semibold text-dark">₹{{ order.tax_amount|floatformat:2 }}</span>
             </div>
             {% if order.discount_amount > 0 %}
               <div class="d-flex justify-content-between py-1 small text-success">
                 <span>Coupon Discount:</span>
-                <span>-₹{{ order.discount_amount }}</span>
+                <span class="fw-semibold">-₹{{ order.discount_amount|floatformat:2 }}</span>
               </div>
             {% endif %}
             <div class="d-flex justify-content-between py-2 border-top border-dark mt-2 fw-bold fs-6">
-              <span>Customer Paid Total:</span>
-              <span class="text-success">₹{{ order.final_amount }}</span>
+              <span class="text-dark">Customer Paid Total:</span>
+              <span class="text-success">₹{{ order.final_amount|floatformat:2 }}</span>
             </div>
           </div>
         </div>
@@ -115,47 +137,49 @@
     </div>
 
     {% if order.has_review %}
-    <!-- Customer Rating & Feedback Card -->
-    <div class="tt-card border-warning mb-4">
-      <div class="tt-card-header bg-warning-subtle d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title text-dark mb-0 d-flex align-items-center gap-1.5">
-          <i class="bi bi-star-fill text-warning"></i> Customer Rating & Feedback
-        </h5>
-        <span class="badge bg-warning text-dark fw-bold">★ {{ order.customer_review.rating }} / 5 Stars</span>
-      </div>
-      <div class="tt-card-body">
-        <p class="mb-2 text-dark fs-6 fst-italic">&ldquo;{{ order.customer_review.comment }}&rdquo;</p>
-        <div class="small text-muted d-flex align-items-center gap-2 flex-wrap">
-          <span>By <strong>{{ order.recipient_name }}</strong></span>
-          <span>·</span>
-          <span>{{ order.customer_review.created_at|date:"d M Y · h:i A" }}</span>
-          {% if order.customer_review.meal %}
-          <span>·</span>
-          <span class="badge bg-light text-secondary border">Dish: {{ order.customer_review.meal.name }}</span>
-          {% endif %}
+      <!-- Customer Rating & Feedback Card -->
+      <div class="tt-card border-warning mb-4">
+        <div class="tt-card-header bg-warning-subtle d-flex justify-content-between align-items-center">
+          <h5 class="tt-card-title text-dark mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-star-fill text-warning"></i> Customer Rating & Feedback
+          </h5>
+          <span class="badge bg-warning text-dark fw-bold px-2 py-1"><i class="bi bi-star-fill me-1"></i>{{ order.customer_review.rating }} / 5 Stars</span>
+        </div>
+        <div class="tt-card-body">
+          <p class="mb-2 text-dark fs-6 fst-italic">&ldquo;{{ order.customer_review.comment }}&rdquo;</p>
+          <div class="small text-muted d-flex align-items-center gap-2 flex-wrap">
+            <span>By <strong>{{ order.recipient_name }}</strong></span>
+            <span>·</span>
+            <span>{{ order.customer_review.created_at|date:"d M Y · h:i A" }}</span>
+            {% if order.customer_review.meal %}
+              <span>·</span>
+              <span class="badge bg-light text-secondary border">Dish: {{ order.customer_review.meal.name }}</span>
+            {% endif %}
+          </div>
         </div>
       </div>
-    </div>
     {% endif %}
 
     <!-- Chef Net Payout Breakdown -->
     <div class="tt-card border-success">
       <div class="tt-card-header bg-success-subtle">
-        <h5 class="tt-card-title text-success"> Kitchen Earnings Calculation</h5>
+        <h5 class="tt-card-title text-success d-flex align-items-center gap-2">
+          <i class="bi bi-cash-coin"></i> Kitchen Earnings Calculation
+        </h5>
       </div>
       <div class="tt-card-body">
         <div class="row text-center g-3">
           <div class="col-sm-4">
-            <div class="text-muted small">Order Value</div>
-            <div class="fs-5 fw-bold">₹{{ order.final_amount }}</div>
+            <div class="text-muted small fw-semibold">Order Value</div>
+            <div class="fs-5 fw-bold text-dark mt-1">₹{{ order.final_amount|floatformat:2 }}</div>
           </div>
           <div class="col-sm-4">
-            <div class="text-muted small">Platform Fee ({{ commission_rate }}%)</div>
-            <div class="fs-5 fw-bold text-danger">-₹{{ order_commission }}</div>
+            <div class="text-muted small fw-semibold">Platform Fee ({{ commission_rate }}%)</div>
+            <div class="fs-5 fw-bold text-danger mt-1">-₹{{ order_commission|floatformat:2 }}</div>
           </div>
           <div class="col-sm-4">
-            <div class="text-muted small">Net Chef Payout</div>
-            <div class="fs-5 fw-bold text-success">₹{{ order_net_earning }}</div>
+            <div class="text-muted small fw-semibold">Net Chef Payout</div>
+            <div class="fs-5 fw-bold text-success mt-1">₹{{ order_net_earning|floatformat:2 }}</div>
           </div>
         </div>
       </div>
@@ -166,8 +190,10 @@
   <div class="col-lg-4">
     <!-- Status Action Controls -->
     <div class="tt-card mb-4 border-primary">
-      <div class="tt-card-header bg-primary text-white">
-        <h5 class="tt-card-title text-white"> Update Order Status</h5>
+      <div class="tt-card-header bg-dark text-white">
+        <h5 class="tt-card-title text-white d-flex align-items-center gap-2">
+          <i class="bi bi-arrow-repeat text-warning"></i> Update Order Status
+        </h5>
       </div>
       <div class="tt-card-body">
         {% if allowed_transitions %}
@@ -177,22 +203,35 @@
 
             <div class="d-flex flex-column gap-2 mb-3">
               {% for val, label in allowed_transitions %}
-                <button type="submit" name="new_status" value="{{ val }}" class="btn {% if val == 'cancelled' %}btn-outline-danger{% elif val == 'delivered' %}btn-success{% else %}btn-primary{% endif %} text-start py-2">
-                  {% if val == 'confirmed' %}✓ Confirm Order{% elif val == 'preparing' %} Start Cooking (In Prep){% elif val == 'out_for_delivery' %} Handed to Delivery Partner{% elif val == 'delivered' %}✓ Mark as Delivered{% else %}✕ Decline / Cancel{% endif %}
+                <button type="submit" name="new_status" value="{{ val }}" class="btn {% if val == 'cancelled' %}btn-outline-danger{% elif val == 'delivered' %}btn-success{% elif val == 'preparing' %}btn-warning tt-btn-gold text-dark{% else %}btn-primary{% endif %} text-start py-2 d-flex align-items-center justify-content-between">
+                  <span>
+                    {% if val == 'confirmed' %}
+                      <i class="bi bi-check-circle me-1"></i> Confirm Order
+                    {% elif val == 'preparing' %}
+                      <i class="bi bi-fire me-1"></i> Start Cooking (In Prep)
+                    {% elif val == 'out_for_delivery' %}
+                      <i class="bi bi-truck me-1"></i> Hand to Delivery Partner
+                    {% elif val == 'delivered' %}
+                      <i class="bi bi-check2-all me-1"></i> Mark as Delivered
+                    {% else %}
+                      <i class="bi bi-x-circle me-1"></i> Decline / Cancel
+                    {% endif %}
+                  </span>
+                  <i class="bi bi-chevron-right small opacity-75"></i>
                 </button>
               {% endfor %}
             </div>
 
             {% if order.status in 'pending confirmed' %}
               <div class="mt-3 pt-3 border-top">
-                <label class="form-label small text-muted">Cancellation Note (if cancelling):</label>
+                <label class="form-label small text-muted fw-semibold">Cancellation Note (if declining):</label>
                 <input type="text" name="cancellation_reason" class="form-control form-control-sm" placeholder="e.g. Out of ingredients">
               </div>
             {% endif %}
           </form>
         {% else %}
           <div class="text-center py-2">
-            <span class="fs-2"></span>
+            <div class="mb-2"><i class="bi bi-check-circle-fill text-success fs-1"></i></div>
             <p class="small text-muted mt-2 mb-0">This order is <strong>{{ order.get_status_display }}</strong>. No further status changes permitted.</p>
             {% if order.cancellation_reason %}
               <div class="alert alert-danger mt-3 small p-2">
@@ -207,29 +246,33 @@
     <!-- Customer & Delivery Details -->
     <div class="tt-card mb-4">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Diner Contact</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-person-lines-fill text-warning"></i> Diner Contact
+        </h5>
       </div>
       <div class="tt-card-body small">
         <div class="mb-3">
-          <div class="text-muted">Recipient Name:</div>
-          <strong class="fs-6">{{ order.recipient_name }}</strong>
+          <div class="text-muted fw-semibold">Recipient Name:</div>
+          <strong class="fs-6 text-dark">{{ order.recipient_name }}</strong>
         </div>
         <div class="mb-3">
-          <div class="text-muted">Phone Number:</div>
-          <a href="tel:{{ order.recipient_phone }}" class="text-decoration-none fw-bold text-primary">
-             {{ order.recipient_phone }}
+          <div class="text-muted fw-semibold">Phone Number:</div>
+          <a href="tel:{{ order.recipient_phone }}" class="text-decoration-none fw-bold text-primary d-inline-flex align-items-center gap-1">
+            <i class="bi bi-telephone-fill small"></i> {{ order.recipient_phone }}
           </a>
         </div>
         <div class="mb-3">
-          <div class="text-muted">Delivery Address:</div>
-          <div class="p-2 bg-light rounded mt-1 border">
+          <div class="text-muted fw-semibold">Delivery Address:</div>
+          <div class="p-2.5 bg-light rounded mt-1 border text-dark">
+            <i class="bi bi-geo-alt-fill text-danger me-1"></i>
             {{ order.delivery_address_text }}
           </div>
         </div>
         {% if order.delivery_notes %}
           <div>
-            <div class="text-muted">Gate / Delivery Instructions:</div>
-            <div class="text-danger-emphasis small mt-1">
+            <div class="text-muted fw-semibold">Gate / Delivery Instructions:</div>
+            <div class="text-danger-emphasis small mt-1 p-2 bg-warning-subtle rounded border border-warning-subtle">
+              <i class="bi bi-exclamation-circle-fill me-1"></i>
               {{ order.delivery_notes }}
             </div>
           </div>
@@ -240,23 +283,25 @@
     <!-- Payment Information -->
     <div class="tt-card">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Payment Details</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-credit-card text-warning"></i> Payment Details
+        </h5>
       </div>
       <div class="tt-card-body small">
-        <div class="d-flex justify-content-between py-1 border-bottom">
+        <div class="d-flex justify-content-between py-2 border-bottom">
           <span class="text-muted">Method:</span>
-          <strong>{{ order.get_payment_method_display }}</strong>
+          <strong class="text-dark">{{ order.get_payment_method_display }}</strong>
         </div>
-        <div class="d-flex justify-content-between py-1 border-bottom">
+        <div class="d-flex justify-content-between py-2 border-bottom align-items-center">
           <span class="text-muted">Status:</span>
-          <span class="badge {% if order.payment_status == 'paid' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+          <span class="badge {% if order.payment_status == 'paid' %}bg-success-subtle text-success border border-success-subtle{% else %}bg-warning-subtle text-warning border border-warning-subtle{% endif %}">
             {{ order.get_payment_status_display }}
           </span>
         </div>
         {% if order.payment_transaction_id %}
-          <div class="d-flex justify-content-between py-1">
+          <div class="d-flex justify-content-between py-2">
             <span class="text-muted">Txn Ref:</span>
-            <span class="font-monospace small">{{ order.payment_transaction_id }}</span>
+            <span class="font-monospace text-dark">{{ order.payment_transaction_id }}</span>
           </div>
         {% endif %}
       </div>

@@ -6,23 +6,28 @@
 {% block page_heading %}{{ meal.name }}{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-  <a href="{% url 'adminpanel:meals' %}" class="btn btn-sm btn-outline-secondary">← Back to Meals</a>
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 tt-stagger-1">
+  <a href="{% url 'adminpanel:meals' %}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Back to Meals
+  </a>
   <div class="d-flex align-items-center gap-2">
     <span class="text-muted small">Status:</span>
     {% if meal.is_available %}
-      <span class="badge bg-success">Available for Order</span>
+      <span class="tt-badge tt-badge-active px-3 py-1">Available for Order</span>
     {% else %}
-      <span class="badge bg-secondary">Unavailable</span>
+      <span class="tt-badge tt-badge-cancelled px-3 py-1">Unavailable</span>
     {% endif %}
   </div>
 </div>
 
-<div class="row g-4 justify-content-center">
+<div class="row g-4 justify-content-center tt-stagger-2">
   <div class="col-lg-9">
     <div class="tt-card">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title"> Edit Dish Details</h5>
+        <h5 class="tt-card-title">
+          <i class="bi bi-pencil-square text-primary"></i>
+          Edit Dish Details
+        </h5>
         <span class="badge bg-light text-muted border">Times Ordered: {{ orders_count }}</span>
       </div>
 
@@ -32,12 +37,12 @@
 
           <div class="row g-3 mb-4">
             <div class="col-md-8">
-              <label class="tt-form-label">Dish Name *</label>
+              <label class="tt-form-label">Dish Name <span class="text-danger">*</span></label>
               {{ form.name }}
             </div>
 
             <div class="col-md-4">
-              <label class="tt-form-label">Home Chef *</label>
+              <label class="tt-form-label">Home Chef <span class="text-danger">*</span></label>
               {{ form.chef }}
             </div>
 
@@ -57,7 +62,7 @@
             </div>
 
             <div class="col-md-4">
-              <label class="tt-form-label">Price per Portion (₹) *</label>
+              <label class="tt-form-label">Price per Portion (₹) <span class="text-danger">*</span></label>
               {{ form.price }}
             </div>
 
@@ -67,7 +72,7 @@
             </div>
 
             <div class="col-md-4">
-              <div class="form-check p-3 bg-light rounded border mt-4">
+              <div class="form-check p-3 rounded border mt-4" style="background-color: var(--tt-surface-muted);">
                 {{ form.is_veg }}
                 <label class="form-check-label fw-semibold ms-2" for="{{ form.is_veg.id_for_label }}">
                   Pure Vegetarian
@@ -76,7 +81,7 @@
             </div>
 
             <div class="col-md-6">
-              <div class="form-check form-switch p-3 bg-light rounded border">
+              <div class="form-check form-switch p-3 rounded border" style="background-color: var(--tt-surface-muted);">
                 {{ form.is_available }}
                 <label class="form-check-label fw-bold ms-2" for="{{ form.is_available.id_for_label }}">
                   Available on Customer Website
@@ -85,7 +90,7 @@
             </div>
 
             <div class="col-md-6">
-              <div class="form-check form-switch p-3 bg-light rounded border">
+              <div class="form-check form-switch p-3 rounded border" style="background-color: var(--tt-surface-muted);">
                 {{ form.is_featured }}
                 <label class="form-check-label fw-bold ms-2" for="{{ form.is_featured.id_for_label }}">
                   Featured Dish
@@ -101,11 +106,13 @@
 
           <div class="d-flex justify-content-between align-items-center pt-3 border-top">
             <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteMealModal">
-              Delete Dish
+              <i class="bi bi-trash3"></i> Delete Dish
             </button>
             <div class="d-flex gap-2">
               <a href="{% url 'adminpanel:meals' %}" class="btn btn-outline-secondary">Cancel</a>
-              <button type="submit" class="btn btn-success px-4 fw-semibold">Save Dish Changes</button>
+              <button type="submit" class="btn btn-success px-4 fw-semibold shadow-sm">
+                <i class="bi bi-check2"></i> Save Dish Changes
+              </button>
             </div>
           </div>
         </form>
@@ -125,19 +132,19 @@
           </div>
           <div>
             <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deleteMealModalLabel">Delete Dish</h5>
-            <div class="text-muted small">Permanent Deletion Confirmation</div>
+            <div class="text-muted small">Menu Item Deletion</div>
           </div>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body py-3 px-4">
         <p class="text-secondary mb-2">
-          Are you sure you want to permanently delete dish <strong class="text-dark">"{{ meal.name }}"</strong>?
+          Are you sure you want to permanently delete <strong class="text-dark">"{{ meal.name }}"</strong>?
         </p>
         <div class="alert alert-warning border-0 bg-warning-subtle text-dark small rounded-3 mb-0 p-3 d-flex gap-2">
           <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0 mt-0.5"></i>
           <div>
-            <strong>Warning:</strong> This dish will be permanently removed from Chef <strong>{{ meal.chef.business_name }}</strong>'s menu. This action cannot be undone.
+            <strong>Warning:</strong> This will permanently delete this dish from Chef <strong>{{ meal.chef.business_name }}</strong>'s catalog. This action cannot be undone.
           </div>
         </div>
       </div>

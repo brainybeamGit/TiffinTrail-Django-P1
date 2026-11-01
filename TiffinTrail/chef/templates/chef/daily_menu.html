@@ -10,14 +10,14 @@
 <div class="mb-4">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h6 class="text-muted fw-bold text-uppercase small mb-0">Select Date to Plan or View</h6>
-    <span class="small text-muted">Showing next 7 days schedule</span>
+    <span class="small text-muted">Showing next 7 days kitchen schedule</span>
   </div>
   <div class="tt-date-scroller">
     {% for item in next_7_days %}
       <a href="?date={{ item.iso_date }}" class="tt-date-chip {% if item.is_selected %}active{% endif %}">
         <span class="tt-date-chip-day">{{ item.day_name }}</span>
         <span class="tt-date-chip-date">{{ item.date_str }}</span>
-        <span class="tt-date-chip-count">{{ item.count }} dishes scheduled</span>
+        <span class="tt-date-chip-count">{{ item.count }} dishes</span>
       </a>
     {% endfor %}
   </div>
@@ -29,14 +29,15 @@
     <div class="tt-card">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
         <div>
-          <h5 class="tt-card-title">
-             Menu for {{ selected_date|date:"l, d F Y" }}
+          <h5 class="tt-card-title d-flex align-items-center gap-2">
+            <i class="bi bi-calendar-event text-warning"></i>
+            Menu for {{ selected_date|date:"l, d F Y" }}
           </h5>
           {% if selected_date == today %}
-            <span class="badge bg-success mt-1">Today's Kitchen Menu</span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle mt-1">Today's Kitchen Menu</span>
           {% endif %}
         </div>
-        <span class="text-muted small">{{ scheduled_menus.count }} meals scheduled</span>
+        <span class="text-muted small fw-semibold">{{ scheduled_menus.count }} meals scheduled</span>
       </div>
 
       <div class="tt-card-body p-0">
@@ -58,13 +59,15 @@
                   <td>
                     <div class="d-flex align-items-center gap-2">
                       {% if menu.meal.image %}
-                        <img src="{{ menu.meal.image.url }}" alt="{{ menu.meal.name }}" class="tt-meal-thumb rounded border" style="width: 40px; height: 40px;">
+                        <img src="{{ menu.meal.image.url }}" alt="{{ menu.meal.name }}" class="rounded border" style="width: 44px; height: 44px; object-fit: cover;">
                       {% else %}
-                        <div class="tt-meal-thumb rounded border" style="width: 40px; height: 40px;"></div>
+                        <div class="rounded border bg-light d-flex align-items-center justify-content-center text-muted" style="width: 44px; height: 44px;">
+                          <i class="bi bi-egg-fried"></i>
+                        </div>
                       {% endif %}
                       <div>
-                        <strong class="d-block">{{ menu.meal.name }}</strong>
-                        <span class="text-muted small">₹{{ menu.meal.price }} · {% if menu.meal.is_veg %}Veg{% else %}Non-veg{% endif %}</span>
+                        <strong class="d-block text-dark">{{ menu.meal.name }}</strong>
+                        <span class="text-muted small">₹{{ menu.meal.price|floatformat:2 }} · {% if menu.meal.is_veg %}<span class="text-success fw-semibold">Veg</span>{% else %}<span class="text-danger fw-semibold">Non-veg</span>{% endif %}</span>
                       </div>
                     </div>
                   </td>
@@ -72,16 +75,16 @@
                     <span class="badge bg-light text-dark border">{{ menu.get_slot_display }}</span>
                   </td>
                   <td>
-                    <strong>{{ menu.available_quantity }}</strong> <span class="text-muted small">portions</span>
+                    <strong class="text-dark">{{ menu.available_quantity }}</strong> <span class="text-muted small">portions</span>
                   </td>
                   <td>
                     <form action="{% url 'chef:daily_menu_toggle' menu.id %}" method="post" class="d-inline">
                       {% csrf_token %}
-                      <button type="submit" class="btn btn-sm {% if menu.is_available %}btn-outline-success{% else %}btn-outline-secondary{% endif %} py-1 px-2">
+                      <button type="submit" class="btn btn-sm {% if menu.is_available %}btn-outline-success{% else %}btn-outline-secondary{% endif %} py-1 px-2 d-inline-flex align-items-center gap-1">
                         {% if menu.is_available %}
-                          <span class="tt-status-dot me-1"></span> Available
+                          <span class="tt-status-dot"></span> Available
                         {% else %}
-                          <span class="tt-status-dot inactive me-1"></span> Sold Out
+                          <span class="tt-status-dot inactive"></span> Sold Out
                         {% endif %}
                       </button>
                     </form>
@@ -92,8 +95,8 @@
                   <td class="text-end">
                     <form action="{% url 'chef:daily_menu_delete' menu.id %}" method="post" class="d-inline">
                       {% csrf_token %}
-                      <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove from schedule" onclick="return confirm('Remove this dish from {{ menu.date }} menu?')">
-                        
+                      <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2" title="Remove from schedule" onclick="return confirm('Remove this dish from {{ menu.date }} menu?')">
+                        <i class="bi bi-trash3"></i>
                       </button>
                     </form>
                   </td>
@@ -101,7 +104,8 @@
               {% empty %}
                 <tr>
                   <td colspan="6" class="text-center py-5 text-muted">
-                    <h5>No meals scheduled for this day yet.</h5>
+                    <div class="mb-2"><i class="bi bi-calendar-x fs-1 text-muted opacity-50"></i></div>
+                    <h6 class="fw-bold">No meals scheduled for this day yet.</h6>
                     <p class="small mb-0">Use the form on the right to schedule dishes for {{ selected_date|date:"d M Y" }}.</p>
                   </td>
                 </tr>
@@ -117,7 +121,10 @@
   <div class="col-lg-4">
     <div class="tt-card">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Schedule Dish</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-plus-circle-fill text-warning"></i>
+          Schedule Dish
+        </h5>
       </div>
       <div class="tt-card-body">
         <form action="{% url 'chef:daily_menu_add' %}" method="post" novalidate>
@@ -126,6 +133,7 @@
           <div class="mb-3">
             <label class="tt-form-label">Select Date *</label>
             {{ form.date }}
+            {% if form.date.errors %}<div class="text-danger small mt-1">{{ form.date.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="mb-3">
@@ -137,18 +145,21 @@
           <div class="mb-3">
             <label class="tt-form-label">Service Slot *</label>
             {{ form.slot }}
+            {% if form.slot.errors %}<div class="text-danger small mt-1">{{ form.slot.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="mb-3">
             <label class="tt-form-label">Available Portions</label>
             {{ form.available_quantity }}
             <div class="tt-help-text">Max number of portions your kitchen will prepare.</div>
+            {% if form.available_quantity.errors %}<div class="text-danger small mt-1">{{ form.available_quantity.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="mb-3">
             <label class="tt-form-label">Special Notes (Optional)</label>
             {{ form.special_notes }}
             <div class="tt-help-text">e.g. Cooked in pure desi ghee, seasonal mango kheer included</div>
+            {% if form.special_notes.errors %}<div class="text-danger small mt-1">{{ form.special_notes.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="mb-4">
@@ -160,7 +171,9 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-success w-100 fw-semibold"> Schedule for Selected Day</button>
+          <button type="submit" class="btn btn-warning w-100 fw-bold tt-btn-gold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-calendar-plus"></i> Schedule for Selected Day
+          </button>
         </form>
       </div>
     </div>

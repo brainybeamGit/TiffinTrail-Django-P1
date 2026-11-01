@@ -7,14 +7,14 @@
 <div class="py-4 border-bottom bg-white">
   <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-1 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'customer:profile' %}">Account</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Reviews</li>
+      <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:profile' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Account</a></li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">My Reviews</li>
       </ol>
     </nav>
-    <h1 class="fs-2 fw-bold mb-0">My Reviews & Chef Ratings</h1>
-    <p class="text-muted small mb-0">Help local home chefs thrive by rating the taste, freshness, and delivery punctuality.</p>
+    <h1 class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">My Reviews &amp; Kitchen Ratings</h1>
+    <p class="text-muted small mb-0">Help neighborhood home chefs flourish by reviewing food warmth, authentic taste, and delivery timeliness.</p>
   </div>
 </div>
 
@@ -22,8 +22,11 @@
   <div class="row g-4">
     <!-- Left Column: Add Review for past order -->
     <div class="col-lg-5">
-      <div class="p-4 bg-white rounded-4 border shadow-sm">
-        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2">Rate a Kitchen You Ordered From</h5>
+      <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
+          <i class="bi bi-pencil-square text-warning"></i>
+          Rate a Home Kitchen You Ordered From
+        </h5>
 
         {% if eligible_chefs %}
         <form action="{% url 'customer:add_review' %}" method="post">
@@ -31,92 +34,149 @@
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Select Home Chef</label>
-            <select name="chef_id" class="form-select" required>
+            <label class="form-label small fw-semibold text-muted">Select Home Chef</label>
+            <select name="chef_id" class="form-select rounded-3" required>
               {% for ch in eligible_chefs %}
-              <option value="{{ ch.id }}">{{ ch.business_name }} ({{ ch.cuisines }})</option>
+              <option value="{{ ch.id }}">{{ ch.business_name }} ({{ ch.cuisines|default:"Homestyle" }})</option>
               {% endfor %}
             </select>
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Star Rating</label>
-            <div class="tt-star-picker fs-3" style="cursor: pointer; color: #eab308;">
-              <span class="star-btn active" data-value="1">★</span>
-              <span class="star-btn active" data-value="2">★</span>
-              <span class="star-btn active" data-value="3">★</span>
-              <span class="star-btn active" data-value="4">★</span>
-              <span class="star-btn active" data-value="5">★</span>
-              <input type="hidden" name="rating" id="reviewStarInput" value="5">
+            <label class="form-label small fw-semibold text-muted">Star Rating</label>
+            <div class="d-flex gap-1 fs-3" style="cursor: pointer; color: #f59e0b;" id="generalStarPicker">
+              <i class="bi bi-star-fill star-review-item" data-value="1"></i>
+              <i class="bi bi-star-fill star-review-item" data-value="2"></i>
+              <i class="bi bi-star-fill star-review-item" data-value="3"></i>
+              <i class="bi bi-star-fill star-review-item" data-value="4"></i>
+              <i class="bi bi-star-fill star-review-item" data-value="5"></i>
             </div>
+            <input type="hidden" name="rating" id="reviewStarInput" value="5">
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Your Review</label>
-            <textarea name="comment" rows="4" class="form-control" placeholder="Share your authentic feedback about warmth, taste, and packaging..." required></textarea>
+            <label class="form-label small fw-semibold text-muted">Your Review &amp; Comments</label>
+            <textarea name="comment" rows="4" class="form-control rounded-3" placeholder="Share your experience about the dishes, spice level, warmth, and packaging..." required></textarea>
           </div>
 
-          <button type="submit" class="btn btn-tt-primary w-100">
-            Publish Review
+          <button type="submit" class="btn btn-tt-primary w-100 py-2.5 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 shadow-xs">
+            <i class="bi bi-send-check"></i>
+            <span>Publish Review</span>
           </button>
         </form>
         {% else %}
-        <p class="small text-muted mb-0">
-          You have reviewed all chefs you've currently ordered from! Order a new meal or subscription to rate additional home kitchens.
-        </p>
+        <div class="text-center py-4">
+          <i class="bi bi-patch-check-fill text-success fs-1 mb-2 d-block"></i>
+          <h6 class="fw-bold text-dark mb-1">All Caught Up!</h6>
+          <p class="small text-muted mb-3">
+            You have reviewed all chefs you've ordered from so far. Order new meals or subscribe to rate additional home cooks.
+          </p>
+          <a href="{% url 'customer:menu' %}" class="btn btn-sm btn-tt-outline rounded-3 px-3 py-2 fw-semibold">
+            <i class="bi bi-search me-1"></i> Browse Fresh Menu
+          </a>
+        </div>
         {% endif %}
       </div>
     </div>
 
     <!-- Right Column: List of Submitted Reviews -->
     <div class="col-lg-7">
-      <h5 class="fw-bold fs-5 mb-3">Your Published Reviews ({{ user_reviews.count }})</h5>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold fs-6 mb-0 text-dark">Your Published Reviews ({{ user_reviews.count }})</h5>
+      </div>
 
       {% if user_reviews %}
       <div class="d-grid gap-3">
         {% for rev in user_reviews %}
-        <div class="p-4 bg-white rounded-4 border shadow-sm">
+        <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
               <h6 class="fw-bold mb-0">
-                <a href="{% url 'customer:chef_detail' rev.chef.pk %}" class="text-dark">{{ rev.chef.business_name }}</a>
+                <a href="{% url 'customer:chef_detail' rev.chef.pk %}" class="text-dark text-decoration-none hover-primary">{{ rev.chef.business_name }}</a>
               </h6>
-              <small class="text-muted">{{ rev.created_at|date:"M d, Y" }}</small>
+              <small class="text-muted">{{ rev.created_at|date:"d M Y" }}</small>
             </div>
 
             <div class="d-flex align-items-center gap-3">
-              <div class="tt-star-rating fs-5">
+              <div class="text-warning small d-inline-flex gap-0.5">
                 {% for i in "12345" %}
-                  {% if forloop.counter <= rev.rating %}★{% else %}☆{% endif %}
+                  {% if forloop.counter <= rev.rating %}
+                    <i class="bi bi-star-fill"></i>
+                  {% else %}
+                    <i class="bi bi-star text-muted"></i>
+                  {% endif %}
                 {% endfor %}
               </div>
 
               <form action="{% url 'customer:delete_review' rev.pk %}" method="post" class="m-0">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" onclick="return confirm('Delete this review?');" title="Delete Review">
-                  Delete
+                <button type="submit" class="btn btn-sm btn-light text-danger border rounded-2 p-1" onclick="return confirm('Delete this review permanently?');" title="Delete Review">
+                  <i class="bi bi-trash3"></i>
                 </button>
               </form>
             </div>
           </div>
 
-          <p class="small text-secondary mb-0">
+          <p class="small text-secondary mb-0" style="line-height: 1.6;">
             "{{ rev.comment }}"
           </p>
           {% if rev.meal %}
-          <div class="mt-2 text-muted" style="font-size: 0.75rem;">
-            Specific dish: <strong>{{ rev.meal.name }}</strong>
+          <div class="mt-2 text-muted small" style="font-size: 0.78rem;">
+            <i class="bi bi-check-circle-fill text-success me-1"></i>Verified dish: <strong class="text-dark">{{ rev.meal.name }}</strong>
           </div>
           {% endif %}
         </div>
         {% endfor %}
       </div>
       {% else %}
-      <div class="text-center py-5 bg-white rounded-4 border p-4">
-        <p class="text-muted mb-0">You haven't submitted any reviews yet.</p>
+      <div class="text-center py-5 bg-white rounded-4 border shadow-sm p-4" style="border-color: var(--tt-border) !important;">
+        <i class="bi bi-chat-quote text-muted fs-1 mb-2 d-block"></i>
+        <h6 class="fw-bold text-dark mb-1">No Reviews Yet</h6>
+        <p class="text-muted small mb-0">You haven't submitted any chef reviews yet. Once your orders are delivered, you can share feedback here.</p>
       </div>
       {% endif %}
     </div>
   </div>
 </div>
+
+<script>
+  // Star rating picker for reviews page
+  document.addEventListener('DOMContentLoaded', function () {
+    const picker = document.getElementById('generalStarPicker');
+    const input = document.getElementById('reviewStarInput');
+    if (!picker || !input) return;
+
+    const stars = picker.querySelectorAll('.star-review-item');
+    function update(val) {
+      stars.forEach(s => {
+        const v = parseInt(s.getAttribute('data-value'), 10);
+        if (v <= val) {
+          s.classList.remove('bi-star', 'text-muted');
+          s.classList.add('bi-star-fill');
+        } else {
+          s.classList.remove('bi-star-fill');
+          s.classList.add('bi-star', 'text-muted');
+        }
+      });
+    }
+
+    stars.forEach(s => {
+      s.addEventListener('click', function () {
+        const val = parseInt(this.getAttribute('data-value'), 10);
+        input.value = val;
+        update(val);
+      });
+      s.addEventListener('mouseenter', function () {
+        const val = parseInt(this.getAttribute('data-value'), 10);
+        update(val);
+      });
+    });
+
+    picker.addEventListener('mouseleave', function () {
+      update(parseInt(input.value, 10) || 5);
+    });
+
+    update(parseInt(input.value, 10) || 5);
+  });
+</script>
 {% endblock %}

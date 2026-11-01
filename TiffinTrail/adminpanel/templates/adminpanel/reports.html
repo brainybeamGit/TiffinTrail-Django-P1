@@ -7,15 +7,12 @@
 
 {% block content %}
 <style>
-  /* ==========================================================================
-     Executive Reports Page Styling
-     ========================================================================== */
   .tt-report-nav {
     background: #ffffff;
     padding: 0.5rem;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    border-radius: 14px;
+    border: 1px solid var(--tt-border);
+    box-shadow: 0 1px 3px rgba(37, 55, 70, 0.04);
   }
   .tt-report-pill {
     display: inline-flex;
@@ -25,7 +22,7 @@
     font-size: 0.85rem;
     font-weight: 600;
     border-radius: 8px;
-    color: #475569;
+    color: var(--tt-text-muted);
     background: transparent;
     border: 1px solid transparent;
     text-decoration: none;
@@ -33,95 +30,28 @@
     white-space: nowrap;
   }
   .tt-report-pill:hover {
-    color: #1e293b;
-    background: #f1f5f9;
+    color: var(--tt-charcoal);
+    background: var(--tt-surface-muted);
   }
   .tt-report-pill.active {
-    background: #253746;
+    background: var(--tt-charcoal);
     color: #ffffff;
     box-shadow: 0 3px 10px rgba(37, 55, 70, 0.22);
   }
-
   .tt-preset-btn {
     font-size: 0.78rem;
     font-weight: 600;
-    padding: 0.3rem 0.75rem;
+    padding: 0.35rem 0.8rem;
     border-radius: 6px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--tt-border);
     background: #ffffff;
-    color: #475569;
+    color: var(--tt-charcoal);
     transition: all 0.15s ease;
   }
   .tt-preset-btn:hover {
-    background: #f8fafc;
-    border-color: #94a3b8;
-    color: #0f172a;
-  }
-
-  /* Stat Card Enhancements */
-  .tt-report-stat {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.25rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-    transition: all 0.2s ease;
-  }
-  .tt-report-stat:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-  }
-  .tt-report-stat-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-  }
-  .tt-report-stat-icon.blue { background: #e0f2fe; color: #0284c7; }
-  .tt-report-stat-icon.green { background: #dcfce7; color: #16a34a; }
-  .tt-report-stat-icon.amber { background: #fef3c7; color: #d97706; }
-  .tt-report-stat-icon.purple { background: #f3e8ff; color: #9333ea; }
-  .tt-report-stat-icon.teal { background: #ccfbf1; color: #0d9488; }
-  .tt-report-stat-icon.red { background: #fee2e2; color: #dc2626; }
-
-  /* Table Customizations */
-  .tt-report-table {
-    width: 100%;
-    margin-bottom: 0;
-    border-collapse: separate;
-    border-spacing: 0;
-  }
-  .tt-report-table th {
-    background: #f8fafc;
-    color: #475569;
-    font-size: 0.76rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 0.85rem 1rem;
-    border-bottom: 1px solid #e2e8f0;
-    white-space: nowrap;
-  }
-  .tt-report-table td {
-    padding: 0.85rem 1rem;
-    font-size: 0.86rem;
-    color: #334155;
-    border-bottom: 1px solid #f1f5f9;
-    vertical-align: middle;
-  }
-  .tt-report-table tbody tr:hover {
-    background-color: #f8fafc;
-  }
-  .tt-report-table tbody tr:last-child td {
-    border-bottom: none;
+    background: var(--tt-surface-muted);
+    border-color: var(--tt-gold);
+    color: var(--tt-charcoal);
   }
 </style>
 
@@ -160,12 +90,12 @@
 </div>
 
 <!-- Parameters & Date Range Control Card -->
-<div class="card border-0 shadow-sm rounded-4 mb-4" style="border: 1px solid #e2e8f0 !important; background: #ffffff;">
-  <div class="card-body p-4">
+<div class="tt-card mb-4">
+  <div class="tt-card-body p-4">
     <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3 pb-3 border-bottom">
       <div>
         <h5 class="fw-bold fs-6 mb-1 text-dark d-flex align-items-center gap-2">
-          <i class="bi bi-sliders text-primary"></i>
+          <i class="bi bi-sliders text-warning"></i>
           <span>Report Parameters & Date Filter</span>
         </h5>
         <div class="small text-muted">
@@ -175,7 +105,7 @@
 
       <!-- Export Actions -->
       <div class="d-flex align-items-center gap-2 flex-wrap">
-        <a href="?report_type={{ report_type }}&start_date={{ start_date }}&end_date={{ end_date }}&export=csv" class="btn btn-sm btn-success fw-bold d-inline-flex align-items-center gap-1.5 px-3 py-2 rounded-3 shadow-xs">
+        <a href="?report_type={{ report_type }}&start_date={{ start_date }}&end_date={{ end_date }}&export=csv" class="btn btn-sm btn-success fw-semibold d-inline-flex align-items-center gap-1.5 px-3 py-2 rounded-3 shadow-xs">
           <i class="bi bi-file-earmark-spreadsheet"></i>
           <span>Download CSV</span>
         </a>
@@ -199,7 +129,7 @@
     <form method="get" id="reportFilterForm" class="row g-3 align-items-end">
       <div class="col-md-4">
         <label class="form-label small fw-semibold text-muted mb-1">Report Category</label>
-        <select name="report_type" class="form-select rounded-3" onchange="this.form.submit()">
+        <select name="report_type" class="form-select" onchange="this.form.submit()">
           <option value="orders" {% if report_type == 'orders' %}selected{% endif %}>Order & Fulfillment Report</option>
           <option value="revenue" {% if report_type == 'revenue' %}selected{% endif %}>Revenue & Commission Ledger</option>
           <option value="subscriptions" {% if report_type == 'subscriptions' %}selected{% endif %}>Subscriptions Report</option>
@@ -227,11 +157,11 @@
       </div>
 
       <div class="col-md-2 d-flex gap-1.5">
-        <button type="submit" class="btn btn-primary w-100 fw-semibold rounded-3 d-inline-flex align-items-center justify-content-center gap-1.5 py-2">
+        <button type="submit" class="btn btn-primary w-100 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 py-2">
           <i class="bi bi-funnel-fill"></i>
           <span>Filter</span>
         </button>
-        <a href="{% url 'adminpanel:reports' %}" class="btn btn-outline-secondary rounded-3 px-2.5 py-2" title="Reset Filters">
+        <a href="{% url 'adminpanel:reports' %}" class="btn btn-outline-secondary px-2.5 py-2" title="Reset Filters">
           <i class="bi bi-arrow-counterclockwise"></i>
         </a>
       </div>
@@ -243,15 +173,15 @@
 <div class="row g-3 mb-4">
   <!-- Record Count (Global) -->
   <div class="col-sm-6 col-md-3">
-    <div class="tt-report-stat">
+    <div class="tt-kpi-card">
       <div class="d-flex justify-content-between align-items-start mb-2">
-        <span class="small fw-bold text-uppercase text-muted" style="letter-spacing: 0.04em;">Matching Records</span>
-        <div class="tt-report-stat-icon blue">
+        <span class="tt-kpi-label">Matching Records</span>
+        <div class="tt-kpi-icon-wrap" style="background: rgba(59, 130, 246, 0.12); color: #3b82f6;">
           <i class="bi bi-database"></i>
         </div>
       </div>
       <div>
-        <h3 class="fw-bold mb-0 text-dark fs-3">{{ summary.records_count|default:0 }}</h3>
+        <h3 class="tt-kpi-value text-dark mb-0 fs-3">{{ summary.records_count|default:0 }}</h3>
         <div class="small text-muted mt-1">In selected date filter</div>
       </div>
     </div>
@@ -259,43 +189,43 @@
 
   {% if report_type == 'orders' %}
     <div class="col-sm-6 col-md-3">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Total Order Value</span>
-          <div class="tt-report-stat-icon green">
+          <span class="tt-kpi-label text-success">Total Order Value</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
             <i class="bi bi-currency-rupee"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.total_order_value|floatformat:2 }}</h3>
+          <h3 class="tt-kpi-value text-success mb-0 fs-3">₹{{ summary.total_order_value|floatformat:2 }}</h3>
           <div class="small text-muted mt-1">All orders in selected window</div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 col-md-3">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Delivered Sales</span>
-          <div class="tt-report-stat-icon green">
+          <span class="tt-kpi-label text-success">Delivered Sales</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
             <i class="bi bi-check2-circle"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.delivered_value|floatformat:2 }}</h3>
+          <h3 class="tt-kpi-value text-success mb-0 fs-3">₹{{ summary.delivered_value|floatformat:2 }}</h3>
           <div class="small text-muted mt-1">{{ summary.completed_count }} fulfilled orders</div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 col-md-3">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-warning" style="letter-spacing: 0.04em;">Pending Orders</span>
-          <div class="tt-report-stat-icon amber">
+          <span class="tt-kpi-label text-warning">Pending Orders</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(230, 173, 69, 0.15); color: #e6ad45;">
             <i class="bi bi-clock-history"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-warning fs-3">{{ summary.pending_count }}</h3>
+          <h3 class="tt-kpi-value text-warning mb-0 fs-3">{{ summary.pending_count }}</h3>
           <div class="small text-muted mt-1">Kitchen / Delivery awaiting</div>
         </div>
       </div>
@@ -303,43 +233,43 @@
 
   {% elif report_type == 'revenue' %}
     <div class="col-sm-6 col-md-3">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Gross Revenue</span>
-          <div class="tt-report-stat-icon green">
+          <span class="tt-kpi-label text-success">Gross Revenue</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
             <i class="bi bi-currency-rupee"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.gross_revenue|floatformat:2 }}</h3>
+          <h3 class="tt-kpi-value text-success mb-0 fs-3">₹{{ summary.gross_revenue|floatformat:2 }}</h3>
           <div class="small text-muted mt-1">Delivered & Paid Subscriptions</div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 col-md-3">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-danger" style="letter-spacing: 0.04em;">Platform Fee (10%)</span>
-          <div class="tt-report-stat-icon amber">
+          <span class="tt-kpi-label text-danger">Platform Fee (10%)</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(220, 38, 38, 0.12); color: #dc2626;">
             <i class="bi bi-pie-chart"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-danger fs-3">₹{{ summary.platform_commission|floatformat:2 }}</h3>
+          <h3 class="tt-kpi-value text-danger mb-0 fs-3">₹{{ summary.platform_commission|floatformat:2 }}</h3>
           <div class="small text-muted mt-1">Platform commissions retained</div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 col-md-3">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-teal" style="letter-spacing: 0.04em;">Net Chef Payout</span>
-          <div class="tt-report-stat-icon teal">
+          <span class="tt-kpi-label text-success">Net Chef Payout</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
             <i class="bi bi-wallet2"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.chef_payout|floatformat:2 }}</h3>
+          <h3 class="tt-kpi-value text-success mb-0 fs-3">₹{{ summary.chef_payout|floatformat:2 }}</h3>
           <div class="small text-muted mt-1">Total home cook earnings</div>
         </div>
       </div>
@@ -347,29 +277,29 @@
 
   {% elif report_type == 'subscriptions' %}
     <div class="col-sm-6 col-md-4">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Subscribed Value</span>
-          <div class="tt-report-stat-icon green">
+          <span class="tt-kpi-label text-success">Subscribed Value</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
             <i class="bi bi-currency-rupee"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-success fs-3">₹{{ summary.total_value|floatformat:2 }}</h3>
+          <h3 class="tt-kpi-value text-success mb-0 fs-3">₹{{ summary.total_value|floatformat:2 }}</h3>
           <div class="small text-muted mt-1">Subscription plans booked</div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 col-md-4">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-primary" style="letter-spacing: 0.04em;">Active Diners</span>
-          <div class="tt-report-stat-icon purple">
+          <span class="tt-kpi-label">Active Diners</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(147, 51, 234, 0.12); color: #9333ea;">
             <i class="bi bi-award"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-dark fs-3">{{ summary.active_count }}</h3>
+          <h3 class="tt-kpi-value text-dark mb-0 fs-3">{{ summary.active_count }}</h3>
           <div class="small text-muted mt-1">Currently active subscription plans</div>
         </div>
       </div>
@@ -377,29 +307,29 @@
 
   {% elif report_type == 'chefs' %}
     <div class="col-sm-6 col-md-4">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Approved Kitchens</span>
-          <div class="tt-report-stat-icon green">
+          <span class="tt-kpi-label text-success">Approved Kitchens</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
             <i class="bi bi-patch-check"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-success fs-3">{{ summary.approved_count }}</h3>
+          <h3 class="tt-kpi-value text-success mb-0 fs-3">{{ summary.approved_count }}</h3>
           <div class="small text-muted mt-1">FSSAI verified active partners</div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 col-md-4">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-warning" style="letter-spacing: 0.04em;">Pending Review</span>
-          <div class="tt-report-stat-icon amber">
+          <span class="tt-kpi-label text-warning">Pending Review</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(230, 173, 69, 0.15); color: #e6ad45;">
             <i class="bi bi-hourglass-split"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-warning fs-3">{{ summary.pending_count }}</h3>
+          <h3 class="tt-kpi-value text-warning mb-0 fs-3">{{ summary.pending_count }}</h3>
           <div class="small text-muted mt-1">Awaiting admin document verification</div>
         </div>
       </div>
@@ -407,29 +337,29 @@
 
   {% elif report_type == 'complaints' %}
     <div class="col-sm-6 col-md-4">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-success" style="letter-spacing: 0.04em;">Resolved Tickets</span>
-          <div class="tt-report-stat-icon green">
+          <span class="tt-kpi-label text-success">Resolved Tickets</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
             <i class="bi bi-check-circle"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-success fs-3">{{ summary.resolved_count }}</h3>
+          <h3 class="tt-kpi-value text-success mb-0 fs-3">{{ summary.resolved_count }}</h3>
           <div class="small text-muted mt-1">Successfully closed issues</div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 col-md-4">
-      <div class="tt-report-stat">
+      <div class="tt-kpi-card">
         <div class="d-flex justify-content-between align-items-start mb-2">
-          <span class="small fw-bold text-uppercase text-danger" style="letter-spacing: 0.04em;">Open Tickets</span>
-          <div class="tt-report-stat-icon red">
+          <span class="tt-kpi-label text-danger">Open Tickets</span>
+          <div class="tt-kpi-icon-wrap" style="background: rgba(220, 38, 38, 0.12); color: #dc2626;">
             <i class="bi bi-exclamation-triangle"></i>
           </div>
         </div>
         <div>
-          <h3 class="fw-bold mb-0 text-danger fs-3">{{ summary.open_count }}</h3>
+          <h3 class="tt-kpi-value text-danger mb-0 fs-3">{{ summary.open_count }}</h3>
           <div class="small text-muted mt-1">Action needed from support team</div>
         </div>
       </div>
@@ -438,12 +368,12 @@
 </div>
 
 <!-- Report Table Container Card -->
-<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border: 1px solid #e2e8f0 !important; background: #ffffff;">
+<div class="tt-card mb-4">
   <!-- Table Header Bar -->
-  <div class="p-3.5 border-bottom bg-white d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+  <div class="tt-card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
     <div class="d-flex align-items-center gap-2 flex-wrap">
-      <h5 class="fw-bold fs-6 mb-0 text-dark d-flex align-items-center gap-2">
-        <i class="bi bi-table text-primary"></i>
+      <h5 class="tt-card-title d-flex align-items-center gap-2">
+        <i class="bi bi-table text-warning"></i>
         <span>Filtered Records: {{ report_type|upper }}</span>
       </h5>
       <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small">
@@ -460,7 +390,7 @@
 
   <!-- Grab & Scroll Table View -->
   <div class="tt-table-responsive">
-    <table class="tt-report-table" id="reportDataTable">
+    <table class="tt-table" id="reportDataTable">
       <thead>
         <tr>
           {% for h in headers %}
@@ -529,11 +459,11 @@
         {% if page_obj.has_previous %}
           <li class="page-item">
             <a class="page-link rounded-start-2" href="?page={{ page_obj.previous_page_number }}&report_type={{ report_type }}&start_date={{ start_date }}&end_date={{ end_date }}">
-              ‹ Previous
+              <i class="bi bi-chevron-left"></i> Previous
             </a>
           </li>
         {% else %}
-          <li class="page-item disabled"><span class="page-link rounded-start-2">‹ Previous</span></li>
+          <li class="page-item disabled"><span class="page-link rounded-start-2"><i class="bi bi-chevron-left"></i> Previous</span></li>
         {% endif %}
 
         <li class="page-item active">
@@ -543,11 +473,11 @@
         {% if page_obj.has_next %}
           <li class="page-item">
             <a class="page-link rounded-end-2" href="?page={{ page_obj.next_page_number }}&report_type={{ report_type }}&start_date={{ start_date }}&end_date={{ end_date }}">
-              Next ›
+              Next <i class="bi bi-chevron-right"></i>
             </a>
           </li>
         {% else %}
-          <li class="page-item disabled"><span class="page-link rounded-end-2">Next ›</span></li>
+          <li class="page-item disabled"><span class="page-link rounded-end-2">Next <i class="bi bi-chevron-right"></i></span></li>
         {% endif %}
       </ul>
     </div>
@@ -585,4 +515,3 @@
   });
 </script>
 {% endblock %}
-

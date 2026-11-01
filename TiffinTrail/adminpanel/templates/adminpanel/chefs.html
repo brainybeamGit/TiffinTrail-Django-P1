@@ -7,31 +7,31 @@
 
 {% block content %}
 <!-- Verification Queue Status Filter Tabs -->
-<div class="mb-4">
+<div class="mb-4 tt-stagger-1">
   <div class="tt-filter-nav">
     <a href="{% url 'adminpanel:chefs' %}" class="tt-filter-btn {% if not v_status and not a_status %}active{% endif %}">
-      All Chefs ({{ counts.all }})
+      <i class="bi bi-grid-fill me-1"></i>All Chefs ({{ counts.all }})
     </a>
     <a href="?verification=pending" class="tt-filter-btn {% if v_status == 'pending' %}active{% endif %}">
-       Pending Review ({{ counts.pending }})
+      <i class="bi bi-hourglass-split text-warning me-1"></i>Pending Review ({{ counts.pending }})
     </a>
     <a href="?verification=under_review" class="tt-filter-btn {% if v_status == 'under_review' %}active{% endif %}">
-       Under Review ({{ counts.under_review }})
+      <i class="bi bi-eye-fill text-info me-1"></i>Under Review ({{ counts.under_review }})
     </a>
     <a href="?verification=approved" class="tt-filter-btn {% if v_status == 'approved' %}active{% endif %}">
-      <i class="bi bi-check2 text-success me-1"></i>Approved ({{ counts.approved }})
+      <i class="bi bi-check2-circle text-success me-1"></i>Approved ({{ counts.approved }})
     </a>
     <a href="?verification=rejected" class="tt-filter-btn {% if v_status == 'rejected' %}active{% endif %}">
-      <i class="bi bi-x text-danger me-1"></i>Rejected ({{ counts.rejected }})
+      <i class="bi bi-x-circle text-danger me-1"></i>Rejected ({{ counts.rejected }})
     </a>
     <a href="?account=suspended" class="tt-filter-btn {% if a_status == 'suspended' %}active{% endif %}">
-       Suspended Accounts
+      <i class="bi bi-slash-circle text-secondary me-1"></i>Suspended Accounts
     </a>
   </div>
 </div>
 
 <!-- Search Bar -->
-<div class="tt-card mb-4">
+<div class="tt-card tt-stagger-2 mb-4">
   <div class="tt-card-body p-3">
     <form method="get" class="row g-2 align-items-center">
       {% if v_status %}
@@ -43,15 +43,19 @@
 
       <div class="col-md-9">
         <div class="input-group">
-          <span class="input-group-text bg-white"></span>
-          <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by Kitchen Name, Chef Name, Cuisine, or Locality...">
+          <span class="input-group-text bg-white border-end-0 text-muted">
+            <i class="bi bi-search"></i>
+          </span>
+          <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search by Kitchen Name, Chef Name, Cuisine, or Locality...">
         </div>
       </div>
 
       <div class="col-md-3 d-flex gap-1">
-        <button type="submit" class="btn btn-primary w-100">Search</button>
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="bi bi-search"></i> Search
+        </button>
         {% if search_query or v_status or a_status %}
-          <a href="{% url 'adminpanel:chefs' %}" class="btn btn-outline-secondary" title="Clear">✕</a>
+          <a href="{% url 'adminpanel:chefs' %}" class="btn btn-outline-secondary" title="Clear Filters"><i class="bi bi-x-lg"></i></a>
         {% endif %}
       </div>
     </form>
@@ -59,13 +63,20 @@
 </div>
 
 <!-- Chefs Table -->
-<div class="tt-card">
+<div class="tt-card tt-stagger-3">
+  <div class="tt-card-header d-flex justify-content-between align-items-center">
+    <h5 class="tt-card-title">
+      <i class="bi bi-shop text-primary"></i>
+      Partner Home Chefs Directory
+    </h5>
+    <span class="text-muted small">Active Kitchen List</span>
+  </div>
   <div class="tt-card-body p-0">
     <div class="tt-table-responsive">
       <table class="tt-table">
         <thead>
           <tr>
-            <th>Kitchen & Chef</th>
+            <th class="ps-3">Kitchen & Chef</th>
             <th>Cuisines</th>
             <th>Phone</th>
             <th>Rating</th>
@@ -73,13 +84,13 @@
             <th>Commission</th>
             <th>Verification</th>
             <th>Account</th>
-            <th class="text-end" >Actions</th>
+            <th class="pe-3 text-end">Actions</th>
           </tr>
         </thead>
         <tbody>
           {% for chef in page_obj %}
             <tr>
-              <td>
+              <td class="ps-3">
                 <div class="d-flex align-items-center gap-3">
                   {% if chef.profile_image %}
                     <img src="{{ chef.profile_image.url }}" alt="{{ chef.business_name }}" class="tt-topbar-avatar" style="width: 36px; height: 36px;">
@@ -116,12 +127,12 @@
               </td>
               <td>
                 {% if chef.is_active %}
-                  <span class="badge bg-success">Active</span>
+                  <span class="tt-badge tt-badge-active">Active</span>
                 {% else %}
-                  <span class="badge bg-danger">Suspended</span>
+                  <span class="tt-badge tt-badge-cancelled">Suspended</span>
                 {% endif %}
               </td>
-              <td class="text-end tt-actions-cell">
+              <td class="pe-3 text-end tt-actions-cell">
                 <div class="tt-actions-group">
                   <a href="{% url 'adminpanel:chef_detail' chef.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Review & Manage">
                     <i class="bi bi-gear-fill"></i> Manage
@@ -157,7 +168,7 @@
           {% if page_obj.has_previous %}
             <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if v_status %}&verification={{ v_status }}{% endif %}">Previous</a></li>
           {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          <li class="page-item active"><span class="page-link bg-dark border-dark">{{ page_obj.number }}</span></li>
           {% if page_obj.has_next %}
             <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if v_status %}&verification={{ v_status }}{% endif %}">Next</a></li>
           {% endif %}

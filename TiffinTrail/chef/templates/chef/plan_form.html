@@ -10,8 +10,12 @@
   <div class="col-lg-9">
     <div class="tt-card">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title"> Subscription Plan Configuration</h5>
-        <a href="{% url 'chef:plans' %}" class="btn btn-sm btn-outline-secondary">← Back to Plans</a>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-sliders text-warning"></i> Subscription Plan Configuration
+        </h5>
+        <a href="{% url 'chef:plans' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Plans
+        </a>
       </div>
 
       <div class="tt-card-body">
@@ -41,12 +45,14 @@
               <label class="tt-form-label">Duration (Days) *</label>
               {{ form.duration_days }}
               <div class="tt-help-text">e.g. 7 for Weekly, 30 for Monthly</div>
+              {% if form.duration_days.errors %}<div class="text-danger small mt-1">{{ form.duration_days.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-md-3">
               <label class="tt-form-label">Meals per Day *</label>
               {{ form.meals_per_day }}
               <div class="tt-help-text">1 (Lunch) or 2 (Lunch+Dinner)</div>
+              {% if form.meals_per_day.errors %}<div class="text-danger small mt-1">{{ form.meals_per_day.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-md-3">
@@ -59,13 +65,14 @@
               <label class="tt-form-label">Original Price (₹)</label>
               {{ form.original_price }}
               <div class="tt-help-text">Non-discounted baseline</div>
+              {% if form.original_price.errors %}<div class="text-danger small mt-1">{{ form.original_price.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-md-6">
               <div class="form-check p-3 bg-light rounded border">
                 {{ form.is_veg }}
                 <label class="form-check-label fw-bold ms-2" for="{{ form.is_veg.id_for_label }}">
-                   Pure Vegetarian Plan
+                  Pure Vegetarian Plan
                 </label>
               </div>
             </div>
@@ -82,6 +89,7 @@
             <div class="col-12">
               <label class="tt-form-label">Delivery Schedule Note</label>
               {{ form.delivery_schedule }}
+              {% if form.delivery_schedule.errors %}<div class="text-danger small mt-1">{{ form.delivery_schedule.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-12">
@@ -94,12 +102,15 @@
             <div class="col-12">
               <label class="tt-form-label">Subscription Terms & Cancellation Policy</label>
               {{ form.service_conditions }}
+              {% if form.service_conditions.errors %}<div class="text-danger small mt-1">{{ form.service_conditions.errors.0 }}</div>{% endif %}
             </div>
           </div>
 
           <div class="d-flex justify-content-end gap-3 pt-3 border-top">
             <a href="{% url 'chef:plans' %}" class="btn btn-outline-secondary">Cancel</a>
-            <button type="submit" class="btn btn-success px-4 fw-semibold"> Save Plan Package</button>
+            <button type="submit" class="btn btn-warning tt-btn-gold px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+              <i class="bi bi-check2-circle"></i> Save Plan Package
+            </button>
           </div>
         </form>
       </div>

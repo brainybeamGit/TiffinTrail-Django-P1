@@ -17,7 +17,9 @@
   </div>
 
   <div>
-    <span class="badge bg-light text-muted border p-2">Commission Rate: <strong>{{ commission_rate }}%</strong></span>
+    <span class="badge bg-white text-dark border p-2 shadow-xs fw-semibold">
+      <i class="bi bi-percent text-warning me-1"></i>Platform Commission: <strong>{{ commission_rate }}%</strong>
+    </span>
   </div>
 </div>
 
@@ -28,7 +30,7 @@
     <div class="tt-stat-card">
       <div class="tt-stat-header">
         <span class="tt-stat-title">Lifetime Gross Value</span>
-        <div class="tt-stat-icon blue">₹</div>
+        <div class="tt-stat-icon blue"><i class="bi bi-wallet2"></i></div>
       </div>
       <div>
         <h3 class="tt-stat-value">₹{{ gross_order_value|floatformat:2 }}</h3>
@@ -42,11 +44,11 @@
     <div class="tt-stat-card">
       <div class="tt-stat-header">
         <span class="tt-stat-title">Platform Fee ({{ commission_rate }}%)</span>
-        <div class="tt-stat-icon amber"></div>
+        <div class="tt-stat-icon amber"><i class="bi bi-percent"></i></div>
       </div>
       <div>
         <h3 class="tt-stat-value text-danger">-₹{{ platform_commission|floatformat:2 }}</h3>
-        <div class="tt-stat-meta text-muted">Technology & hosting support</div>
+        <div class="tt-stat-meta text-muted">Technology, payment & platform support</div>
       </div>
     </div>
   </div>
@@ -56,11 +58,11 @@
     <div class="tt-stat-card border-success">
       <div class="tt-stat-header">
         <span class="tt-stat-title text-success">Total Chef Net Earnings</span>
-        <div class="tt-stat-icon green"></div>
+        <div class="tt-stat-icon green"><i class="bi bi-cash-coin"></i></div>
       </div>
       <div>
         <h3 class="tt-stat-value text-success">₹{{ net_earnings|floatformat:2 }}</h3>
-        <div class="tt-stat-meta text-success">90% of completed deliveries</div>
+        <div class="tt-stat-meta text-success fw-semibold">Net earned from completed deliveries</div>
       </div>
     </div>
   </div>
@@ -70,7 +72,7 @@
     <div class="tt-stat-card">
       <div class="tt-stat-header">
         <span class="tt-stat-title">{{ filter_label }} Orders</span>
-        <div class="tt-stat-icon purple"></div>
+        <div class="tt-stat-icon purple"><i class="bi bi-bag-check"></i></div>
       </div>
       <div>
         <h3 class="tt-stat-value">{{ completed_sales_count }}</h3>
@@ -84,7 +86,7 @@
     <div class="tt-stat-card">
       <div class="tt-stat-header">
         <span class="tt-stat-title">{{ filter_label }} Gross</span>
-        <div class="tt-stat-icon emerald"></div>
+        <div class="tt-stat-icon emerald"><i class="bi bi-graph-up-arrow"></i></div>
       </div>
       <div>
         <h3 class="tt-stat-value">₹{{ filtered_gross|floatformat:2 }}</h3>
@@ -98,7 +100,7 @@
     <div class="tt-stat-card border-success">
       <div class="tt-stat-header">
         <span class="tt-stat-title text-success">{{ filter_label }} Net</span>
-        <div class="tt-stat-icon green"></div>
+        <div class="tt-stat-icon green"><i class="bi bi-piggy-bank"></i></div>
       </div>
       <div>
         <h3 class="tt-stat-value text-success">₹{{ filtered_net|floatformat:2 }}</h3>
@@ -109,9 +111,9 @@
 </div>
 
 <!-- Settlement Notice Banner -->
-<div class="alert alert-info d-flex align-items-center gap-3 mb-4 border-info-subtle">
-  <div class="fs-3">ℹ</div>
-  <div class="small">
+<div class="alert alert-info d-flex align-items-center gap-3 mb-4 border-info-subtle bg-white shadow-xs">
+  <div class="fs-3 text-info"><i class="bi bi-info-circle-fill"></i></div>
+  <div class="small text-dark">
     <strong>Settlement Policy:</strong> Chef payouts are disbursed via weekly direct bank transfers by platform administration for all verified delivered orders. Please ensure your bank KYC is up to date in settings.
   </div>
 </div>
@@ -119,8 +121,10 @@
 <!-- Order Payout Breakdown Table -->
 <div class="tt-card">
   <div class="tt-card-header d-flex justify-content-between align-items-center">
-    <h5 class="tt-card-title"> Order Payout Ledger ({{ filter_label }})</h5>
-    <span class="text-muted small">{{ page_obj.paginator.count }} transactions</span>
+    <h5 class="tt-card-title d-flex align-items-center gap-2">
+      <i class="bi bi-receipt text-warning"></i> Order Payout Ledger ({{ filter_label }})
+    </h5>
+    <span class="text-muted small fw-semibold">{{ page_obj.paginator.count }} transactions</span>
   </div>
 
   <div class="tt-card-body p-0">
@@ -142,12 +146,12 @@
             <tr>
               <td>
                 <a href="{% url 'chef:order_detail' row.order.id %}" class="fw-bold text-decoration-none text-dark">
-                  {{ row.order.order_number }}
+                  #{{ row.order.order_number }}
                 </a>
               </td>
               <td>{{ row.completion_date|date:"d M Y, h:i A" }}</td>
-              <td><strong>₹{{ row.gross_amount|floatformat:2 }}</strong></td>
-              <td class="text-danger">-₹{{ row.commission|floatformat:2 }}</td>
+              <td><strong class="text-dark">₹{{ row.gross_amount|floatformat:2 }}</strong></td>
+              <td class="text-danger fw-semibold">-₹{{ row.commission|floatformat:2 }}</td>
               <td class="text-muted">₹{{ row.refund_amount|floatformat:2 }}</td>
               <td class="text-success fw-bold fs-6">₹{{ row.net_earnings|floatformat:2 }}</td>
               <td>
@@ -159,7 +163,8 @@
           {% empty %}
             <tr>
               <td colspan="7" class="text-center py-5 text-muted">
-                <h5>No completed sales in this timeframe.</h5>
+                <div class="mb-2"><i class="bi bi-cash-stack fs-1 text-muted opacity-50"></i></div>
+                <h6 class="fw-bold">No completed sales in this timeframe.</h6>
                 <p class="small mb-0">Delivered orders will automatically appear in this ledger once fulfilled.</p>
               </td>
             </tr>
@@ -176,7 +181,7 @@
           {% if page_obj.has_previous %}
             <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&range={{ date_filter }}">Previous</a></li>
           {% endif %}
-          <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+          <li class="page-item active"><span class="page-link bg-dark border-dark">{{ page_obj.number }}</span></li>
           {% if page_obj.has_next %}
             <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&range={{ date_filter }}">Next</a></li>
           {% endif %}

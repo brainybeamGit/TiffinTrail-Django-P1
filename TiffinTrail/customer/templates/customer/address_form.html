@@ -9,75 +9,77 @@
     <div class="col-lg-6">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-2 small">
-          <li class="breadcrumb-item"><a href="{% url 'customer:home' %}">Home</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'customer:profile' %}">Account</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+          <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'customer:profile' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Account</a></li>
+          <li class="breadcrumb-item active text-muted" aria-current="page">{{ title }}</li>
         </ol>
       </nav>
 
-      <div class="p-4 p-md-5 bg-white rounded-4 border shadow-sm">
-        <h2 class="fs-4 fw-bold mb-1">{{ title }}</h2>
-        <p class="text-muted small mb-4">Provide accurate street and gate directions for swift delivery.</p>
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <h2 class="h4 fw-bold mb-1" style="color: var(--tt-charcoal);">{{ title }}</h2>
+        <p class="text-muted small mb-4">Provide accurate street and gate directions for swift tiffin delivery.</p>
 
         <form action="" method="post">
           {% csrf_token %}
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Address Label / Title</label>
+            <label class="form-label small fw-semibold text-muted">Address Label / Title</label>
             {{ form.title }}
           </div>
 
           <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Recipient Full Name</label>
+              <label class="form-label small fw-semibold text-muted">Recipient Full Name</label>
               {{ form.recipient_name }}
-              {% if form.recipient_name.errors %}<div class="text-danger small">{{ form.recipient_name.errors.0 }}</div>{% endif %}
+              {% if form.recipient_name.errors %}<div class="text-danger small mt-1">{{ form.recipient_name.errors.0 }}</div>{% endif %}
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Mobile Phone Number</label>
+              <label class="form-label small fw-semibold text-muted">Mobile Phone Number</label>
               {{ form.phone_number }}
-              {% if form.phone_number.errors %}<div class="text-danger small">{{ form.phone_number.errors.0 }}</div>{% endif %}
+              {% if form.phone_number.errors %}<div class="text-danger small mt-1">{{ form.phone_number.errors.0 }}</div>{% endif %}
             </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Flat/House No, Building, Street</label>
+            <label class="form-label small fw-semibold text-muted">Flat/House No, Building, Street</label>
             {{ form.street_address }}
-            {% if form.street_address.errors %}<div class="text-danger small">{{ form.street_address.errors.0 }}</div>{% endif %}
+            {% if form.street_address.errors %}<div class="text-danger small mt-1">{{ form.street_address.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="row g-3 mb-3">
             <div class="col-md-5">
-              <label class="form-label small fw-bold">Area / Locality / Landmark</label>
+              <label class="form-label small fw-semibold text-muted">Area / Locality / Landmark</label>
               {{ form.area }}
             </div>
             <div class="col-md-4">
-              <label class="form-label small fw-bold">City</label>
+              <label class="form-label small fw-semibold text-muted">City</label>
               {{ form.city }}
             </div>
             <div class="col-md-3">
-              <label class="form-label small fw-bold">Pincode</label>
+              <label class="form-label small fw-semibold text-muted">Pincode</label>
               {{ form.pincode }}
             </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Special Delivery Notes</label>
+            <label class="form-label small fw-semibold text-muted">Special Delivery Notes</label>
             {{ form.delivery_notes }}
           </div>
 
           <div class="mb-4">
             <div class="form-check">
               {{ form.is_default }}
-              <label class="form-check-label small fw-semibold" for="{{ form.is_default.id_for_label }}">
+              <label class="form-check-label small fw-semibold text-dark" for="{{ form.is_default.id_for_label }}">
                 Set as my default delivery address
               </label>
             </div>
           </div>
 
           <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-tt-primary">Save Address</button>
-            <a href="{% url 'customer:profile' %}" class="btn btn-tt-subtle">Cancel</a>
+            <button type="submit" class="btn btn-tt-primary px-4 py-2 rounded-3 fw-semibold shadow-xs">
+              <i class="bi bi-geo-alt-fill me-1"></i> Save Address
+            </button>
+            <a href="{% url 'customer:profile' %}" class="btn btn-light border px-4 py-2 rounded-3 text-dark">Cancel</a>
           </div>
         </form>
       </div>

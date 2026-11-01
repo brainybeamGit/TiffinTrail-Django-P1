@@ -3,7 +3,7 @@
 
 {% block title %}Settings & Security | TiffinTrail Admin Console{% endblock %}
 {% block eyebrow %}PLATFORM SECURITY & ACCESS{% endblock %}
-{% block page_heading %}Settings & Security{% endblock %}
+{% block page_heading %}Settings & Platform Security{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center g-4">
@@ -11,7 +11,9 @@
     <!-- Password Change Card -->
     <div class="tt-card mb-4">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Change Admin Password</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-shield-lock-fill text-warning"></i> Change Admin Password
+        </h5>
       </div>
       <div class="tt-card-body">
         <form method="post" novalidate>
@@ -27,7 +29,7 @@
             <label class="tt-form-label">New Password *</label>
             {{ password_form.new_password1 }}
             {% if password_form.new_password1.errors %}<div class="text-danger small mt-1">{{ password_form.new_password1.errors.0 }}</div>{% endif %}
-            <div class="tt-help-text">Must be at least 8 characters long.</div>
+            <div class="tt-help-text">Must be at least 8 characters long and avoid common passwords.</div>
           </div>
 
           <div class="mb-4">
@@ -36,7 +38,9 @@
             {% if password_form.new_password2.errors %}<div class="text-danger small mt-1">{{ password_form.new_password2.errors.0 }}</div>{% endif %}
           </div>
 
-          <button type="submit" class="btn btn-primary fw-semibold px-4">Update Administrator Password</button>
+          <button type="submit" class="btn btn-primary fw-semibold px-4 d-inline-flex align-items-center gap-1.5 shadow-sm">
+            <i class="bi bi-key-fill"></i> Update Administrator Password
+          </button>
         </form>
       </div>
     </div>
@@ -44,29 +48,32 @@
     <!-- Security Information Card -->
     <div class="tt-card">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Security & Role Governance</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-shield-check text-success"></i> Security & Role Governance
+        </h5>
       </div>
       <div class="tt-card-body small">
-        <div class="p-3 bg-light rounded border mb-3">
-          <div class="d-flex justify-content-between py-1 border-bottom">
-            <span class="text-muted">Account Type:</span>
-            <strong>{% if request.user.is_superuser %}Superuser (Full Authority){% else %}Staff (Operational Administrator){% endif %}</strong>
+        <div class="p-3 rounded-3 border mb-3" style="background-color: var(--tt-surface-muted);">
+          <div class="d-flex justify-content-between py-1.5 border-bottom">
+            <span class="text-secondary">Account Authority:</span>
+            <strong class="text-dark">{% if request.user.is_superuser %}Superuser (Full Authority){% else %}Staff (Operational Administrator){% endif %}</strong>
           </div>
-          <div class="d-flex justify-content-between py-1 border-bottom">
-            <span class="text-muted">Authentication:</span>
-            <strong>Django PBKDF2 with SHA256</strong>
+          <div class="d-flex justify-content-between py-1.5 border-bottom">
+            <span class="text-secondary">Authentication Algorithm:</span>
+            <strong class="text-dark">Django PBKDF2 with SHA-256</strong>
           </div>
-          <div class="d-flex justify-content-between py-1 border-bottom">
-            <span class="text-muted">Session Isolation:</span>
-            <strong class="text-success">Active & Monitored</strong>
+          <div class="d-flex justify-content-between py-1.5 border-bottom">
+            <span class="text-secondary">Session Isolation:</span>
+            <strong class="text-success"><i class="bi bi-shield-fill-check me-1"></i>Active & Monitored</strong>
           </div>
-          <div class="d-flex justify-content-between py-1">
-            <span class="text-muted">CSRF Protection:</span>
-            <strong class="text-success">Strict Token Validation</strong>
+          <div class="d-flex justify-content-between py-1.5">
+            <span class="text-secondary">CSRF Defense:</span>
+            <strong class="text-success"><i class="bi bi-shield-fill-check me-1"></i>Strict Cryptographic Token Validation</strong>
           </div>
         </div>
-        <div class="text-muted">
-          Only Superusers can create new administrative staff accounts via the Django root management interface.
+        <div class="text-muted d-flex align-items-center gap-1.5">
+          <i class="bi bi-info-circle"></i>
+          <span>Only Superusers can manage administrative staff accounts via Django's core administration interface.</span>
         </div>
       </div>
     </div>

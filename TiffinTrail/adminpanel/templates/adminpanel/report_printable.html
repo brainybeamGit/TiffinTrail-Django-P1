@@ -5,13 +5,63 @@
   <meta charset="utf-8">
   <title>TiffinTrail Report: {{ report_type|upper }}</title>
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; padding: 30px; color: #1e293b; background: white; }
-    .tt-print-header { border-bottom: 2px solid #1b5e20; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; }
-    .tt-print-title { font-size: 1.5rem; font-weight: 800; color: #1b5e20; margin: 0; }
-    .tt-summary-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px; }
-    table { font-size: 0.85rem; }
-    th { background-color: #f1f5f9 !important; text-transform: uppercase; font-size: 0.75rem; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      padding: 32px;
+      color: #1e293b;
+      background: #ffffff;
+    }
+    .tt-print-header {
+      border-bottom: 2px solid #253746;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .tt-print-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .tt-print-brand-badge {
+      width: 32px;
+      height: 32px;
+      background: #253746;
+      color: #E6AD45;
+      font-weight: 800;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tt-print-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #253746;
+      margin: 0;
+    }
+    .tt-summary-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    table {
+      font-size: 0.85rem;
+    }
+    th {
+      background-color: #253746 !important;
+      color: #ffffff !important;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+    }
     @media print {
       .no-print { display: none !important; }
       body { padding: 0; }
@@ -19,14 +69,19 @@
   </style>
 </head>
 <body>
-  <div class="no-print mb-3 text-end">
-    <button onclick="window.print()" class="btn btn-primary btn-sm fw-bold"> Print or Save as PDF</button>
+  <div class="no-print mb-4 d-flex justify-content-end gap-2">
+    <button onclick="window.print()" class="btn btn-primary btn-sm fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+      <i class="bi bi-printer"></i> Print or Save as PDF
+    </button>
     <button onclick="window.close()" class="btn btn-outline-secondary btn-sm">Close</button>
   </div>
 
   <div class="tt-print-header">
     <div>
-      <h1 class="tt-print-title">TiffinTrail Enterprise Report</h1>
+      <div class="tt-print-brand">
+        <span class="tt-print-brand-badge">T</span>
+        <h1 class="tt-print-title">TiffinTrail Enterprise Report</h1>
+      </div>
       <div class="text-muted small">Category: <strong>{{ report_type|upper }}</strong> · Period: <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong></div>
     </div>
     <div class="text-end small text-muted">
@@ -37,7 +92,7 @@
 
   <!-- Summary Box -->
   <div class="tt-summary-box">
-    <h6 class="fw-bold mb-2">Executive Summary</h6>
+    <h6 class="fw-bold mb-2 text-dark">Executive Summary</h6>
     <div class="row g-2 small">
       <div class="col-3">Matching Records: <strong>{{ summary.records_count|default:0 }}</strong></div>
       {% for key, val in summary.items %}
@@ -49,28 +104,30 @@
   </div>
 
   <!-- Records Table -->
-  <table class="table table-bordered table-sm">
-    <thead>
-      <tr>
-        {% for h in headers %}
-          <th>{{ h }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in rows %}
+  <div class="table-responsive">
+    <table class="table table-bordered table-sm">
+      <thead>
         <tr>
-          {% for cell in row %}
-            <td>{{ cell }}</td>
+          {% for h in headers %}
+            <th>{{ h }}</th>
           {% endfor %}
         </tr>
-      {% empty %}
-        <tr>
-          <td colspan="{{ headers|length|default:4 }}" class="text-center py-4 text-muted">No records found.</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            {% for cell in row %}
+              <td>{{ cell }}</td>
+            {% endfor %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="{{ headers|length|default:4 }}" class="text-center py-4 text-muted">No records found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
   <div class="mt-4 pt-3 border-top text-center small text-muted">
     © {% now "Y" %} TiffinTrail · Confidential Platform Management Report

@@ -7,13 +7,13 @@
 <div class="py-4 border-bottom bg-white">
   <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-1 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'customer:cart' %}" class="text-decoration-none" style="color: var(--tt-primary);">Cart</a></li>
+      <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:cart' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Cart</a></li>
         <li class="breadcrumb-item active text-muted" aria-current="page">Checkout</li>
       </ol>
     </nav>
-    <h1 class="h3 fw-bold mb-1" style="color: var(--tt-text-main);">Order Checkout</h1>
+    <h1 class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">Order Checkout</h1>
     <p class="text-muted small mb-0">Confirm your delivery details and choose your preferred payment option.</p>
   </div>
 </div>
@@ -25,9 +25,9 @@
       <!-- Left Column: Delivery & Payment Details -->
       <div class="col-lg-7">
         <!-- Contact Information -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important;">
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
-            <span class="rounded-circle d-inline-flex align-items-center justify-content-center text-white" style="width: 22px; height: 22px; background-color: var(--tt-primary); font-size: 0.75rem;">1</span>
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center text-white" style="width: 24px; height: 24px; background-color: var(--tt-charcoal); font-size: 0.75rem; font-weight: 700;">1</span>
             Contact Information
           </h5>
           <div class="row g-3">
@@ -43,9 +43,9 @@
         </div>
 
         <!-- Delivery Address Selection -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important;">
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
-            <span class="rounded-circle d-inline-flex align-items-center justify-content-center text-white" style="width: 22px; height: 22px; background-color: var(--tt-primary); font-size: 0.75rem;">2</span>
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center text-white" style="width: 24px; height: 24px; background-color: var(--tt-charcoal); font-size: 0.75rem; font-weight: 700;">2</span>
             Delivery Address
           </h5>
 
@@ -110,9 +110,9 @@
         </div>
 
         <!-- Payment Method -->
-        <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important;">
+        <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
-            <span class="rounded-circle d-inline-flex align-items-center justify-content-center text-white" style="width: 22px; height: 22px; background-color: var(--tt-primary); font-size: 0.75rem;">3</span>
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center text-white" style="width: 24px; height: 24px; background-color: var(--tt-charcoal); font-size: 0.75rem; font-weight: 700;">3</span>
             Payment Method
           </h5>
           <div class="d-grid gap-3">
@@ -121,10 +121,10 @@
               <label class="form-check-label w-100 ms-2" for="payMethodOnline">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                   <div class="d-flex align-items-center gap-2">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--tt-primary)" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    <i class="bi bi-shield-lock-fill text-success fs-5"></i>
                     <strong class="small text-dark">Instant Online Payment (UPI / Cards / NetBanking)</strong>
                   </div>
-                  <span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill small fw-semibold">
+                  <span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill small fw-semibold">
                     Razorpay Secured
                   </span>
                 </div>
@@ -136,18 +136,18 @@
               <input class="form-check-input" type="radio" name="payment_method" id="payMethodCod" value="cod">
               <label class="form-check-label w-100 ms-2" for="payMethodCod">
                 <div class="d-flex align-items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                  <i class="bi bi-cash-stack text-secondary fs-5"></i>
                   <strong class="small text-dark">Cash on Delivery (COD)</strong>
                 </div>
                 <small class="text-muted d-block mt-1">Pay with cash or UPI directly to the delivery partner upon arrival.</small>
               </label>
             </div>
 
-            <!-- Razorpay Test Mode Guidance Box -->
-            <div class="alert py-2 px-3 rounded-3 small mb-0 d-flex align-items-start gap-2 border-0" style="font-size: 0.8rem; background-color: #f0fdf4; color: #166534; border-left: 3px solid #16a34a !important;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" class="flex-shrink-0 mt-0.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <!-- Razorpay Guidance Box -->
+            <div class="alert py-2.5 px-3 rounded-3 small mb-0 d-flex align-items-start gap-2 border-0" style="font-size: 0.8rem; background-color: #f0fdf4; color: #166534; border-left: 3px solid #16a34a !important;">
+              <i class="bi bi-info-circle-fill flex-shrink-0 mt-0.5 text-success"></i>
               <div>
-                <strong>Razorpay Test Mode Info:</strong> Online payment test karne ke liye Razorpay popup me <strong>Netbanking</strong> (kisi bhi bank) select karke <strong>"Success"</strong> par click karein, ya UPI me <code>success@razorpay</code> use karein.
+                <strong>Payment Information:</strong> For test mode, choose <strong>Netbanking</strong> in Razorpay and select <strong>"Success"</strong>, or use UPI ID <code>success@razorpay</code>.
               </div>
             </div>
           </div>
@@ -160,11 +160,11 @@
         <div class="card border-0 shadow-sm rounded-4 p-4 mb-3" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--tt-primary, #253746)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><circle cx="7" cy="7" r="1"></circle></svg>
+              <i class="bi bi-ticket-perforated-fill text-warning"></i>
               <span>Offers &amp; Coupons</span>
             </h6>
             {% if available_coupons %}
-            <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fw-bold" style="color: #253746;" data-bs-toggle="modal" data-bs-target="#availableCouponsModal">
+            <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 fw-bold" style="color: var(--tt-charcoal);" data-bs-toggle="modal" data-bs-target="#availableCouponsModal">
               View All ({{ available_coupons.count }})
             </button>
             {% endif %}
@@ -172,19 +172,19 @@
 
           {% if cart.coupon %}
           <!-- Applied Coupon Summary -->
-          <div class="tt-coupon-applied-box mt-2">
+          <div class="p-3 rounded-3 mt-2 border bg-light" style="border-color: #bbf7d0 !important;">
             <div class="d-flex align-items-start justify-content-between gap-2">
               <div>
                 <div class="d-flex align-items-center gap-1.5 text-success fw-bold font-monospace">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <i class="bi bi-check-circle-fill"></i>
                   <span>{{ cart.coupon.code }} Applied</span>
                 </div>
                 {% if cart.coupon.description %}
-                <div class="tt-coupon-promo-desc mb-1" style="font-size: 0.9rem; color: #253746;">
+                <div class="small text-muted mt-1">
                   "{{ cart.coupon.description }}"
                 </div>
                 {% endif %}
-                <small class="text-success fw-semibold d-block">You saved ₹{{ cart.discount_amount|floatformat:2 }}</small>
+                <small class="text-success fw-semibold d-block mt-1">You saved ₹{{ cart.discount_amount|floatformat:2 }}</small>
               </div>
               <button type="submit" form="couponRemoveForm" class="btn btn-sm btn-outline-danger py-1 px-2 rounded-2" style="font-size: 0.78rem;">Remove</button>
             </div>
@@ -193,19 +193,18 @@
           <!-- Manual Coupon Input -->
           <div class="input-group mt-2">
             <input type="text" name="coupon_code" form="couponApplyForm" class="form-control form-control-sm text-uppercase font-monospace rounded-start-3" placeholder="Enter coupon code" required>
-            <button type="submit" form="couponApplyForm" class="btn btn-sm btn-tt-coupon-apply rounded-end-3 px-3">Apply</button>
+            <button type="submit" form="couponApplyForm" class="btn btn-sm btn-tt-primary rounded-end-3 px-3 fw-semibold">Apply</button>
           </div>
 
           {% if available_coupons %}
           <div class="mt-3">
-            <button type="button" class="btn btn-sm w-100 py-2.5 rounded-3 text-start d-flex align-items-center justify-content-between border shadow-xs" style="background-color: #F7F5F0; border-color: #E5E7EB !important; color: #253746; transition: all 0.2s;" data-bs-toggle="modal" data-bs-target="#availableCouponsModal">
+            <button type="button" class="btn btn-sm w-100 py-2.5 rounded-3 text-start d-flex align-items-center justify-content-between border shadow-xs" style="background-color: var(--tt-cream); border-color: var(--tt-border) !important; color: var(--tt-charcoal);" data-bs-toggle="modal" data-bs-target="#availableCouponsModal">
               <span class="small fw-semibold d-flex align-items-center gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E6AD45" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><circle cx="7" cy="7" r="1"></circle></svg>
+                <i class="bi bi-tag-fill text-warning"></i>
                 Available Coupons ({{ available_coupons.count }})
               </span>
-              <span class="small fw-bold d-flex align-items-center gap-1" style="color: #253746;">
-                View Offers
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              <span class="small fw-bold d-flex align-items-center gap-1">
+                View Offers <i class="bi bi-chevron-right"></i>
               </span>
             </button>
           </div>
@@ -213,107 +212,116 @@
           {% endif %}
         </div>
 
-        <div class="card border-0 shadow-sm rounded-4 p-4 position-sticky" style="top: 90px; border: 1px solid var(--tt-border) !important; background: linear-gradient(180deg, #ffffff 0%, #fafcfa 100%);">
-          <h5 class="fw-bold fs-6 mb-3 pb-3 border-bottom text-dark">Order Summary</h5>
+        <!-- Order Summary Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 position-sticky" style="top: 90px; border: 1px solid var(--tt-border) !important; background: #ffffff;">
+          <h5 class="fw-bold fs-6 mb-3 pb-2 border-bottom text-dark d-flex align-items-center gap-2">
+            <i class="bi bi-receipt text-warning"></i>
+            Order Summary
+          </h5>
 
-          <div class="mb-3 max-h-200 overflow-auto" style="max-height: 240px;">
+          <!-- Items Overview -->
+          <div class="mb-3 max-h-240 overflow-y-auto pe-1">
             {% for item in items %}
             <div class="d-flex justify-content-between align-items-center py-2 border-bottom small">
-              <div>
-                <span class="fw-semibold text-dark">{{ item.quantity }}x {{ item.meal.name }}</span>
-                <small class="d-block text-muted">by Chef {{ item.meal.chef.business_name }}</small>
+              <div class="d-flex align-items-center gap-2">
+                <span class="tt-diet-indicator {% if item.meal.is_veg %}veg{% else %}non-veg{% endif %}">
+                  <span class="dot"></span>
+                </span>
+                <span class="text-dark">{{ item.quantity }} × {{ item.meal.name }}</span>
               </div>
-              <span class="fw-bold" style="color: var(--tt-primary);">₹{{ item.subtotal|floatformat:2 }}</span>
+              <span class="fw-semibold text-dark">₹{{ item.subtotal|floatformat:2 }}</span>
             </div>
             {% endfor %}
           </div>
 
-          <div class="d-flex justify-content-between py-2 small">
-            <span class="text-muted">Item Subtotal</span>
-            <span class="text-dark">₹{{ cart.subtotal|floatformat:2 }}</span>
-          </div>
-
-          <div class="d-flex justify-content-between py-2 small">
-            <span class="text-muted">Delivery Fee</span>
-            <span>
+          <div class="border-top pt-2">
+            <div class="d-flex justify-content-between py-1.5 small">
+              <span class="text-muted">Item Subtotal</span>
+              <span class="text-dark fw-semibold">₹{{ cart.subtotal|floatformat:2 }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-1.5 small">
+              <span class="text-muted">Delivery Fee</span>
               {% if cart.delivery_fee == 0 %}
-              <strong class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill">FREE</strong>
+              <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill">FREE</span>
               {% else %}
-              ₹{{ cart.delivery_fee|floatformat:2 }}
-              {% endif %}
-            </span>
-          </div>
-
-          <div class="d-flex justify-content-between py-2 small">
-            <span class="text-muted">Taxes (5% GST)</span>
-            <span class="text-dark">₹{{ cart.tax_amount|floatformat:2 }}</span>
-          </div>
-
-          {% if cart.coupon %}
-          <div class="d-flex justify-content-between py-2 small fw-bold" style="color: var(--tt-primary, #253746);">
-            <div>
-              <span>Coupon Discount ({{ cart.coupon.code }})</span>
-              {% if cart.coupon.description %}
-              <small class="d-block text-muted fw-normal" style="font-size: 0.8rem;">{{ cart.coupon.description }}</small>
+              <span class="text-dark fw-semibold">₹{{ cart.delivery_fee|floatformat:2 }}</span>
               {% endif %}
             </div>
-            <span class="text-success">- ₹{{ cart.discount_amount|floatformat:2 }}</span>
-          </div>
-          {% endif %}
+            <div class="d-flex justify-content-between py-1.5 small">
+              <span class="text-muted">Kitchen Taxes (5% GST)</span>
+              <span class="text-dark fw-semibold">₹{{ cart.tax_amount|floatformat:2 }}</span>
+            </div>
+            {% if cart.coupon %}
+            <div class="d-flex justify-content-between py-1.5 small text-success">
+              <span>Coupon Discount ({{ cart.coupon.code }})</span>
+              <span class="fw-bold">- ₹{{ cart.discount_amount|floatformat:2 }}</span>
+            </div>
+            {% endif %}
 
-          <div class="d-flex justify-content-between py-3 my-2 border-top border-bottom fs-5 fw-bold text-dark">
-            <span>Total Payable</span>
-            <span style="color: var(--tt-primary);">₹{{ cart.final_total|floatformat:2 }}</span>
+            <div class="d-flex justify-content-between py-3 my-2 border-top border-bottom fs-5 fw-bold">
+              <span style="color: var(--tt-charcoal);">Total Payable</span>
+              <span style="color: var(--tt-charcoal);">₹{{ cart.final_total|floatformat:2 }}</span>
+            </div>
           </div>
 
-          <button type="button" id="ttSubmitBtn" class="btn btn-tt-primary w-100 py-3 fs-6 rounded-3 mt-2 d-flex align-items-center justify-content-center gap-2 shadow-sm">
-            <span id="ttSubmitSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-            <svg id="ttSubmitIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <span id="ttSubmitBtnText">Pay ₹{{ cart.final_total|floatformat:2 }} via Razorpay</span>
+          <button type="submit" id="submitOrderBtn" class="btn btn-tt-primary w-100 py-3 rounded-3 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-xs mt-2">
+            <i class="bi bi-shield-check"></i>
+            <span id="submitOrderBtnText">Pay ₹{{ cart.final_total|floatformat:2 }} via Razorpay</span>
           </button>
 
-          <div class="text-center mt-3 text-muted small d-flex align-items-center justify-content-center gap-1" style="font-size: 0.78rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            <span>Encrypted 256-bit SSL Razorpay Checkout &amp; FSSAI Standards</span>
+          <div class="text-center mt-3">
+            <span class="small text-muted d-inline-flex align-items-center gap-1" style="font-size: 0.75rem;">
+              <i class="bi bi-lock-fill text-success"></i>
+              Encrypted 256-bit Secure Transaction
+            </span>
           </div>
         </div>
       </div>
     </div>
   </form>
+
+  <!-- Separate Coupon Apply & Remove Forms -->
+  <form id="couponApplyForm" action="{% url 'customer:cart_apply_coupon' %}" method="post" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+  </form>
+  <form id="couponRemoveForm" action="{% url 'customer:cart_remove_coupon' %}" method="post" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ request.path }}">
+  </form>
 </div>
 
-<!-- Available Coupons Modal on Checkout Page -->
+<!-- Available Coupons Modal -->
 <div class="modal fade" id="availableCouponsModal" tabindex="-1" aria-labelledby="availableCouponsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background: #F7F5F0;">
-      <div class="modal-header tt-coupon-modal-header">
+    <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden" style="background: #ffffff;">
+      <div class="modal-header border-bottom p-3" style="background-color: var(--tt-charcoal); color: #ffffff;">
         <div>
           <h5 class="modal-title fw-bold text-white fs-6 mb-0" id="availableCouponsModalLabel">Available Offers &amp; Coupons</h5>
-          <small class="text-white-50">Select and apply any promotional offer to your tiffin order</small>
+          <small class="text-white-50">Select and apply any promotional offer to your tiffin cart</small>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-3 p-md-4">
         {% if available_coupons %}
-          <div class="coupon-list">
+          <div class="d-grid gap-3">
             {% for cpn in available_coupons %}
-              <div class="tt-coupon-card {% if cart.coupon and cart.coupon.code == cpn.code %}is-applied{% endif %}">
+              <div class="card border rounded-3 p-3 {% if cart.coupon and cart.coupon.code == cpn.code %}border-success bg-light{% endif %}" style="background-color: #fafbfc;">
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-                  <div class="tt-coupon-code-badge">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-                    <span>{{ cpn.code }}</span>
+                  <div class="badge bg-light text-dark border font-monospace px-2.5 py-1.5 fs-6">
+                    <i class="bi bi-tag-fill text-warning me-1"></i>
+                    {{ cpn.code }}
                   </div>
-                  <div class="tt-coupon-discount-highlight">
+                  <div class="text-success fw-bold">
                     {% if cpn.discount_type == 'percent' %}
                       {{ cpn.discount_value|floatformat:0 }}% OFF
                     {% else %}
-                      ₹{{ cpn.discount_value|floatformat:0 }} FLAT OFF
+                      ₹{{ cpn.discount_value|floatformat:2 }} FLAT OFF
                     {% endif %}
                   </div>
                 </div>
 
-                <!-- Promotional Description entered by Admin -->
-                <div class="tt-coupon-promo-desc">
+                <div class="small text-secondary mb-2">
                   {% if cpn.description %}
                     "{{ cpn.description }}"
                   {% else %}
@@ -321,35 +329,25 @@
                   {% endif %}
                 </div>
 
-                <div class="tt-coupon-dashed-divider"></div>
-
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-1">
-                  <div class="tt-coupon-meta">
-                    <div>Min. order: <strong>₹{{ cpn.min_order_amount|floatformat:0 }}</strong></div>
+                <div class="border-top pt-2 d-flex justify-content-between align-items-center flex-wrap gap-2 small">
+                  <div class="text-muted">
+                    <div>Min. order: <strong>₹{{ cpn.min_order_amount|floatformat:2 }}</strong></div>
                     {% if cpn.discount_type == 'percent' and cpn.max_discount_amount %}
-                      <div>Max. discount: <strong>₹{{ cpn.max_discount_amount|floatformat:0 }}</strong></div>
+                      <div>Max. discount: <strong>₹{{ cpn.max_discount_amount|floatformat:2 }}</strong></div>
                     {% endif %}
-                    <div>
-                      {% if cpn.valid_until %}
-                        Expires: <strong>{{ cpn.valid_until|date:"d M Y" }}</strong>
-                      {% else %}
-                        <strong>No Expiry</strong>
-                      {% endif %}
-                    </div>
                   </div>
                   <div>
                     {% if cart.coupon and cart.coupon.code == cpn.code %}
-                      <span class="btn-tt-coupon-applied">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        Applied
+                      <span class="badge bg-success text-white px-3 py-1.5 rounded-pill d-inline-flex align-items-center gap-1">
+                        <i class="bi bi-check-circle-fill"></i> Applied
                       </span>
                     {% else %}
                       <form action="{% url 'customer:cart_apply_coupon' %}" method="post" class="m-0">
                         {% csrf_token %}
                         <input type="hidden" name="coupon_code" value="{{ cpn.code }}">
                         <input type="hidden" name="next" value="{{ request.path }}">
-                        <button type="submit" class="btn btn-tt-coupon-apply">
-                          Apply Coupon
+                        <button type="submit" class="btn btn-sm btn-tt-primary rounded-3 px-3 py-1 fw-semibold">
+                          Apply
                         </button>
                       </form>
                     {% endif %}
@@ -360,7 +358,7 @@
           </div>
         {% else %}
           <div class="text-center py-4 text-muted">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5" class="mb-2"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            <i class="bi bi-ticket-perforated fs-1 text-muted mb-2 d-block"></i>
             <p class="mb-0 fw-medium">No promotional coupons available at the moment.</p>
           </div>
         {% endif %}
@@ -369,104 +367,76 @@
   </div>
 </div>
 
-<!-- Dedicated Forms for Coupon Apply & Remove on Checkout -->
-<form action="{% url 'customer:cart_apply_coupon' %}" method="post" id="couponApplyForm" class="d-none">
-  {% csrf_token %}
-  <input type="hidden" name="next" value="{{ request.path }}">
-</form>
-<form action="{% url 'customer:cart_remove_coupon' %}" method="post" id="couponRemoveForm" class="d-none">
-  {% csrf_token %}
-  <input type="hidden" name="next" value="{{ request.path }}">
-</form>
-</div>
-
 <!-- Razorpay Checkout SDK -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="{% static 'js/checkout.js' %}"></script>
 
 <script>
-  // Address selection toggle
-  document.querySelectorAll('input[name="address_choice"]').forEach(function(radio) {
-    radio.addEventListener('change', function() {
-      const newFields = document.getElementById('ttNewAddressFields');
-      if (newFields) {
-        newFields.style.display = this.value === 'new' ? 'block' : 'none';
+  // Dynamic UI Toggles
+  const addrNewRadio = document.getElementById('addr_new');
+  const newAddrFields = document.getElementById('ttNewAddressFields');
+  const checkoutForm = document.getElementById('checkoutForm');
+  const submitBtn = document.getElementById('submitOrderBtn');
+  const submitBtnText = document.getElementById('submitOrderBtnText');
+  const finalTotalAmount = "{{ cart.final_total|floatformat:2 }}";
+
+  // Address radio toggle
+  document.querySelectorAll('input[name="address_choice"]').forEach(radio => {
+    radio.addEventListener('change', function () {
+      if (newAddrFields) {
+        newAddrFields.style.display = (this.value === 'new') ? 'block' : 'none';
       }
     });
   });
 
-  const checkoutForm = document.getElementById('checkoutForm');
-  const submitBtn = document.getElementById('ttSubmitBtn');
-  const submitBtnText = document.getElementById('ttSubmitBtnText');
-  const submitSpinner = document.getElementById('ttSubmitSpinner');
-  const submitIcon = document.getElementById('ttSubmitIcon');
-  const payMethodOnline = document.getElementById('payMethodOnline');
-  const payMethodCod = document.getElementById('payMethodCod');
-
-  // Update button text when payment method toggles
-  function updateButtonLabel() {
-    const isOnline = payMethodOnline ? payMethodOnline.checked : true;
-    if (isOnline) {
-      submitBtnText.textContent = "Pay ₹{{ cart.final_total|floatformat:2 }} via Razorpay";
+  // Payment method switch
+  function updateSubmitBtn() {
+    const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'online';
+    if (selectedMethod === 'cod') {
+      submitBtnText.textContent = `Confirm Order (Pay ₹${finalTotalAmount} via COD)`;
     } else {
-      submitBtnText.textContent = "Place Cash on Delivery Order";
+      submitBtnText.textContent = `Pay ₹${finalTotalAmount} via Razorpay`;
     }
   }
 
-  if (payMethodOnline) payMethodOnline.addEventListener('change', updateButtonLabel);
-  if (payMethodCod) payMethodCod.addEventListener('change', updateButtonLabel);
-  updateButtonLabel();
+  document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+    radio.addEventListener('change', updateSubmitBtn);
+  });
+  updateSubmitBtn();
 
-  function setBtnLoading(msg) {
-    submitBtn.disabled = true;
-    submitSpinner.classList.remove('d-none');
-    submitIcon.classList.add('d-none');
-    submitBtnText.textContent = msg;
-  }
-
-  function resetBtn() {
-    submitBtn.disabled = false;
-    submitSpinner.classList.add('d-none');
-    submitIcon.classList.remove('d-none');
-    updateButtonLabel();
-  }
-
+  // Helper validation before payment
   function validateCheckoutDetails() {
-    const nameInput = document.querySelector('input[name="recipient_name"]');
-    const phoneInput = document.querySelector('input[name="recipient_phone"]');
+    const recipName = document.querySelector('[name="recipient_name"]')?.value || '';
+    const recipPhone = document.querySelector('[name="recipient_phone"]')?.value || '';
 
-    if (!nameInput || !nameInput.value.trim()) {
-      alert("Please enter the recipient's name.");
-      if (nameInput) nameInput.focus();
-      return false;
-    }
-    if (!phoneInput || !phoneInput.value.trim()) {
-      alert("Please enter a valid mobile phone number.");
-      if (phoneInput) phoneInput.focus();
+    if (!recipName.trim() || !recipPhone.trim()) {
+      alert("Please provide the recipient's name and mobile phone number.");
       return false;
     }
 
     const addrChoice = document.querySelector('input[name="address_choice"]:checked')?.value;
-    if (addrChoice && addrChoice !== 'new') {
-      return true;
-    }
-
-    const streetInput = document.querySelector('input[name="street_address"]');
-    const pincodeInput = document.querySelector('input[name="pincode"]');
-
-    if (!streetInput || !streetInput.value.trim()) {
-      alert("Please enter your street address / apartment details.");
-      if (streetInput) streetInput.focus();
-      return false;
-    }
-    if (!pincodeInput || !pincodeInput.value.trim()) {
-      alert("Please enter delivery area pincode.");
-      if (pincodeInput) pincodeInput.focus();
-      return false;
+    if (addrChoice === 'new' || !addrChoice) {
+      const street = document.querySelector('[name="street_address"]')?.value || '';
+      const area = document.querySelector('[name="area"]')?.value || '';
+      const city = document.querySelector('[name="city"]')?.value || '';
+      const pin = document.querySelector('[name="pincode"]')?.value || '';
+      if (!street.trim() || !area.trim() || !city.trim() || !pin.trim()) {
+        alert("Please complete all delivery address fields (Street Address, Area, City, and Pincode).");
+        return false;
+      }
     }
     return true;
   }
 
-  // Prevent accidental form submissions (e.g. Enter key)
+  function setBtnLoading(msg) {
+    submitBtn.disabled = true;
+    submitBtnText.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${msg}`;
+  }
+
+  function resetBtn() {
+    submitBtn.disabled = false;
+    updateSubmitBtn();
+  }
+
   checkoutForm.addEventListener('submit', function(e) {
     const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'online';
     if (selectedMethod === 'online') {
@@ -475,7 +445,6 @@
     }
   });
 
-  // Action button click handler
   submitBtn.addEventListener('click', function(e) {
     e.preventDefault();
 
@@ -492,9 +461,9 @@
       return;
     }
 
-    // 2. ONLINE PAYMENT: Razorpay modal FIRST. Order created ONLY AFTER payment completes.
+    // 2. ONLINE PAYMENT: Razorpay modal
     if (typeof Razorpay === 'undefined') {
-      alert("Razorpay checkout script load nahi ho paayi. Kripya apna ad-blocker disable karein ya page refresh karein.");
+      alert("Razorpay checkout script could not be loaded. Please check your internet connection or reload the page.");
       return;
     }
 
@@ -541,17 +510,14 @@
           contact: data.customer_phone || ''
         },
         theme: {
-          color: '#16a34a'
+          color: '#253746'
         },
         modal: {
           ondismiss: function() {
-            // User cancelled/closed without payment -> DO NOT place order
             resetBtn();
           }
         },
         handler: function(response) {
-          // Payment successfully authorized by Razorpay!
-          // Now verify signature and create the Order in DB.
           setBtnLoading('Payment Received! Confirming Order...');
 
           const verifyData = new FormData(checkoutForm);

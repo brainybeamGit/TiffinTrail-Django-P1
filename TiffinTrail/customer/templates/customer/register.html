@@ -7,11 +7,13 @@
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-6 col-md-8">
-      <div class="p-4 p-md-5 bg-white rounded-4 border shadow-sm">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
         <div class="text-center mb-4">
-          <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" style="width: 56px; height: 56px; object-fit: contain; border-radius: 12px;" class="mb-2">
-          <h2 class="fs-4 fw-bold mb-1">Join TiffinTrail</h2>
-          <p class="text-muted small">Sign up to explore neighborhood home chefs and subscribe to daily tiffins.</p>
+          <a href="{% url 'customer:home' %}" class="d-inline-block mb-3 text-decoration-none" title="TiffinTrail">
+            <img src="{% static 'images/logo.png' %}" alt="TiffinTrail Logo" style="width: 64px; height: 64px; object-fit: contain; border-radius: 14px;" class="shadow-xs border p-1.5 bg-white">
+          </a>
+          <h2 class="h4 fw-bold mb-1" style="color: var(--tt-charcoal);">Join TiffinTrail</h2>
+          <p class="text-muted small">Sign up to discover neighborhood home chefs and subscribe to wholesome daily tiffins.</p>
         </div>
 
         <form action="" method="post">
@@ -19,55 +21,55 @@
 
           <div class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label small fw-bold">First Name</label>
+              <label class="form-label small fw-semibold text-muted">First Name</label>
               {{ form.first_name }}
-              {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors.0 }}</div>{% endif %}
+              {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Last Name</label>
+              <label class="form-label small fw-semibold text-muted">Last Name</label>
               {{ form.last_name }}
-              {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors.0 }}</div>{% endif %}
+              {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
             </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Choose Username</label>
+            <label class="form-label small fw-semibold text-muted">Choose Username</label>
             {{ form.username }}
-            {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors.0 }}</div>{% endif %}
+            {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Email Address</label>
+            <label class="form-label small fw-semibold text-muted">Email Address</label>
             {{ form.email }}
-            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors.0 }}</div>{% endif %}
+            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="mb-3">
-            <label class="form-label small fw-bold">Mobile Phone Number</label>
+            <label class="form-label small fw-semibold text-muted">Mobile Phone Number</label>
             {{ form.phone }}
-            {% if form.phone.errors %}<div class="text-danger small">{{ form.phone.errors.0 }}</div>{% endif %}
+            {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>{% endif %}
           </div>
 
           <div class="row g-3 mb-4">
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Password</label>
+              <label class="form-label small fw-semibold text-muted">Password</label>
               {{ form.password }}
-              {% if form.password.errors %}<div class="text-danger small">{{ form.password.errors.0 }}</div>{% endif %}
+              {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>{% endif %}
             </div>
             <div class="col-md-6">
-              <label class="form-label small fw-bold">Confirm Password</label>
+              <label class="form-label small fw-semibold text-muted">Confirm Password</label>
               {{ form.confirm_password }}
-              {% if form.confirm_password.errors %}<div class="text-danger small">{{ form.confirm_password.errors.0 }}</div>{% endif %}
+              {% if form.confirm_password.errors %}<div class="text-danger small mt-1">{{ form.confirm_password.errors.0 }}</div>{% endif %}
             </div>
           </div>
 
-          <button type="submit" class="btn btn-tt-primary w-100 py-2 fs-6 mb-3">
-            Create Customer Account
+          <button type="submit" class="btn btn-tt-primary w-100 py-2.5 rounded-3 fw-semibold shadow-xs mb-3">
+            <i class="bi bi-person-check-fill me-1"></i> Create My Account
           </button>
 
           <div class="text-center small text-muted">
             Already have an account?
-            <a href="{% url 'customer:login' %}" class="fw-bold text-success text-decoration-none">Log In</a>
+            <a href="{% url 'customer:login' %}" class="fw-bold text-decoration-none" style="color: var(--tt-primary);">Sign In</a>
           </div>
         </form>
       </div>

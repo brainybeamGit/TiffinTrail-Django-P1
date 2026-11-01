@@ -10,8 +10,12 @@
   <div class="col-lg-10">
     <div class="tt-card">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title"> Update Kitchen Information</h5>
-        <a href="{% url 'chef:profile' %}" class="btn btn-sm btn-outline-secondary">← Back to Profile</a>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-pencil-square text-warning"></i> Update Kitchen Information
+        </h5>
+        <a href="{% url 'chef:profile' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Profile
+        </a>
       </div>
 
       <div class="tt-card-body">
@@ -20,7 +24,7 @@
 
           <!-- Account & Owner Name -->
           <div class="row g-3 mb-4">
-            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">1. Chef & Business Identity</h6></div>
+            <div class="col-12"><h6 class="fw-bold text-dark border-bottom pb-2">1. Chef & Business Identity</h6></div>
 
             <div class="col-md-6">
               <label class="tt-form-label">Business / Kitchen Name *</label>
@@ -55,15 +59,16 @@
 
           <!-- Photos & Branding -->
           <div class="row g-3 mb-4">
-            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">2. Kitchen Photos & Branding</h6></div>
+            <div class="col-12"><h6 class="fw-bold text-dark border-bottom pb-2">2. Kitchen Photos & Branding</h6></div>
 
             <div class="col-md-6">
               <label class="tt-form-label">Profile Photo</label>
               {{ form.profile_image }}
               <div class="tt-help-text">Square photo recommended (JPG, PNG, WebP max 5MB).</div>
               {% if chef.profile_image %}
-                <div class="mt-2">
-                  <img src="{{ chef.profile_image.url }}" alt="Current Photo" class="rounded border" style="width: 80px; height: 80px; object-fit: cover;">
+                <div class="mt-2 d-flex align-items-center gap-2">
+                  <img src="{{ chef.profile_image.url }}" alt="Current Photo" class="rounded-circle border" style="width: 50px; height: 50px; object-fit: cover;">
+                  <span class="text-muted small">Current Profile Image</span>
                 </div>
               {% endif %}
               {% if form.profile_image.errors %}<div class="text-danger small mt-1">{{ form.profile_image.errors.0 }}</div>{% endif %}
@@ -72,10 +77,11 @@
             <div class="col-md-6">
               <label class="tt-form-label">Kitchen Cover Banner</label>
               {{ form.cover_image }}
-              <div class="tt-help-text">Banner display on public profile (horizontal landscape).</div>
+              <div class="tt-help-text">Banner display on public profile (horizontal landscape, max 5MB).</div>
               {% if chef.cover_image %}
-                <div class="mt-2">
-                  <img src="{{ chef.cover_image.url }}" alt="Current Cover" class="rounded border" style="width: 140px; height: 60px; object-fit: cover;">
+                <div class="mt-2 d-flex align-items-center gap-2">
+                  <img src="{{ chef.cover_image.url }}" alt="Current Cover" class="rounded border" style="width: 100px; height: 45px; object-fit: cover;">
+                  <span class="text-muted small">Current Banner</span>
                 </div>
               {% endif %}
               {% if form.cover_image.errors %}<div class="text-danger small mt-1">{{ form.cover_image.errors.0 }}</div>{% endif %}
@@ -84,7 +90,7 @@
 
           <!-- Culinary Details -->
           <div class="row g-3 mb-4">
-            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">3. Culinary Specialities & Standards</h6></div>
+            <div class="col-12"><h6 class="fw-bold text-dark border-bottom pb-2">3. Culinary Specialities & Standards</h6></div>
 
             <div class="col-md-6">
               <label class="tt-form-label">Cuisines Served (comma-separated)</label>
@@ -128,7 +134,7 @@
 
           <!-- Location & Timings -->
           <div class="row g-3 mb-4">
-            <div class="col-12"><h6 class="fw-bold text-success border-bottom pb-2">4. Address, Schedule & Availability</h6></div>
+            <div class="col-12"><h6 class="fw-bold text-dark border-bottom pb-2">4. Address, Schedule & Availability</h6></div>
 
             <div class="col-12">
               <label class="tt-form-label">Kitchen Address</label>
@@ -158,7 +164,7 @@
             <div class="col-12">
               <div class="form-check form-switch p-3 bg-light rounded border">
                 {{ form.is_accepting_orders }}
-                <label class="form-check-label fw-bold ms-2" for="{{ form.is_accepting_orders.id_for_label }}">
+                <label class="form-check-label fw-bold ms-2 text-dark" for="{{ form.is_accepting_orders.id_for_label }}">
                   Accepting Orders Currently
                 </label>
                 <div class="text-muted small ms-4">When turned off, diners will see your kitchen as temporarily paused.</div>
@@ -168,7 +174,9 @@
 
           <div class="d-flex justify-content-end gap-3 pt-3 border-top">
             <a href="{% url 'chef:profile' %}" class="btn btn-outline-secondary">Cancel</a>
-            <button type="submit" class="btn btn-success px-4 fw-semibold"> Save Profile Changes</button>
+            <button type="submit" class="btn btn-warning tt-btn-gold px-4 fw-bold shadow-sm d-inline-flex align-items-center gap-2">
+              <i class="bi bi-check2-circle"></i> Save Profile Changes
+            </button>
           </div>
         </form>
       </div>

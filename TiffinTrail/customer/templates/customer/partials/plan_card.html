@@ -1,17 +1,16 @@
 {% load static %}
-<div class="tt-card tt-plan-card hover-lift h-100 p-4 d-flex flex-column {% if plan.plan_type == 'weekly' %}is-featured{% endif %}">
-  <!-- Top Row: Plan Type (Left) & Recommended / Savings Badge (Right) -->
+<div class="tt-card tt-plan-card hover-lift h-100 p-4 d-flex flex-column {% if plan.plan_type == 'weekly' %}border-warning{% endif %}">
+  <!-- Top Row: Plan Type & Savings Badge -->
   <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
     <span class="badge bg-light text-dark border px-2.5 py-1 font-monospace" style="font-size: 0.72rem; letter-spacing: 0.05em;">
       {{ plan.get_plan_type_display|upper }}
     </span>
     {% if plan.plan_type == 'weekly' %}
-      <span class="badge rounded-pill px-2.5 py-1 fw-bold small d-inline-flex align-items-center gap-1 shadow-sm" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; font-size: 0.7rem; letter-spacing: 0.04em;">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-        RECOMMENDED
+      <span class="badge rounded-pill px-2.5 py-1 fw-bold small d-inline-flex align-items-center gap-1 shadow-sm" style="background: linear-gradient(135deg, #E6AD45, #d49a33); color: #253746; font-size: 0.7rem; letter-spacing: 0.04em;">
+        <i class="bi bi-star-fill"></i> RECOMMENDED
       </span>
     {% elif plan.savings_percent %}
-      <span class="badge rounded-pill px-2.5 py-1 fw-bold small d-inline-flex align-items-center gap-1 shadow-sm" style="background: linear-gradient(135deg, #059669, #10b981); color: #ffffff; font-size: 0.7rem;">
+      <span class="badge rounded-pill px-2.5 py-1 fw-bold small d-inline-flex align-items-center gap-1 shadow-sm" style="background: linear-gradient(135deg, #16A34A, #15803D); color: #ffffff; font-size: 0.7rem;">
         Save {{ plan.savings_percent }}%
       </span>
     {% endif %}
@@ -22,51 +21,51 @@
     {{ plan.duration_days }} Days · {{ plan.total_meals }} Meals
   </div>
 
-  <h3 class="fs-4 fw-bold mb-2">{{ plan.name }}</h3>
+  <h3 class="fs-4 fw-bold mb-2 text-dark">{{ plan.name }}</h3>
 
   <p class="text-secondary small mb-3">
     {{ plan.description }}
   </p>
 
   <div class="my-2">
-    <span class="fs-2 fw-bold text-success">₹{{ plan.price|floatformat:0 }}</span>
+    <span class="fs-2 fw-bold text-success">₹{{ plan.price|floatformat:2 }}</span>
     <span class="text-muted small">/ {{ plan.duration_days }} days</span>
   </div>
 
   {% if plan.savings %}
-  <div class="p-2 px-3 rounded-pill bg-light border d-inline-flex align-items-center gap-2 small text-success fw-semibold mb-3">
-    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-    <span>Genuine Savings: ₹{{ plan.savings|floatformat:0 }} off</span>
-  </div>
+    <div class="p-2 px-3 rounded-pill bg-light border d-inline-flex align-items-center gap-2 small text-success fw-semibold mb-3">
+      <i class="bi bi-tag-fill"></i>
+      <span>Genuine Savings: ₹{{ plan.savings|floatformat:2 }} off</span>
+    </div>
   {% else %}
-  <div class="mb-3"></div>
+    <div class="mb-3"></div>
   {% endif %}
 
   <ul class="list-unstyled small d-flex flex-column gap-2 mb-4">
     {% for feat in plan.get_features_list %}
-    <li class="d-flex align-items-center gap-2">
-      <span class="text-success fw-bold d-inline-flex align-items-center justify-content-center bg-success-subtle rounded-circle" style="width: 18px; height: 18px; font-size: 0.7rem;">
-        ✓
-      </span>
-      <span>{{ feat }}</span>
-    </li>
+      <li class="d-flex align-items-center gap-2">
+        <span class="text-success fw-bold d-inline-flex align-items-center justify-content-center bg-success-subtle rounded-circle flex-shrink-0" style="width: 20px; height: 20px; font-size: 0.75rem;">
+          <i class="bi bi-check-lg"></i>
+        </span>
+        <span class="text-dark">{{ feat }}</span>
+      </li>
     {% endfor %}
   </ul>
 
   <div class="border-top pt-3 mt-auto">
-    <div class="small text-muted mb-3 d-flex align-items-center gap-1">
-      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <div class="small text-muted mb-3 d-flex align-items-center gap-1.5">
+      <i class="bi bi-calendar-event text-warning"></i>
       <span><strong>Schedule:</strong> {{ plan.delivery_schedule }}</span>
     </div>
 
     {% if plan.chef %}
-    <a href="{% url 'customer:subscribe_direct' chef_id=plan.chef.pk plan_id=plan.pk %}" class="btn btn-tt-primary w-100 py-2">
-      Subscribe with {{ plan.chef.business_name }} →
-    </a>
+      <a href="{% url 'customer:subscribe_direct' chef_id=plan.chef.pk plan_id=plan.pk %}" class="btn btn-warning tt-btn-gold w-100 py-2 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-1 shadow-sm">
+        <span>Subscribe with {{ plan.chef.business_name }}</span> <i class="bi bi-arrow-right"></i>
+      </a>
     {% else %}
-    <a href="{% url 'customer:subscribe' %}?plan_id={{ plan.pk }}" class="btn btn-tt-primary w-100 py-2">
-      Choose Chef & Subscribe →
-    </a>
+      <a href="{% url 'customer:subscribe' %}?plan_id={{ plan.pk }}" class="btn btn-warning tt-btn-gold w-100 py-2 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-1 shadow-sm">
+        <span>Choose Chef & Subscribe</span> <i class="bi bi-arrow-right"></i>
+      </a>
     {% endif %}
   </div>
 </div>

@@ -3,14 +3,17 @@
 
 {% block title %}Payment #{{ order.order_number }} | TiffinTrail Admin Console{% endblock %}
 {% block eyebrow %}TRANSACTION LEDGER & AUDIT{% endblock %}
-{% block page_heading %}Payment Details: {{ order.order_number }}{% endblock %}
+{% block page_heading %}Payment Details: #{{ order.order_number }}{% endblock %}
 
 {% block content %}
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-  <a href="{% url 'adminpanel:payments' %}" class="btn btn-sm btn-outline-secondary">← Back to Payments</a>
+  <a href="{% url 'adminpanel:payments' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+    <i class="bi bi-arrow-left"></i> Back to Payments
+  </a>
   <div class="d-flex align-items-center gap-2">
-    <span class="text-muted small">Payment Status:</span>
-    <span class="badge {% if order.payment_status == 'paid' %}bg-success{% elif order.payment_status == 'pending' %}bg-warning text-dark{% else %}bg-danger{% endif %} fs-6 px-3 py-1">
+    <span class="text-muted small fw-medium">Settlement Status:</span>
+    <span class="badge {% if order.payment_status == 'paid' %}bg-success text-white{% elif order.payment_status == 'pending' %}bg-warning text-dark{% else %}bg-danger text-white{% endif %} fs-6 px-3 py-1.5">
+      <i class="bi {% if order.payment_status == 'paid' %}bi-check-circle-fill{% elif order.payment_status == 'pending' %}bi-clock{% else %}bi-exclamation-circle{% endif %} me-1"></i>
       {{ order.get_payment_status_display }}
     </span>
   </div>
@@ -19,64 +22,87 @@
 <div class="row g-4 justify-content-center">
   <div class="col-lg-8">
     <div class="tt-card">
-      <div class="tt-card-header">
-        <h5 class="tt-card-title"> Transaction Audit Ledger</h5>
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-receipt text-warning"></i> Transaction Audit Ledger
+        </h5>
+        <span class="badge bg-light text-dark border font-monospace">Ref: {{ order.order_number }}</span>
       </div>
       <div class="tt-card-body">
-        <div class="p-3 bg-light rounded border mb-4">
+        <!-- Transaction Information Box -->
+        <div class="p-3 rounded-3 border mb-4" style="background-color: var(--tt-surface-muted);">
           <div class="row g-3">
             <div class="col-sm-6">
-              <div class="text-muted small">Associated Order:</div>
-              <strong><a href="{% url 'adminpanel:order_detail' order.id %}" class="text-dark">{{ order.order_number }}</a></strong>
+              <div class="text-secondary small">Associated Order:</div>
+              <strong class="text-dark">
+                <a href="{% url 'adminpanel:order_detail' order.id %}" class="text-decoration-none fw-bold" style="color: var(--tt-charcoal);">
+                  #{{ order.order_number }} <i class="bi bi-box-arrow-up-right small"></i>
+                </a>
+              </strong>
             </div>
             <div class="col-sm-6">
-              <div class="text-muted small">Transaction Date:</div>
-              <strong>{{ order.created_at|date:"d F Y, h:i A" }}</strong>
+              <div class="text-secondary small">Transaction Timestamp:</div>
+              <strong class="text-dark">{{ order.created_at|date:"d F Y, h:i A" }}</strong>
             </div>
             <div class="col-sm-6">
-              <div class="text-muted small">Paying Customer:</div>
-              <strong>{{ order.recipient_name }}</strong>
+              <div class="text-secondary small">Paying Customer:</div>
+              <strong class="text-dark">{{ order.recipient_name }}</strong>
+              {% if order.recipient_phone %}
+                <span class="text-muted small">({{ order.recipient_phone }})</span>
+              {% endif %}
             </div>
             <div class="col-sm-6">
-              <div class="text-muted small">Recipient Chef Kitchen:</div>
-              <strong>{{ order.chef.business_name }}</strong>
+              <div class="text-secondary small">Recipient Chef Kitchen:</div>
+              <strong class="text-dark">
+                <a href="{% url 'adminpanel:chef_detail' order.chef.id %}" class="text-decoration-none text-dark">
+                  <i class="bi bi-shop me-1 text-secondary"></i>{{ order.chef.business_name }}
+                </a>
+              </strong>
             </div>
             <div class="col-sm-6">
-              <div class="text-muted small">Payment Gateway / Method:</div>
-              <strong>{{ order.get_payment_method_display }}</strong>
+              <div class="text-secondary small">Payment Gateway / Mode:</div>
+              <span class="badge bg-white text-dark border mt-1">
+                <i class="bi {% if order.payment_method == 'online' %}bi-credit-card{% else %}bi-cash-coin{% endif %} me-1"></i>
+                {{ order.get_payment_method_display }}
+              </span>
             </div>
             <div class="col-sm-6">
-              <div class="text-muted small">Transaction ID:</div>
-              <span class="font-monospace small">{{ order.payment_transaction_id|default:"COD / System Generated" }}</span>
+              <div class="text-secondary small">Transaction ID:</div>
+              <span class="font-monospace text-dark small bg-white px-2 py-1 rounded border d-inline-block mt-1">
+                {{ order.payment_transaction_id|default:"COD / Internal Settlement" }}
+              </span>
             </div>
           </div>
         </div>
 
-        <h6 class="fw-bold mb-3">Order Cost Accounting Breakdown</h6>
-        <div class="table-responsive">
-          <table class="table table-sm table-bordered">
+        <!-- Cost Breakdown Table -->
+        <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: var(--tt-charcoal);">
+          <i class="bi bi-calculator text-secondary"></i> Order Cost Accounting Breakdown
+        </h6>
+        <div class="tt-table-responsive border rounded-3 mb-0">
+          <table class="table table-sm mb-0">
             <tbody>
               <tr>
-                <td class="text-muted">Food Meals Subtotal</td>
-                <td class="text-end">₹{{ order.total_amount|floatformat:2 }}</td>
+                <td class="text-secondary py-2.5 ps-3">Food Meals Subtotal</td>
+                <td class="text-end py-2.5 pe-3 fw-medium text-dark">₹{{ order.total_amount|floatformat:2 }}</td>
               </tr>
               <tr>
-                <td class="text-muted">Delivery Charges</td>
-                <td class="text-end">₹{{ order.delivery_fee|floatformat:2 }}</td>
+                <td class="text-secondary py-2.5 ps-3">Delivery Charges</td>
+                <td class="text-end py-2.5 pe-3 fw-medium text-dark">₹{{ order.delivery_fee|floatformat:2 }}</td>
               </tr>
               <tr>
-                <td class="text-muted">Taxes (GST 5%)</td>
-                <td class="text-end">₹{{ order.tax_amount|floatformat:2 }}</td>
+                <td class="text-secondary py-2.5 ps-3">Taxes (GST 5%)</td>
+                <td class="text-end py-2.5 pe-3 fw-medium text-dark">₹{{ order.tax_amount|floatformat:2 }}</td>
               </tr>
               {% if order.discount_amount > 0 %}
-                <tr class="text-success">
-                  <td>Promotional Discount</td>
-                  <td class="text-end">-₹{{ order.discount_amount|floatformat:2 }}</td>
+                <tr class="text-success" style="background: rgba(22, 163, 74, 0.05);">
+                  <td class="py-2.5 ps-3 fw-medium">Promotional Discount Applied</td>
+                  <td class="text-end py-2.5 pe-3 fw-bold">-₹{{ order.discount_amount|floatformat:2 }}</td>
                 </tr>
               {% endif %}
-              <tr class="table-light fw-bold fs-6">
-                <td>Total Collected from Customer</td>
-                <td class="text-end text-success">₹{{ order.final_amount|floatformat:2 }}</td>
+              <tr class="fw-bold fs-6" style="background-color: var(--tt-surface-muted);">
+                <td class="py-3 ps-3 text-dark">Total Collected from Customer</td>
+                <td class="text-end py-3 pe-3 text-success fs-5">₹{{ order.final_amount|floatformat:2 }}</td>
               </tr>
             </tbody>
           </table>

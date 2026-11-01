@@ -8,9 +8,9 @@
   <div class="container">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-1 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'customer:menu' %}" class="text-decoration-none" style="color: var(--tt-primary);">Menu</a></li>
-        <li class="breadcrumb-item active text-muted" aria-current="page">{{ meal.name }}</li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none text-muted">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:menu' %}" class="text-decoration-none text-muted">Menu</a></li>
+        <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ meal.name }}</li>
       </ol>
     </nav>
   </div>
@@ -20,24 +20,24 @@
   <div class="row g-5 align-items-center">
     <!-- Left Column: Media / Photo -->
     <div class="col-lg-6">
-      <div class="rounded-4 overflow-hidden border shadow-sm position-relative" style="background: var(--tt-cream); min-height: 420px; border-color: var(--tt-border) !important;">
+      <div class="rounded-4 overflow-hidden border shadow-sm position-relative" style="background: #F7F5F0; min-height: 420px;">
         {% if meal.image %}
-        <img src="{{ meal.image.url }}" alt="{{ meal.name }}" class="w-100 h-100" style="object-fit: cover; min-height: 420px;">
+          <img src="{{ meal.image.url }}" alt="{{ meal.name }}" class="w-100 h-100" style="object-fit: cover; min-height: 420px; display: block;">
         {% else %}
-        <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100 p-5 text-center" style="min-height: 420px; background: linear-gradient(135deg, var(--tt-cream) 0%, #fef3e2 100%);">
-          <div class="rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px; background: white; color: var(--tt-primary); box-shadow: 0 10px 25px rgba(20, 107, 58, 0.12);">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+          <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100 p-5 text-center" style="min-height: 420px; background: linear-gradient(135deg, #F7F5F0 0%, #fef3e2 100%);">
+            <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 bg-white shadow-sm" style="width: 100px; height: 100px; color: #253746;">
+              <i class="bi bi-egg-fried fs-1 text-warning"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-1">Authentic Home Recipe</h5>
+            <span class="text-muted small">Prepared freshly upon confirmed subscription</span>
           </div>
-          <h5 class="fw-bold text-dark mb-1">Authentic Home Recipe</h5>
-          <span class="text-muted small">Prepared freshly upon confirmed subscription</span>
-        </div>
         {% endif %}
 
-        <div class="position-absolute top-0 start-0 m-3 d-flex align-items-center gap-2 bg-white px-3 py-1.5 rounded-pill shadow-sm border" style="border-color: var(--tt-border) !important;">
-          <span class="tt-diet-indicator {% if meal.is_veg %}veg{% else %}non-veg{% endif %}">
-            <span class="dot"></span>
+        <div class="position-absolute top-0 start-0 m-3 d-flex align-items-center gap-2 bg-white px-3 py-1.5 rounded-pill shadow-sm border">
+          <span class="{% if meal.is_veg %}tt-badge-veg{% else %}tt-badge-nonveg{% endif %}">
+            <span class="{% if meal.is_veg %}tt-veg-icon{% else %}tt-nonveg-icon{% endif %}"></span>
+            <span>{{ meal.dietary_label }}</span>
           </span>
-          <span class="fw-semibold small text-dark">{{ meal.dietary_label }}</span>
         </div>
       </div>
     </div>
@@ -52,22 +52,23 @@
       <h1 class="h2 fw-bold mb-2 text-dark">{{ meal.name }}</h1>
 
       <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
-        <div class="tt-star-rating fw-bold small">
-          ★ {{ meal.rating }}
+        <div class="d-inline-flex align-items-center gap-1 fw-bold text-dark small bg-white px-2.5 py-1 rounded-pill border">
+          <i class="bi bi-star-fill text-warning"></i>
+          <span>{{ meal.rating }}</span>
         </div>
         <span class="text-muted small">·</span>
         <div class="d-inline-flex align-items-center gap-1 text-muted small">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <i class="bi bi-clock"></i>
           <span>{{ meal.preparation_time }} mins prep time</span>
         </div>
         <span class="text-muted small">·</span>
         <div class="d-inline-flex align-items-center gap-1 text-muted small">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--tt-accent)" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+          <i class="bi bi-fire text-warning"></i>
           <span>~{{ meal.calories }} kcal</span>
         </div>
       </div>
 
-      <div class="h3 fw-bold mb-3" style="color: var(--tt-primary);">
+      <div class="h3 fw-bold mb-3 text-success">
         ₹{{ meal.price|floatformat:2 }}
       </div>
 
@@ -76,62 +77,60 @@
       </p>
 
       {% if meal.ingredients %}
-      <div class="p-3 bg-white rounded-3 border mb-4" style="border-color: var(--tt-border) !important;">
-        <strong class="d-block small text-muted text-uppercase fw-bold mb-1">Key Ingredients & Spices:</strong>
-        <p class="small text-dark mb-0">{{ meal.ingredients }}</p>
-      </div>
+        <div class="p-3 bg-white rounded-3 border mb-4">
+          <strong class="d-block small text-muted text-uppercase fw-bold mb-1">Key Ingredients & Spices:</strong>
+          <p class="small text-dark mb-0">{{ meal.ingredients }}</p>
+        </div>
       {% endif %}
 
       <!-- Chef Info Card -->
-      <div class="p-3 rounded-4 border d-flex align-items-center justify-content-between mb-4" style="background: var(--tt-cream); border-color: var(--tt-border) !important;">
+      <div class="p-3 rounded-4 border d-flex align-items-center justify-content-between mb-4 bg-white">
         <div class="d-flex align-items-center gap-3">
           {% if meal.chef.profile_image %}
-          <img src="{{ meal.chef.profile_image.url }}" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;" alt="{{ meal.chef.business_name }}">
+            <img src="{{ meal.chef.profile_image.url }}" class="rounded-circle border" style="width: 48px; height: 48px; object-fit: cover;" alt="{{ meal.chef.business_name }}">
           {% else %}
-          <div class="tt-avatar-initials" style="width: 48px; height: 48px; font-size: 1.1rem; background-color: var(--tt-primary); color: white;">
-            {{ meal.chef.business_name|slice:":1"|upper }}
-          </div>
+            <div class="rounded-circle bg-dark text-warning fw-bold d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.1rem;">
+              {{ meal.chef.business_name|slice:":1"|upper }}
+            </div>
           {% endif %}
           <div>
             <div class="fw-bold text-dark">{{ meal.chef.business_name }}</div>
-            <small class="text-muted d-block">Delivers to: {{ meal.chef.service_areas|truncatechars:32 }}</small>
+            <small class="text-muted d-block"><i class="bi bi-geo-alt-fill text-danger me-1"></i>Delivers to: {{ meal.chef.service_areas|truncatechars:32 }}</small>
           </div>
         </div>
-        <a href="{% url 'customer:chef_detail' meal.chef.pk %}" class="btn btn-sm btn-tt-outline">View Kitchen</a>
+        <a href="{% url 'customer:chef_detail' meal.chef.pk %}" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1.5 fw-semibold">View Kitchen</a>
       </div>
 
       <!-- Add to Cart Form -->
       {% if meal.is_available %}
-      <form action="{% url 'customer:cart_add' meal.pk %}" method="post">
-        {% csrf_token %}
-        <div class="d-flex align-items-center gap-3 mb-4">
-          <div class="tt-qty-input-group rounded-3 p-1 bg-white border" style="border-color: var(--tt-border) !important;">
-            <button type="button" data-qty-action="decrement" data-target="mealQtyInput" class="btn btn-sm btn-light border-0 fw-bold rounded-2 px-2.5">-</button>
-            <input type="number" id="mealQtyInput" name="quantity" value="1" min="1" max="20" class="border-0 text-center fw-bold" style="width: 45px;">
-            <button type="button" data-qty-action="increment" data-target="mealQtyInput" class="btn btn-sm btn-light border-0 fw-bold rounded-2 px-2.5">+</button>
-          </div>
+        <form action="{% url 'customer:cart_add' meal.pk %}" method="post">
+          {% csrf_token %}
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="d-flex align-items-center rounded-3 p-1 bg-white border">
+              <button type="button" data-qty-action="decrement" data-target="mealQtyInput" class="btn btn-sm btn-light border-0 fw-bold rounded-2 px-2.5">-</button>
+              <input type="number" id="mealQtyInput" name="quantity" value="1" min="1" max="20" class="border-0 text-center fw-bold text-dark" style="width: 45px;">
+              <button type="button" data-qty-action="increment" data-target="mealQtyInput" class="btn btn-sm btn-light border-0 fw-bold rounded-2 px-2.5">+</button>
+            </div>
 
-          <button type="submit" class="btn btn-tt-primary px-4 py-2.5 fs-6 rounded-3 d-inline-flex align-items-center gap-2 shadow-sm">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-            </svg>
-            <span>Add to My Cart</span>
-          </button>
-        </div>
-      </form>
+            <button type="submit" class="btn btn-warning tt-btn-gold px-4 py-2.5 fs-6 rounded-pill d-inline-flex align-items-center gap-2 shadow-sm fw-bold">
+              <i class="bi bi-bag-plus"></i>
+              <span>Add to My Cart</span>
+            </button>
+          </div>
+        </form>
       {% else %}
-      <div class="alert alert-secondary mb-4 rounded-3 border-0" style="background-color: #f1f3f1;">
-        This dish is currently fully booked for today's lunch schedule. Please explore other dishes by Chef {{ meal.chef.business_name }}.
-      </div>
+        <div class="alert alert-secondary mb-4 rounded-3 border-0 bg-light text-dark">
+          This dish is currently fully booked for today's schedule. Please explore other dishes by Chef {{ meal.chef.business_name }}.
+        </div>
       {% endif %}
 
       <div class="d-flex align-items-center gap-4 text-muted small pt-2 border-top">
         <span class="d-flex align-items-center gap-1.5">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tt-primary)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <i class="bi bi-shield-check text-success"></i>
           Hygienic Thermal Packaging
         </span>
         <span class="d-flex align-items-center gap-1.5">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tt-primary)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <i class="bi bi-check-circle-fill text-success"></i>
           Fresh Small-Batch Cooking
         </span>
       </div>
@@ -140,16 +139,48 @@
 
   <!-- Related meals by chef -->
   {% if related_meals %}
-  <div class="mt-5 pt-4 border-top">
-    <h3 class="h4 fw-bold mb-4 text-dark">More Homestyle Meals by {{ meal.chef.business_name }}</h3>
-    <div class="row g-4">
-      {% for rel in related_meals %}
-      <div class="col-md-3">
-        {% include 'customer/partials/meal_card.html' with meal=rel %}
+    <div class="mt-5 pt-4 border-top">
+      <h3 class="h4 fw-bold mb-4 text-dark">More Homestyle Meals by {{ meal.chef.business_name }}</h3>
+      <div class="row g-4">
+        {% for rel in related_meals %}
+          <div class="col-md-3">
+            {% include 'customer/partials/meal_card.html' with meal=rel %}
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-  </div>
+  {% endif %}
+
+  <!-- Meal Reviews -->
+  {% if reviews %}
+    <div class="mt-5 pt-4 border-top">
+      <h3 class="h4 fw-bold mb-4 text-dark d-flex align-items-center gap-2">
+        <i class="bi bi-chat-heart-fill text-warning"></i>
+        Customer Reviews for {{ meal.name }}
+      </h3>
+      <div class="row g-3">
+        {% for rev in reviews %}
+          <div class="col-md-6">
+            <div class="p-3 bg-white rounded-3 border h-100 shadow-xs">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <strong class="text-dark">{{ rev.user.get_full_name|default:rev.user.username }}</strong>
+                <div class="text-warning small">
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= rev.rating %}
+                      <i class="bi bi-star-fill text-warning"></i>
+                    {% else %}
+                      <i class="bi bi-star text-muted"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+              <p class="text-secondary small mb-1 fst-italic">&ldquo;{{ rev.comment }}&rdquo;</p>
+              <span class="text-muted" style="font-size: 0.72rem;">{{ rev.created_at|date:"d M Y" }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
   {% endif %}
 </div>
 {% endblock %}

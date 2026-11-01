@@ -3,14 +3,16 @@
 
 {% block title %}Admin Profile | TiffinTrail Admin Console{% endblock %}
 {% block eyebrow %}ACCOUNT DETAILS{% endblock %}
-{% block page_heading %}Admin Profile{% endblock %}
+{% block page_heading %}Administrator Profile{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-lg-8">
     <div class="tt-card">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Administrator Profile Information</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-person-circle text-warning"></i> Administrator Profile Information
+        </h5>
       </div>
       <div class="tt-card-body">
         <form method="post" novalidate>
@@ -31,22 +33,29 @@
             <div class="col-md-6">
               <label class="tt-form-label">First Name *</label>
               {{ form.first_name }}
+              {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-md-6">
               <label class="tt-form-label">Last Name *</label>
               {{ form.last_name }}
+              {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
             </div>
 
             <div class="col-12">
               <label class="tt-form-label">Email Address *</label>
               {{ form.email }}
+              {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
             </div>
           </div>
 
-          <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-            <a href="{% url 'adminpanel:settings' %}" class="btn btn-outline-secondary"> Change Password</a>
-            <button type="submit" class="btn btn-success fw-semibold px-4">Save Profile</button>
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-3 border-top">
+            <a href="{% url 'adminpanel:settings' %}" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1.5">
+              <i class="bi bi-key"></i> Change Password
+            </a>
+            <button type="submit" class="btn btn-success fw-semibold px-4 d-inline-flex align-items-center gap-1.5 shadow-sm">
+              <i class="bi bi-check2-circle"></i> Save Profile
+            </button>
           </div>
         </form>
       </div>

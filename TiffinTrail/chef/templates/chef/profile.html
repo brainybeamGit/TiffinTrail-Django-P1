@@ -10,14 +10,14 @@
   <!-- Left Column: Chef Card & Public Preview -->
   <div class="col-lg-4">
     <!-- Profile Showcase Card -->
-    <div class="tt-card text-center overflow-hidden">
+    <div class="tt-card text-center overflow-hidden mb-4">
       <!-- Cover banner -->
-      <div style="height: 140px; background: linear-gradient(135deg, #1b5e20, #388e3c); position: relative; overflow: hidden;">
+      <div style="height: 140px; background: linear-gradient(135deg, #253746, #344859); position: relative; overflow: hidden;">
         {% if chef.cover_image %}
           <img src="{{ chef.cover_image.url }}" alt="Cover" style="width: 100%; height: 100%; object-fit: cover;">
         {% else %}
           <div class="d-flex align-items-center justify-content-center h-100 w-100 text-white-50 small">
-            <span>No Cover Banner Set</span>
+            <span><i class="bi bi-image me-1"></i>No Cover Banner Set</span>
           </div>
         {% endif %}
         <!-- Cover Upload Button Overlay -->
@@ -32,64 +32,89 @@
           {% if chef.profile_image %}
             <img src="{{ chef.profile_image.url }}" alt="{{ chef.business_name }}" class="rounded-circle shadow border border-3 border-white" style="width: 100px; height: 100px; object-fit: cover;">
           {% else %}
-            <div class="rounded-circle shadow border border-3 border-white mx-auto d-flex align-items-center justify-content-center bg-success text-white fw-bold fs-2" style="width: 100px; height: 100px;">
+            <div class="rounded-circle shadow border border-3 border-white mx-auto d-flex align-items-center justify-content-center bg-dark text-warning fw-bold fs-2" style="width: 100px; height: 100px;">
               {{ chef.business_name|slice:":1"|default:"C" }}
             </div>
           {% endif %}
-          <button type="button" class="btn btn-sm btn-primary rounded-circle position-absolute bottom-0 end-0 p-1 shadow-sm d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;" data-bs-toggle="modal" data-bs-target="#uploadImagesModal" title="Change Profile Photo">
-            <i class="bi bi-camera me-1"></i>
+          <button type="button" class="btn btn-sm btn-warning rounded-circle position-absolute bottom-0 end-0 p-1 shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" data-bs-toggle="modal" data-bs-target="#uploadImagesModal" title="Change Profile Photo">
+            <i class="bi bi-camera-fill text-dark"></i>
           </button>
         </div>
 
-        <h4 class="fw-bold mb-1">{{ chef.business_name }}</h4>
+        <h4 class="fw-bold mb-1 text-dark">{{ chef.business_name }}</h4>
         <p class="text-muted small mb-2">{{ chef.user.get_full_name|default:chef.user.username }}</p>
 
         <!-- Rating & Badges -->
-        <div class="d-flex justify-content-center align-items-center gap-2 mb-3">
-          <span class="badge bg-warning text-dark fw-bold"><i class="bi bi-star-fill text-warning me-1"></i>{{ chef.rating }} ({{ chef.review_count }} reviews)</span>
+        <div class="d-flex justify-content-center align-items-center gap-2 mb-3 flex-wrap">
+          <span class="badge bg-warning-subtle text-dark border border-warning-subtle fw-bold">
+            <i class="bi bi-star-fill text-warning me-1"></i>{{ chef.rating }} ({{ chef.review_count }} reviews)
+          </span>
           {% if chef.is_approved %}
-            <span class="badge bg-success">Verified Chef ✓</span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle">
+              <i class="bi bi-patch-check-fill me-1"></i>Verified Chef
+            </span>
           {% else %}
-            <span class="badge bg-warning text-dark">Verification Pending</span>
+            <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+              <i class="bi bi-clock-history me-1"></i>Verification Pending
+            </span>
           {% endif %}
         </div>
 
-        <div class="d-flex justify-content-center gap-2">
-          <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#uploadImagesModal">
-            <i class="bi bi-camera me-1"></i>Change Photos
+        <div class="d-flex justify-content-center gap-2 flex-wrap">
+          <button type="button" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#uploadImagesModal">
+            <i class="bi bi-camera"></i> Photos
           </button>
-          <a href="{% url 'chef:profile_edit' %}" class="btn btn-sm btn-outline-primary">Edit Profile</a>
-          <a href="{% url 'customer:chef_detail' chef.id %}" target="_blank" class="btn btn-sm btn-outline-secondary">Public View ↗</a>
+          <a href="{% url 'chef:profile_edit' %}" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1">
+            <i class="bi bi-pencil-square"></i> Edit Profile
+          </a>
+          <a href="{% url 'customer:chef_detail' chef.id %}" target="_blank" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+            <span>Public View</span> <i class="bi bi-box-arrow-up-right small"></i>
+          </a>
         </div>
       </div>
 
       <div class="border-top p-3 bg-light text-start small">
-        <div class="mb-2"><strong>FSSAI License:</strong> <span class="font-monospace">{{ chef.fssai_license }}</span></div>
-        <div class="mb-2"><strong>Platform Commission:</strong> {{ chef.commission_rate }}%</div>
-        <div><strong>Member Since:</strong> {{ chef.created_at|date:"F Y" }}</div>
+        <div class="mb-2 d-flex justify-content-between">
+          <span class="text-muted">FSSAI License:</span>
+          <span class="font-monospace text-dark fw-bold">{{ chef.fssai_license }}</span>
+        </div>
+        <div class="mb-2 d-flex justify-content-between">
+          <span class="text-muted">Platform Commission:</span>
+          <span class="text-dark fw-semibold">{{ chef.commission_rate }}%</span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span class="text-muted">Member Since:</span>
+          <span class="text-dark fw-semibold">{{ chef.created_at|date:"F Y" }}</span>
+        </div>
       </div>
     </div>
 
     <!-- Operating Hours Card -->
     <div class="tt-card">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Operating Schedule</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-clock-history text-warning"></i> Operating Schedule
+        </h5>
       </div>
       <div class="tt-card-body small">
         <div class="d-flex justify-content-between py-2 border-bottom">
           <span class="text-muted">Working Days:</span>
-          <strong>{{ chef.working_days|default:"Monday – Saturday" }}</strong>
+          <strong class="text-dark">{{ chef.working_days|default:"Monday – Saturday" }}</strong>
         </div>
         <div class="d-flex justify-content-between py-2 border-bottom">
           <span class="text-muted">Kitchen Hours:</span>
-          <strong>{{ chef.working_hours|default:"8:00 AM – 8:00 PM" }}</strong>
+          <strong class="text-dark">{{ chef.working_hours|default:"8:00 AM – 8:00 PM" }}</strong>
         </div>
-        <div class="d-flex justify-content-between py-2">
+        <div class="d-flex justify-content-between py-2 align-items-center">
           <span class="text-muted">Orders Status:</span>
           {% if chef.is_accepting_orders %}
-            <strong class="text-success">Accepting Orders</strong>
+            <span class="badge bg-success-subtle text-success border border-success-subtle">
+              <span class="tt-status-dot me-1"></span> Accepting Orders
+            </span>
           {% else %}
-            <strong class="text-danger">Temporarily Paused</strong>
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+              <span class="tt-status-dot inactive me-1"></span> Temporarily Paused
+            </span>
           {% endif %}
         </div>
       </div>
@@ -98,22 +123,28 @@
 
   <!-- Right Column: Kitchen Information & Specialties -->
   <div class="col-lg-8">
-    <div class="tt-card">
+    <div class="tt-card mb-4">
       <div class="tt-card-header d-flex justify-content-between align-items-center">
-        <h5 class="tt-card-title"> Culinary Bio & Heritage</h5>
-        <a href="{% url 'chef:profile_edit' %}" class="btn btn-sm btn-outline-primary">Edit Details</a>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-book-half text-warning"></i> Culinary Bio & Heritage
+        </h5>
+        <a href="{% url 'chef:profile_edit' %}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-pencil"></i> Edit Details
+        </a>
       </div>
       <div class="tt-card-body">
-        <p class="text-secondary lead fs-6">
+        <p class="text-secondary fs-6 mb-0">
           {{ chef.bio|default:"No bio provided yet. Click 'Edit Profile' to introduce your cooking heritage and story to diners." }}
         </p>
       </div>
     </div>
 
     <!-- Kitchen Specialties & Cuisines -->
-    <div class="tt-card">
+    <div class="tt-card mb-4">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Cuisines & Signature Dishes</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-egg-fried text-warning"></i> Cuisines & Signature Dishes
+        </h5>
       </div>
       <div class="tt-card-body">
         <div class="mb-3">
@@ -134,7 +165,7 @@
 
         <div>
           <h6 class="text-muted text-uppercase small fw-bold">Cooking & Packaging Standards</h6>
-          <p class="mb-0 text-secondary small">{{ chef.preparation_preferences }}</p>
+          <p class="mb-0 text-secondary small">{{ chef.preparation_preferences|default:"Prepared fresh daily with highest hygiene standards." }}</p>
         </div>
       </div>
     </div>
@@ -142,19 +173,23 @@
     <!-- Location & Delivery Areas -->
     <div class="tt-card">
       <div class="tt-card-header">
-        <h5 class="tt-card-title"> Location & Service Coverage</h5>
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-geo-alt-fill text-warning"></i> Location & Service Coverage
+        </h5>
       </div>
       <div class="tt-card-body">
         <div class="mb-3">
           <h6 class="text-muted text-uppercase small fw-bold">Kitchen Address</h6>
-          <p class="mb-0">{{ chef.kitchen_address }}</p>
+          <p class="mb-0 text-dark">{{ chef.kitchen_address }}</p>
         </div>
 
         <div>
           <h6 class="text-muted text-uppercase small fw-bold">Covered Delivery Areas</h6>
           <div class="d-flex flex-wrap gap-2 mt-2">
             {% for area in chef.get_service_areas_list %}
-              <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-7"> {{ area }}</span>
+              <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-7">
+                <i class="bi bi-pin-map-fill me-1"></i>{{ area }}
+              </span>
             {% empty %}
               <span class="text-muted small">No service areas specified.</span>
             {% endfor %}
@@ -169,8 +204,10 @@
 <div class="modal fade" id="uploadImagesModal" tabindex="-1" aria-labelledby="uploadImagesModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title" id="uploadImagesModalLabel"><i class="bi bi-camera me-1"></i>Kitchen Photos & Branding</h5>
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fs-6 fw-bold text-white d-flex align-items-center gap-2" id="uploadImagesModalLabel">
+          <i class="bi bi-camera text-warning"></i> Kitchen Photos & Branding
+        </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="{% url 'chef:upload_images' %}" method="post" enctype="multipart/form-data">
@@ -178,9 +215,9 @@
         <div class="modal-body">
           <!-- Cover Banner Upload -->
           <div class="mb-4">
-            <label class="form-label fw-bold small">Kitchen Cover Banner (Displayed on Chef Card & Profile Header)</label>
+            <label class="form-label fw-bold small text-dark">Kitchen Cover Banner (Displayed on Chef Card & Profile Header)</label>
             <input type="file" name="cover_image" accept="image/*" class="form-control">
-            <div class="form-text small">Recommended: Horizontal landscape image (16:9 or wide format). This banner is shown on the public discovery card.</div>
+            <div class="form-text small">Recommended: Horizontal landscape image (16:9 ratio, max 5MB).</div>
             {% if chef.cover_image %}
               <div class="mt-2 d-flex align-items-center gap-2">
                 <span class="small text-muted">Current:</span>
@@ -191,7 +228,7 @@
 
           <!-- Profile Photo Upload -->
           <div class="mb-3">
-            <label class="form-label fw-bold small">Chef Profile Photo / Kitchen Logo</label>
+            <label class="form-label fw-bold small text-dark">Chef Profile Photo / Kitchen Logo</label>
             <input type="file" name="profile_image" accept="image/*" class="form-control">
             <div class="form-text small">Recommended: Square headshot or logo for your circular badge.</div>
             {% if chef.profile_image %}
@@ -204,7 +241,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-success btn-sm fw-bold">Save Images</button>
+          <button type="submit" class="btn btn-warning tt-btn-gold btn-sm fw-bold">Save Images</button>
         </div>
       </form>
     </div>

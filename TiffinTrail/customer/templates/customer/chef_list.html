@@ -1,24 +1,30 @@
 {% extends 'customer/base.html' %}
 {% load static %}
 
-{% block title %}Find Home Chefs | TiffinTrail{% endblock %}
+{% block title %}Explore Verified Home Chefs | TiffinTrail{% endblock %}
 
 {% block content %}
+<!-- Page Header -->
 <div class="py-4 border-bottom bg-white">
   <div class="container">
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-1 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none" style="color: var(--tt-primary);">Home</a></li>
-        <li class="breadcrumb-item active text-muted" aria-current="page">Explore Chefs</li>
+      <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item">
+          <a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a>
+        </li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">Explore Home Chefs</li>
       </ol>
     </nav>
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
       <div>
-        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-text-main);">Explore Local Home Chefs</h1>
-        <p class="text-muted small mb-0">Browse verified neighborhood cooks preparing authentic regional homemade food.</p>
+        <h1 class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">Explore Verified Home Chefs</h1>
+        <p class="text-muted small mb-0">Browse certified neighborhood home cooks preparing authentic regional homemade meals with hygienic kitchen standards.</p>
       </div>
-      <div class="badge bg-light text-dark border px-3 py-2 rounded-pill small fw-normal">
-        Showing <strong class="text-dark">{{ page_obj.paginator.count }}</strong> approved chef{% if page_obj.paginator.count != 1 %}s{% endif %}
+      <div>
+        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill small fw-normal d-inline-flex align-items-center gap-1.5 shadow-xs">
+          <i class="bi bi-shield-check text-success"></i>
+          Showing <strong class="text-dark ms-1">{{ page_obj.paginator.count }}</strong> approved kitchen{% if page_obj.paginator.count != 1 %}s{% endif %}
+        </span>
       </div>
     </div>
   </div>
@@ -28,14 +34,16 @@
   <div class="row g-4">
     <!-- Filter Sidebar -->
     <div class="col-lg-3">
-      <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 90px; border: 1px solid var(--tt-border) !important;">
+      <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 90px; border: 1px solid var(--tt-border) !important; background: #ffffff;">
         <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
           <h5 class="fw-bold mb-0 fs-6 text-dark d-flex align-items-center gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tt-primary)" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-            Filters & Search
+            <i class="bi bi-funnel-fill text-warning"></i>
+            Filter & Search
           </h5>
-          {% if search_query or cuisine_filter or rating_filter or max_price %}
-          <a href="{% url 'customer:chefs' %}" class="small text-danger text-decoration-none fw-semibold">Reset All</a>
+          {% if search_query or cuisine_filter or rating_filter or max_price or sort_by %}
+          <a href="{% url 'customer:chefs' %}" class="small text-danger text-decoration-none fw-semibold d-inline-flex align-items-center gap-1">
+            <i class="bi bi-x-circle"></i> Reset All
+          </a>
           {% endif %}
         </div>
 
@@ -45,15 +53,15 @@
             <label class="form-label small fw-semibold text-muted">Search Chef or Area</label>
             <div class="input-group input-group-sm">
               <span class="input-group-text bg-white border-end-0 rounded-start-3 text-muted">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <i class="bi bi-search"></i>
               </span>
-              <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 rounded-end-3" placeholder="e.g. Amrita, Indiranagar...">
+              <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 rounded-end-3" placeholder="e.g. Indiranagar, Punjabi...">
             </div>
           </div>
 
           <!-- Cuisine Filter -->
           <div class="mb-3">
-            <label class="form-label small fw-semibold text-muted">Cuisine</label>
+            <label class="form-label small fw-semibold text-muted">Cuisine Style</label>
             <select name="cuisine" class="form-select form-select-sm rounded-3">
               <option value="">All Cuisines</option>
               {% for c in all_cuisines %}
@@ -64,34 +72,37 @@
 
           <!-- Minimum Rating -->
           <div class="mb-3">
-            <label class="form-label small fw-semibold text-muted">Minimum Rating</label>
+            <label class="form-label small fw-semibold text-muted">Customer Rating</label>
             <select name="min_rating" class="form-select form-select-sm rounded-3">
               <option value="">Any Rating</option>
-              <option value="4.8" {% if rating_filter == '4.8' %}selected{% endif %}>★ 4.8 & above</option>
-              <option value="4.5" {% if rating_filter == '4.5' %}selected{% endif %}>★ 4.5 & above</option>
-              <option value="4.0" {% if rating_filter == '4.0' %}selected{% endif %}>★ 4.0 & above</option>
+              <option value="4.8" {% if rating_filter == '4.8' %}selected{% endif %}>4.8 & above</option>
+              <option value="4.5" {% if rating_filter == '4.5' %}selected{% endif %}>4.5 & above</option>
+              <option value="4.0" {% if rating_filter == '4.0' %}selected{% endif %}>4.0 & above</option>
             </select>
           </div>
 
           <!-- Max Price -->
           <div class="mb-3">
             <label class="form-label small fw-semibold text-muted">Max Starting Price (₹)</label>
-            <input type="number" name="max_price" value="{{ max_price }}" class="form-control form-control-sm rounded-3" placeholder="e.g. 150">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white border-end-0 rounded-start-3 text-muted">₹</span>
+              <input type="number" step="1" name="max_price" value="{{ max_price }}" class="form-control border-start-0 rounded-end-3" placeholder="e.g. 150">
+            </div>
           </div>
 
           <!-- Sort Order -->
           <div class="mb-4">
             <label class="form-label small fw-semibold text-muted">Sort By</label>
             <select name="sort" class="form-select form-select-sm rounded-3">
-              <option value="rating_desc" {% if sort_by == 'rating_desc' %}selected{% endif %}>Top Rated</option>
+              <option value="rating_desc" {% if sort_by == 'rating_desc' %}selected{% endif %}>Top Rated Kitchens</option>
               <option value="reviews" {% if sort_by == 'reviews' %}selected{% endif %}>Most Popular / Reviews</option>
               <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
               <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
             </select>
           </div>
 
-          <button type="submit" class="btn btn-sm btn-tt-primary w-100 py-2 rounded-3 shadow-xs">
-            Apply Filters
+          <button type="submit" class="btn btn-sm btn-tt-primary w-100 py-2 rounded-3 shadow-xs d-inline-flex align-items-center justify-content-center gap-1.5 fw-semibold">
+            <i class="bi bi-funnel"></i> Apply Filters
           </button>
         </form>
       </div>
@@ -111,14 +122,16 @@
       {% include 'customer/partials/pagination.html' with page_obj=page_obj %}
       {% else %}
       <div class="text-center py-5 bg-white rounded-4 border shadow-sm p-5" style="border-color: var(--tt-border) !important;">
-        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 72px; height: 72px; background-color: var(--tt-cream); color: var(--tt-primary);">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 72px; height: 72px; background-color: var(--tt-cream); color: var(--tt-charcoal);">
+          <i class="bi bi-person-x fs-1 text-muted"></i>
         </div>
-        <h4 class="fw-bold mt-2 text-dark">No Home Chefs Match Your Filters</h4>
+        <h4 class="fw-bold mt-2" style="color: var(--tt-charcoal);">No Home Chefs Match Your Filters</h4>
         <p class="text-muted small mx-auto" style="max-width: 440px;">
-          Try clearing your search query or selecting a broader cuisine filter to find available home cooks in neighboring localities.
+          Try adjusting your search keywords, lowering the minimum rating, or clearing cuisine filters to explore available home kitchens in neighboring areas.
         </p>
-        <a href="{% url 'customer:chefs' %}" class="btn btn-sm btn-tt-outline mt-2 px-3 py-2 rounded-3">Clear All Filters</a>
+        <a href="{% url 'customer:chefs' %}" class="btn btn-sm btn-tt-outline mt-2 px-3 py-2 rounded-3 d-inline-flex align-items-center gap-1.5">
+          <i class="bi bi-arrow-counterclockwise"></i> Clear All Filters
+        </a>
       </div>
       {% endif %}
     </div>
