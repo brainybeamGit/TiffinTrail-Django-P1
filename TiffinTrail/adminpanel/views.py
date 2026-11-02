@@ -920,11 +920,12 @@ def order_detail(request, order_id):
                 if reason:
                     order.cancellation_reason = f"Admin override: {reason}"
                 order.save()
-                try:
-                    from customer.emails import send_order_status_update_email
-                    send_order_status_update_email(order, new_status, async_send=True)
-                except Exception:
-                    pass
+                if new_status != 'preparing':
+                    try:
+                        from customer.emails import send_order_status_update_email
+                        send_order_status_update_email(order, new_status, async_send=True)
+                    except Exception:
+                        pass
                 AdminActivityLog.objects.create(
                     admin=request.user,
                     action="Order Status Override",

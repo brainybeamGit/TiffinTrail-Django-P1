@@ -121,8 +121,14 @@ def send_order_confirmation_email(order, async_send=True):
 def send_order_status_update_email(order, new_status, async_send=True):
     """
     Sends email notification when an order status is updated (e.g. Confirmed by Chef, Out for Delivery, Delivered).
+    Skips sending email for 'preparing' status as per user request.
     """
     try:
+        # Do not send email when order moves to 'preparing' (Cooking in Kitchen)
+        if new_status == 'preparing':
+            logger.info(f"[EMAIL SKIPPED] Status update email skipped for 'preparing' status on Order #{order.order_number}")
+            return False
+
         recipients = _get_order_recipients(order)
         if not recipients:
             return False
@@ -288,6 +294,72 @@ def send_customer_welcome_email(user, async_send=True):
 
     except Exception as exc:
         logger.error(f"[EMAIL ERROR] Exception in send_customer_welcome_email: {exc}", exc_info=True)
+        return False
+
+
+def send_customer_registration_otp_email(user_data, otp, async_send=True):
+    """
+    Sends rich HTML + Text 6-digit OTP verification email when a customer signs up.
+    Recipients: Customer (user_data['email']) and Store Owner (EMAIL_HOST_USER).
+    """
+    try:
+        email = user_data.get('email', '').strip()
+        if not email or '@' not in email:
+            logger.warning(f"[EMAIL SKIPPED] No valid email for customer registration OTP: {user_data.get('username')}")
+            return False
+
+        recipients = [email]
+        owner_email = getattr(settings, 'EMAIL_HOST_USER', None)
+        if owner_email and '@' in owner_email and owner_email.strip() not in recipients:
+            recipients.append(owner_email.strip())
+
+        site_url = getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')
+        support_email = getattr(settings, 'EMAIL_HOST_USER', 'lakumdharmesh799@gmail.com')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', f"TiffinTrail <{support_email}>")
+
+        first_name = user_data.get('first_name', '')
+        last_name = user_data.get('last_name', '')
+        full_name = f"{first_name} {last_name}".strip()
+        customer_name = full_name or user_data.get('username', 'Food Lover')
+
+        subject = f"{otp} is your TiffinTrail Registration OTP | Welcome to TiffinTrail"
+
+        context = {
+            'customer_name': customer_name,
+            'first_name': first_name,
+            'username': user_data.get('username', ''),
+            'email': email,
+            'phone': user_data.get('phone', ''),
+            'otp': otp,
+            'site_url': site_url,
+            'support_email': support_email,
+            'current_year': datetime.now().year,
+        }
+
+        try:
+            html_content = render_to_string('customer/emails/customer_registration_otp.html', context)
+        except Exception as e:
+            logger.error(f"[EMAIL ERROR] Error rendering customer_registration_otp.html: {e}")
+            html_content = None
+
+        try:
+            text_content = render_to_string('customer/emails/customer_registration_otp.txt', context)
+        except Exception as e:
+            text_content = strip_tags(html_content) if html_content else f"Your TiffinTrail registration OTP is {otp}"
+
+        if async_send:
+            thread = threading.Thread(
+                target=_send_email_worker,
+                args=(subject, text_content, html_content, recipients, from_email),
+                daemon=True
+            )
+            thread.start()
+            return True
+        else:
+            return _send_email_worker(subject, text_content, html_content, recipients, from_email)
+
+    except Exception as exc:
+        logger.error(f"[EMAIL ERROR] Exception in send_customer_registration_otp_email: {exc}", exc_info=True)
         return False
 
 

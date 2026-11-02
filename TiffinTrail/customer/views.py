@@ -1499,28 +1499,194 @@ def customer_login(request):
 
 
 def customer_register(request):
-    """Customer registration view with auto-login and cart migration."""
+    """
+    Customer registration view with OTP verification.
+    Submitting the form generates a 6-digit OTP sent via email and redirects to OTP verification.
+    """
     if request.user.is_authenticated:
         return redirect('customer:home')
 
     if request.method == 'POST':
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            import secrets
+            from datetime import timedelta
+            from django.utils import timezone
+
+            cleaned = form.cleaned_data
+            otp = f"{secrets.randbelow(1000000):06d}"
+            expires_at = timezone.now() + timedelta(minutes=10)
+
+            # Store pending registration details in session
+            request.session['pending_registration'] = {
+                'username': cleaned['username'],
+                'first_name': cleaned['first_name'],
+                'last_name': cleaned['last_name'],
+                'email': cleaned['email'].lower(),
+                'phone': cleaned['phone'],
+                'password': cleaned['password'],
+            }
+            request.session['registration_otp'] = otp
+            request.session['registration_otp_expiry'] = expires_at.isoformat()
+            request.session['registration_email'] = cleaned['email'].lower()
+
+            # Send rich HTML + text OTP email
             try:
-                from .emails import send_customer_welcome_email
-                send_customer_welcome_email(user, async_send=True)
+                from .emails import send_customer_registration_otp_email
+                send_customer_registration_otp_email(
+                    user_data=request.session['pending_registration'],
+                    otp=otp,
+                    async_send=True
+                )
             except Exception as exc:
-                print(f"[EMAIL ERROR] Customer welcome email failed: {exc}")
-            login(request, user)
-            # Migrate guest cart
-            get_or_create_cart(request)
-            messages.success(request, f"Welcome to TiffinTrail, {user.first_name}! Your account has been created.")
-            return redirect('customer:home')
+                print(f"[EMAIL ERROR] Registration OTP email failed: {exc}")
+
+            messages.success(
+                request,
+                f"A 6-digit verification OTP has been sent to {cleaned['email']}. Please enter it below to complete your registration."
+            )
+            return redirect('customer:verify_registration_otp')
     else:
         form = CustomerRegistrationForm()
 
     return render(request, 'customer/register.html', {'form': form})
+
+
+def verify_registration_otp(request):
+    """
+    Customer registration OTP verification view.
+    Only after successful OTP entry is the user account created and logged in.
+    """
+    if request.user.is_authenticated:
+        return redirect('customer:home')
+
+    pending_data = request.session.get('pending_registration')
+    if not pending_data:
+        messages.warning(request, "Registration session expired or not found. Please fill out the registration form.")
+        return redirect('customer:register')
+
+    email = request.session.get('registration_email') or pending_data.get('email', '')
+    masked_email = mask_email(email)
+
+    if request.method == 'POST':
+        otp = request.POST.get('otp', '').strip().replace(' ', '')
+        if not otp:
+            messages.error(request, "Please enter the 6-digit OTP code.")
+            return render(request, 'customer/verify_registration_otp.html', {
+                'email': email,
+                'masked_email': masked_email
+            })
+
+        # Validate OTP expiry
+        expiry_str = request.session.get('registration_otp_expiry')
+        if expiry_str:
+            try:
+                from datetime import datetime
+                from django.utils import timezone
+                expiry = datetime.fromisoformat(expiry_str)
+                if timezone.is_naive(expiry):
+                    from django.utils.timezone import make_aware
+                    expiry = make_aware(expiry)
+                if timezone.now() > expiry:
+                    messages.error(request, "OTP has expired. Please click 'Resend OTP' to get a new code.")
+                    return render(request, 'customer/verify_registration_otp.html', {
+                        'email': email,
+                        'masked_email': masked_email
+                    })
+            except Exception as e:
+                print(f"[OTP EXPIRY PARSE ERROR] {e}")
+
+        # Validate OTP code match
+        expected_otp = str(request.session.get('registration_otp', '')).strip()
+        if not expected_otp or otp != expected_otp:
+            messages.error(request, "Invalid OTP code. Please enter the correct 6-digit code sent to your email.")
+            return render(request, 'customer/verify_registration_otp.html', {
+                'email': email,
+                'masked_email': masked_email
+            })
+
+        # OTP is valid! Verify username/email uniqueness before creation
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if User.objects.filter(username__iexact=pending_data['username']).exists():
+            messages.error(request, "An account with this username already exists.")
+            return redirect('customer:register')
+        if User.objects.filter(email__iexact=pending_data['email']).exists():
+            messages.error(request, "An account with this email address already exists.")
+            return redirect('customer:register')
+
+        # Create user & CustomerProfile
+        user = User.objects.create_user(
+            username=pending_data['username'],
+            email=pending_data['email'].lower(),
+            first_name=pending_data['first_name'],
+            last_name=pending_data['last_name'],
+            password=pending_data['password']
+        )
+        CustomerProfile.objects.create(
+            user=user,
+            phone=pending_data['phone']
+        )
+
+        # Clear registration session keys
+        request.session.pop('pending_registration', None)
+        request.session.pop('registration_otp', None)
+        request.session.pop('registration_otp_expiry', None)
+        request.session.pop('registration_email', None)
+
+        # Log in newly registered user
+        login(request, user)
+        # Migrate guest cart
+        get_or_create_cart(request)
+
+        # Send confirmed welcome email
+        try:
+            from .emails import send_customer_welcome_email
+            send_customer_welcome_email(user, async_send=True)
+        except Exception as exc:
+            print(f"[EMAIL ERROR] Customer welcome email failed: {exc}")
+
+        messages.success(request, f"Welcome to TiffinTrail, {user.first_name}! Your email has been verified and your account is ready.")
+        return redirect('customer:home')
+
+    return render(request, 'customer/verify_registration_otp.html', {
+        'email': email,
+        'masked_email': masked_email
+    })
+
+
+def resend_registration_otp(request):
+    """Resend 6-digit OTP code for pending customer registration."""
+    if request.user.is_authenticated:
+        return redirect('customer:home')
+
+    pending_data = request.session.get('pending_registration')
+    if not pending_data:
+        messages.warning(request, "Registration session expired. Please register again.")
+        return redirect('customer:register')
+
+    import secrets
+    from datetime import timedelta
+    from django.utils import timezone
+
+    otp = f"{secrets.randbelow(1000000):06d}"
+    expires_at = timezone.now() + timedelta(minutes=10)
+
+    request.session['registration_otp'] = otp
+    request.session['registration_otp_expiry'] = expires_at.isoformat()
+
+    try:
+        from .emails import send_customer_registration_otp_email
+        send_customer_registration_otp_email(
+            user_data=pending_data,
+            otp=otp,
+            async_send=True
+        )
+    except Exception as exc:
+        print(f"[EMAIL ERROR] Resend registration OTP failed: {exc}")
+
+    messages.success(request, f"A fresh 6-digit OTP has been sent to {pending_data.get('email')}.")
+    return redirect('customer:verify_registration_otp')
 
 
 def customer_logout(request):

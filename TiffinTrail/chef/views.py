@@ -598,12 +598,13 @@ def order_status_update(request, order_id):
                     order.payment_status = 'paid'
             order.save()
 
-            # Send Email notification on Order Confirmation & Status Updates
-            try:
-                from customer.emails import send_order_status_update_email
-                send_order_status_update_email(order, new_status, async_send=True)
-            except Exception as _em_err:
-                pass
+            # Send Email notification on Order Confirmation & Status Updates (skip preparing)
+            if new_status != 'preparing':
+                try:
+                    from customer.emails import send_order_status_update_email
+                    send_order_status_update_email(order, new_status, async_send=True)
+                except Exception as _em_err:
+                    pass
 
             messages.success(request, f"Order {order.order_number} status updated to '{order.get_status_display()}'.")
         else:

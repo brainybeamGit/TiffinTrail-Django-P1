@@ -288,7 +288,12 @@
 </div>
 
 <!-- Razorpay Checkout SDK -->
-<script src="{% static 'js/checkout.js' %}"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  if (typeof Razorpay === 'undefined') {
+    document.write('<script src="{% static "js/checkout.js" %}"><\/script>');
+  }
+</script>
 
 <script>
   // Dynamic Plan & Chef Selection Handler

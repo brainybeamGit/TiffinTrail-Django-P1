@@ -304,6 +304,18 @@ class CustomerWebsiteTests(TestCase):
         }
         res = self.client.post(reverse('customer:register'), reg_data, follow=True)
         self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'Verify Your Email')
+
+        # Test invalid OTP
+        bad_res = self.client.post(reverse('customer:verify_registration_otp'), {'otp': '999999'}, follow=True)
+        self.assertContains(bad_res, 'Invalid OTP code')
+        self.assertIsNone(User.objects.filter(username='newuser').first())
+
+        # Test correct OTP
+        otp = self.client.session.get('registration_otp')
+        self.assertIsNotNone(otp)
+        verify_res = self.client.post(reverse('customer:verify_registration_otp'), {'otp': otp}, follow=True)
+        self.assertEqual(verify_res.status_code, 200)
 
         new_user = User.objects.filter(username='newuser').first()
         self.assertIsNotNone(new_user)

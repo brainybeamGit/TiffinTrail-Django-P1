@@ -65,6 +65,8 @@ urlpatterns = [
     # Auth
     path('login/', views.customer_login, name='login'),
     path('register/', views.customer_register, name='register'),
+    path('register/verify/', views.verify_registration_otp, name='verify_registration_otp'),
+    path('register/resend-otp/', views.resend_registration_otp, name='resend_registration_otp'),
     path('logout/', views.customer_logout, name='logout'),
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),

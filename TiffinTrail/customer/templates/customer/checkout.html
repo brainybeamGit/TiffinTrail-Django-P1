@@ -347,7 +347,7 @@
                         <input type="hidden" name="coupon_code" value="{{ cpn.code }}">
                         <input type="hidden" name="next" value="{{ request.path }}">
                         <button type="submit" class="btn btn-sm btn-tt-primary rounded-3 px-3 py-1 fw-semibold">
-                          Apply
+                          Apply Coupon
                         </button>
                       </form>
                     {% endif %}
@@ -368,7 +368,12 @@
 </div>
 
 <!-- Razorpay Checkout SDK -->
-<script src="{% static 'js/checkout.js' %}"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  if (typeof Razorpay === 'undefined') {
+    document.write('<script src="{% static "js/checkout.js" %}"><\/script>');
+  }
+</script>
 
 <script>
   // Dynamic UI Toggles

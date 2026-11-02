@@ -1,0 +1,25 @@
+Namaste {{ customer_name }},
+
+Welcome to TiffinTrail!
+Ghar Jaisa Swad, Apno Ka Pyar.
+
+Your 6-digit OTP code to verify your email and complete your registration is:
+
+==============================
+OTP CODE: {{ otp }}
+(Valid for 10 minutes only)
+==============================
+
+Registration Details:
+- Username: {{ username }}
+- Email: {{ email }}
+{% if phone %}- Mobile: {{ phone }}
+{% endif %}- Status: Pending OTP Verification
+
+Please enter this OTP in the verification box on TiffinTrail to complete your account registration.
+
+Security Alert: Do NOT share this OTP with anyone. TiffinTrail will never ask for your OTP.
+
+Need help? Contact support: {{ support_email }}
+© {{ current_year }} TiffinTrail. All rights reserved.
+
