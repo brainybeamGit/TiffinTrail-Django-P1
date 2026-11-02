@@ -10,7 +10,7 @@
   <!-- Offline Core Stylesheets -->
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
-  <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=9.0">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}?v=9.1">
   {% block extra_css %}{% endblock %}
 </head>
 <body class="tt-admin-body">
@@ -109,7 +109,15 @@
     <!-- Sidebar Bottom Section -->
     <div class="tt-sidebar-bottom">
       <a class="tt-sidebar-user-pill" href="{% url 'adminpanel:profile' %}" title="Platform Administrator">
-        <div class="tt-sidebar-user-avatar">{{ request.user.first_name|slice:":1"|default:request.user.username|slice:":1"|upper }}</div>
+        <div class="tt-sidebar-user-avatar overflow-hidden">
+          {% if request.user.customer_profile.profile_image %}
+            <img src="{{ request.user.customer_profile.profile_image.url }}" alt="{{ request.user.username }}" class="w-100 h-100 object-fit-cover rounded-circle">
+          {% elif request.user.chef_profile.profile_image %}
+            <img src="{{ request.user.chef_profile.profile_image.url }}" alt="{{ request.user.username }}" class="w-100 h-100 object-fit-cover rounded-circle">
+          {% else %}
+            {{ request.user.first_name|slice:":1"|default:request.user.username|slice:":1"|upper }}
+          {% endif %}
+        </div>
         <div class="tt-sidebar-user-info">
           <span class="tt-sidebar-user-name">{{ request.user.get_full_name|default:request.user.username }}</span>
           <span class="tt-sidebar-user-role">Platform Admin</span>
@@ -155,7 +163,15 @@
         <!-- Admin Profile Dropdown Menu -->
         <div class="dropdown">
           <a class="tt-topbar-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <div class="tt-topbar-avatar">{{ request.user.first_name|slice:":1"|default:request.user.username|slice:":1"|upper }}</div>
+            <div class="tt-topbar-avatar overflow-hidden">
+              {% if request.user.customer_profile.profile_image %}
+                <img src="{{ request.user.customer_profile.profile_image.url }}" alt="{{ request.user.username }}" class="w-100 h-100 object-fit-cover rounded-circle">
+              {% elif request.user.chef_profile.profile_image %}
+                <img src="{{ request.user.chef_profile.profile_image.url }}" alt="{{ request.user.username }}" class="w-100 h-100 object-fit-cover rounded-circle">
+              {% else %}
+                {{ request.user.first_name|slice:":1"|default:request.user.username|slice:":1"|upper }}
+              {% endif %}
+            </div>
             <span class="d-none d-sm-inline fw-semibold small">{{ request.user.get_full_name|default:request.user.username }}</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end shadow-sm">

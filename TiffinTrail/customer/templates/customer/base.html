@@ -169,13 +169,30 @@
           {% if request.user.is_authenticated %}
             <div class="dropdown">
               <button class="tt-user-menu-btn dropdown-toggle" type="button" id="userMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="tt-avatar-mini">{{ request.user.first_name|default:request.user.username|slice:":1"|upper }}</span>
+                {% if request.user.customer_profile.profile_image %}
+                  <img src="{{ request.user.customer_profile.profile_image.url }}" alt="{{ request.user.first_name|default:request.user.username }}" class="tt-avatar-mini" style="object-fit: cover;">
+                {% elif request.user.chef_profile.profile_image %}
+                  <img src="{{ request.user.chef_profile.profile_image.url }}" alt="{{ request.user.first_name|default:request.user.username }}" class="tt-avatar-mini" style="object-fit: cover;">
+                {% else %}
+                  <span class="tt-avatar-mini">{{ request.user.first_name|default:request.user.username|slice:":1"|upper }}</span>
+                {% endif %}
                 <span>{{ request.user.first_name|default:request.user.username }}</span>
               </button>
               <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-2 mt-2" aria-labelledby="userMenuBtn" style="border-radius: 14px; min-width: 220px; border: 1px solid #ECEAE3 !important; box-shadow: 0 12px 32px rgba(37,55,70,0.12) !important;">
                 <li class="px-3 py-2 border-bottom mb-1" style="background: #faf9f6; border-top-left-radius: 14px; border-top-right-radius: 14px;">
-                  <small class="text-muted d-block" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Signed in as</small>
-                  <div class="fw-bold text-dark text-truncate" style="font-size: 0.88rem;">{{ request.user.email|default:request.user.username }}</div>
+                  <div class="d-flex align-items-center gap-2">
+                    {% if request.user.customer_profile.profile_image %}
+                      <img src="{{ request.user.customer_profile.profile_image.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border shadow-xs" style="width: 36px; height: 36px;">
+                    {% elif request.user.chef_profile.profile_image %}
+                      <img src="{{ request.user.chef_profile.profile_image.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border shadow-xs" style="width: 36px; height: 36px;">
+                    {% else %}
+                      <span class="tt-avatar-mini" style="width: 36px; height: 36px; font-size: 0.95rem;">{{ request.user.first_name|default:request.user.username|slice:":1"|upper }}</span>
+                    {% endif %}
+                    <div style="min-width: 0;">
+                      <div class="fw-bold text-dark text-truncate" style="font-size: 0.88rem;">{{ request.user.get_full_name|default:request.user.username }}</div>
+                      <small class="text-muted text-truncate d-block" style="font-size: 0.74rem;">{{ request.user.email }}</small>
+                    </div>
+                  </div>
                 </li>
                 <li>
                   <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="{% url 'customer:profile' %}">
@@ -220,9 +237,15 @@
         <div class="d-lg-none mt-3 pt-3 border-top">
           {% if request.user.is_authenticated %}
             <div class="d-flex align-items-center gap-2 mb-3">
-              <div class="tt-avatar-mini" style="width: 38px; height: 38px; font-size: 1rem;">
-                {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
-              </div>
+              {% if request.user.customer_profile.profile_image %}
+                <img src="{{ request.user.customer_profile.profile_image.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border shadow-xs" style="width: 40px; height: 40px;">
+              {% elif request.user.chef_profile.profile_image %}
+                <img src="{{ request.user.chef_profile.profile_image.url }}" alt="{{ request.user.username }}" class="rounded-circle object-fit-cover border shadow-xs" style="width: 40px; height: 40px;">
+              {% else %}
+                <div class="tt-avatar-mini" style="width: 40px; height: 40px; font-size: 1rem;">
+                  {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
+                </div>
+              {% endif %}
               <div>
                 <div class="fw-bold">{{ request.user.get_full_name|default:request.user.username }}</div>
                 <small class="text-muted">{{ request.user.email }}</small>

@@ -1,155 +1,437 @@
 {% extends 'adminpanel/base.html' %}
 {% load static %}
 
-{% block title %}Platform Analytics | TiffinTrail Admin Console{% endblock %}
+{% block title %}Platform Analytics & Intelligence | TiffinTrail Admin Console{% endblock %}
 {% block eyebrow %}ADVANCED ANALYTICS & INTELLIGENCE{% endblock %}
-{% block page_heading %}Platform Analytics & Growth Trends{% endblock %}
+{% block page_heading %}Platform Analytics & Growth Telemetry{% endblock %}
 
 {% block content %}
-<!-- Timeframe Filter -->
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+<style>
+  /* Premium Analytics Specific Styles */
+  .tt-analytics-header {
+    background: #FFFFFF;
+    border: 1px solid var(--tt-border, #E2E8F0);
+    border-radius: var(--tt-radius-md, 14px);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .tt-time-pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #475569;
+    background: #F1F5F9;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .tt-time-pill:hover {
+    background: #E2E8F0;
+    color: #0F172A;
+  }
+  .tt-time-pill.active {
+    background: #253746 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 8px rgba(37, 55, 70, 0.25);
+  }
+
+  .tt-stat-card {
+    background: #FFFFFF;
+    border: 1px solid var(--tt-border, #E2E8F0);
+    border-radius: var(--tt-radius-md, 14px);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .tt-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  }
+  .tt-stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+  .tt-stat-card.card-orders::before { background: linear-gradient(90deg, #3B82F6, #1D4ED8); }
+  .tt-stat-card.card-delivered::before { background: linear-gradient(90deg, #16A34A, #15803D); }
+  .tt-stat-card.card-diners::before { background: linear-gradient(90deg, #E6AD45, #D97706); }
+  .tt-stat-card.card-chefs::before { background: linear-gradient(90deg, #8B5CF6, #6D28D9); }
+
+  .tt-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  /* Interactive Chart Canvas */
+  .tt-chart-card {
+    background: #FFFFFF;
+    border: 1px solid var(--tt-border, #E2E8F0);
+    border-radius: var(--tt-radius-md, 14px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .tt-chart-viewport {
+    position: relative;
+    padding: 24px 20px 10px;
+    min-height: 260px;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .tt-chart-grid-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px dashed #E2E8F0;
+    pointer-events: none;
+  }
+  .tt-chart-grid-label {
+    position: absolute;
+    left: 14px;
+    font-size: 0.72rem;
+    color: #94A3B8;
+    font-family: monospace;
+    font-weight: 600;
+  }
+
+  .tt-bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 200px;
+    position: relative;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .tt-bar-fill {
+    width: 100%;
+    max-width: 32px;
+    border-radius: 6px 6px 2px 2px;
+    transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, transform 0.2s ease;
+    background: linear-gradient(180deg, #E6AD45 0%, #D49A33 100%);
+    position: relative;
+  }
+  .tt-bar-col:hover .tt-bar-fill {
+    transform: scaleX(1.08);
+    filter: brightness(1.1);
+  }
+  .tt-bar-val-badge {
+    position: absolute;
+    top: -24px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #334155;
+    white-space: nowrap;
+    opacity: 0.85;
+    pointer-events: none;
+  }
+  .tt-bar-date-label {
+    margin-top: 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748B;
+    white-space: nowrap;
+  }
+
+  /* Rank Badges */
+  .tt-rank-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+  .rank-1 { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
+  .rank-2 { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
+  .rank-3 { background: #FFEDD5; color: #C2410C; border: 1px solid #FED7AA; }
+  .rank-n { background: #F8FAFC; color: #64748B; border: 1px solid #E2E8F0; }
+
+  /* Tooltip Box */
+  #ttChartTooltip {
+    position: absolute;
+    display: none;
+    background: #1E293B;
+    color: #FFFFFF;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    transition: opacity 0.15s ease;
+  }
+</style>
+
+<!-- Top Control & Filter Header Bar -->
+<div class="tt-analytics-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
   <div>
-    <p class="text-secondary mb-0">Aggregated database business metrics over the selected timeframe.</p>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge" style="background: rgba(230, 173, 69, 0.18); color: #B45309; font-weight: 700; border: 1px solid rgba(230, 173, 69, 0.35);">
+        <i class="bi bi-broadcast me-1"></i> Live Aggregation
+      </span>
+      <span class="text-muted small">Target Window: <strong>Last {{ days_span }} Days</strong></span>
+    </div>
+    <h4 class="fw-bold mb-0 mt-1" style="color: #253746; letter-spacing: -0.01em;">Executive Telemetry Dashboard</h4>
   </div>
-  <div class="tt-filter-nav">
-    <a href="?days=7" class="tt-filter-btn {% if days_span == 7 %}active{% endif %}">Last 7 Days</a>
-    <a href="?days=14" class="tt-filter-btn {% if days_span == 14 %}active{% endif %}">Last 14 Days</a>
-    <a href="?days=30" class="tt-filter-btn {% if days_span == 30 %}active{% endif %}">Last 30 Days</a>
-    <a href="?days=90" class="tt-filter-btn {% if days_span == 90 %}active{% endif %}">Last 90 Days</a>
+
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <div class="d-flex align-items-center gap-1 p-1 bg-light rounded-pill border">
+      <a href="?days=7" class="tt-time-pill {% if days_span == 7 %}active{% endif %}">7D</a>
+      <a href="?days=14" class="tt-time-pill {% if days_span == 14 %}active{% endif %}">14D</a>
+      <a href="?days=30" class="tt-time-pill {% if days_span == 30 %}active{% endif %}">30D</a>
+      <a href="?days=90" class="tt-time-pill {% if days_span == 90 %}active{% endif %}">90D</a>
+    </div>
+
+    <button type="button" onclick="window.print()" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 px-3 py-1.5 rounded-3 fw-semibold">
+      <i class="bi bi-printer"></i>
+      <span>Print Report</span>
+    </button>
   </div>
 </div>
 
-<!-- Growth Summary KPIs -->
+<!-- 4 Executive KPI Metric Cards -->
 <div class="row g-3 mb-4">
-  <div class="col-sm-6 col-md-3">
-    <div class="tt-kpi-card">
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <span class="tt-kpi-label">New Diners</span>
-        <div class="tt-kpi-icon-wrap" style="background: rgba(59, 130, 246, 0.12); color: #3b82f6;">
-          <i class="bi bi-people"></i>
+  <!-- 1. Total Period Orders -->
+  <div class="col-sm-6 col-lg-3">
+    <div class="tt-stat-card card-orders">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <span class="text-uppercase small fw-bold text-muted" style="letter-spacing: 0.05em; font-size: 0.72rem;">Period Orders</span>
+          <h2 class="display-6 fw-bold mb-0 mt-1" style="color: #253746;">{{ total_orders_period }}</h2>
+        </div>
+        <div class="tt-stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #2563EB;">
+          <i class="bi bi-receipt-cutoff"></i>
         </div>
       </div>
-      <div>
-        <h3 class="tt-kpi-value text-dark mb-0">+{{ customers_growth }}</h3>
-        <div class="tt-kpi-meta text-muted mt-1">Registered in timeframe</div>
+      <div class="pt-2 border-top d-flex justify-content-between align-items-center small text-muted">
+        <span>Fulfillment:</span>
+        <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-0.5 rounded-pill">
+          {{ delivered_period }}/{{ total_orders_period }} Delivered
+        </span>
       </div>
     </div>
   </div>
 
-  <div class="col-sm-6 col-md-3">
-    <div class="tt-kpi-card">
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <span class="tt-kpi-label text-success">Chef Kitchens Enrolled</span>
-        <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
-          <i class="bi bi-person-badge"></i>
+  <!-- 2. Successfully Delivered Orders -->
+  <div class="col-sm-6 col-lg-3">
+    <div class="tt-stat-card card-delivered">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <span class="text-uppercase small fw-bold text-muted" style="letter-spacing: 0.05em; font-size: 0.72rem;">Delivered Volume</span>
+          <h2 class="display-6 fw-bold mb-0 mt-1 text-success">{{ delivered_period }}</h2>
         </div>
-      </div>
-      <div>
-        <h3 class="tt-kpi-value text-success mb-0">+{{ chefs_growth }}</h3>
-        <div class="tt-kpi-meta text-muted mt-1">Applied in timeframe</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-6 col-md-3">
-    <div class="tt-kpi-card">
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <span class="tt-kpi-label">Period Orders</span>
-        <div class="tt-kpi-icon-wrap" style="background: rgba(230, 173, 69, 0.15); color: #e6ad45;">
-          <i class="bi bi-bag-check"></i>
-        </div>
-      </div>
-      <div>
-        <h3 class="tt-kpi-value text-dark mb-0">{{ total_orders_period }}</h3>
-        <div class="tt-kpi-meta text-muted mt-1">Total placed in period</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-6 col-md-3">
-    <div class="tt-kpi-card">
-      <div class="d-flex justify-content-between align-items-start mb-2">
-        <span class="tt-kpi-label text-success">Delivered Volume</span>
-        <div class="tt-kpi-icon-wrap" style="background: rgba(22, 163, 74, 0.12); color: #16a34a;">
+        <div class="tt-stat-icon" style="background: rgba(22, 163, 74, 0.1); color: #16A34A;">
           <i class="bi bi-check2-circle"></i>
         </div>
       </div>
-      <div>
-        <h3 class="tt-kpi-value text-success mb-0">{{ delivered_period }}</h3>
-        <div class="tt-kpi-meta text-muted mt-1">Successfully fulfilled</div>
+      <div class="pt-2 border-top d-flex justify-content-between align-items-center small text-muted">
+        <span>Status:</span>
+        <span class="text-success fw-semibold">
+          <i class="bi bi-shield-check me-1"></i>Completed Diners
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. New Customer Diners Growth -->
+  <div class="col-sm-6 col-lg-3">
+    <div class="tt-stat-card card-diners">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <span class="text-uppercase small fw-bold text-muted" style="letter-spacing: 0.05em; font-size: 0.72rem;">New Diners Joined</span>
+          <h2 class="display-6 fw-bold mb-0 mt-1" style="color: #D97706;">+{{ customers_growth }}</h2>
+        </div>
+        <div class="tt-stat-icon" style="background: rgba(230, 173, 69, 0.12); color: #D97706;">
+          <i class="bi bi-people-fill"></i>
+        </div>
+      </div>
+      <div class="pt-2 border-top d-flex justify-content-between align-items-center small text-muted">
+        <span>User Growth:</span>
+        <span class="fw-semibold text-dark">Verified Customer Profiles</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Chef Kitchens Enrolled -->
+  <div class="col-sm-6 col-lg-3">
+    <div class="tt-stat-card card-chefs">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <span class="text-uppercase small fw-bold text-muted" style="letter-spacing: 0.05em; font-size: 0.72rem;">Kitchens Enrolled</span>
+          <h2 class="display-6 fw-bold mb-0 mt-1" style="color: #7C3AED;">+{{ chefs_growth }}</h2>
+        </div>
+        <div class="tt-stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #7C3AED;">
+          <i class="bi bi-shop-window"></i>
+        </div>
+      </div>
+      <div class="pt-2 border-top d-flex justify-content-between align-items-center small text-muted">
+        <span>Partnership:</span>
+        <span class="fw-semibold text-dark">Home Chef Applications</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Offline Activity & Revenue Trend Chart -->
-<div class="tt-card mb-4">
-  <div class="tt-card-header d-flex justify-content-between align-items-center">
-    <h5 class="tt-card-title d-flex align-items-center gap-2">
-      <i class="bi bi-bar-chart-line-fill text-warning"></i> Daily Order & Revenue Growth Trend
-    </h5>
-    <span class="text-muted small">Daily activity over last {{ days_span }} days</span>
-  </div>
-  <div class="tt-card-body">
-    <div class="tt-chart-container">
-      <div class="tt-chart-bar-group" style="height: 220px;">
-        {% for day in order_trend %}
-          <div class="tt-chart-col" title="{{ day.date }}: {{ day.orders }} orders (₹{{ day.revenue|floatformat:2 }})">
-            <span class="tt-chart-bar-val">₹{{ day.revenue|floatformat:0 }}</span>
-            <div class="tt-chart-bar" style="height: {% if day.revenue > 0 %}{% widthratio day.revenue 1000 160 %}px{% else %}4px{% endif %};"></div>
-            <span class="tt-chart-label">{{ day.date }}</span>
-          </div>
-        {% empty %}
-          <div class="text-center py-5 text-muted w-100">No chart data available for this range.</div>
-        {% endfor %}
+<!-- Interactive Daily Growth & Telemetry Chart Card -->
+<div class="tt-chart-card">
+  <!-- Chart Card Header -->
+  <div class="p-3 px-4 border-bottom d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3" style="background: #FAFAFA;">
+    <div>
+      <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: #253746; font-size: 1.05rem;">
+        <i class="bi bi-graph-up-arrow text-warning"></i> Daily Order &amp; Revenue Telemetry
+      </h5>
+      <span class="text-muted small">Daily activity track for the recent {{ days_span }} days timeframe</span>
+    </div>
+
+    <!-- Toggle Controls: Revenue vs Orders -->
+    <div class="d-flex align-items-center gap-2">
+      <div class="btn-group btn-group-sm p-1 rounded-3 border bg-white shadow-xs" role="group">
+        <button type="button" class="btn btn-sm btn-light fw-semibold active px-3" id="btnModeRevenue" onclick="setChartMode('revenue')">
+          <i class="bi bi-currency-rupee me-1"></i> Revenue
+        </button>
+        <button type="button" class="btn btn-sm btn-light fw-semibold px-3" id="btnModeOrders" onclick="setChartMode('orders')">
+          <i class="bi bi-bag-check me-1"></i> Orders
+        </button>
       </div>
     </div>
   </div>
+
+  <!-- Chart Summary Strip -->
+  <div class="px-4 py-3 bg-white border-bottom d-flex flex-wrap gap-4 align-items-center text-muted small">
+    <div class="d-flex align-items-center gap-2">
+      <span class="rounded-circle p-1" style="background: rgba(230, 173, 69, 0.2);"><i class="bi bi-coin text-warning"></i></span>
+      <span>Trend Total: <strong class="text-dark" id="chartTotalSummary">₹0.00</strong></span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span class="rounded-circle p-1" style="background: rgba(37, 55, 70, 0.1);"><i class="bi bi-calendar3 text-secondary"></i></span>
+      <span>Data Points: <strong class="text-dark">{{ order_trend|length }} Days</strong></span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span class="rounded-circle p-1" style="background: rgba(22, 163, 74, 0.15);"><i class="bi bi-trophy text-success"></i></span>
+      <span>Peak Day: <strong class="text-dark" id="chartPeakSummary">—</strong></span>
+    </div>
+  </div>
+
+  <!-- Interactive Dynamic Bar Viewport -->
+  <div class="tt-chart-viewport" id="chartViewport">
+    <!-- Grid Baseline Lines -->
+    <div class="tt-chart-grid-line" style="bottom: 30px;">
+      <span class="tt-chart-grid-label">0</span>
+    </div>
+    <div class="tt-chart-grid-line" style="bottom: 110px;">
+      <span class="tt-chart-grid-label" id="gridMidLabel">50%</span>
+    </div>
+    <div class="tt-chart-grid-line" style="bottom: 190px;">
+      <span class="tt-chart-grid-label" id="gridTopLabel">100%</span>
+    </div>
+
+    <!-- Render Bars -->
+    {% for day in order_trend %}
+      <div class="tt-bar-col" 
+           data-date="{{ day.date }}" 
+           data-orders="{{ day.orders }}" 
+           data-revenue="{{ day.revenue|floatformat:2 }}"
+           onmouseenter="showChartTooltip(event, this)"
+           onmouseleave="hideChartTooltip()">
+        <span class="tt-bar-val-badge" id="badge-{{ forloop.counter0 }}">₹{{ day.revenue|floatformat:0 }}</span>
+        <div class="tt-bar-fill" id="fill-{{ forloop.counter0 }}" style="height: 6px;"></div>
+        <span class="tt-bar-date-label">{{ day.date }}</span>
+      </div>
+    {% empty %}
+      <div class="w-100 text-center py-5 text-muted">
+        <i class="bi bi-inbox fs-2 text-secondary mb-2 d-block"></i>
+        <span>No transaction telemetry found for this selected timeframe.</span>
+      </div>
+    {% endfor %}
+  </div>
 </div>
 
-<!-- Two Column Ranking Breakdown: Top Chefs & Top Meals -->
-<div class="row g-4">
-  <!-- Top Performing Chefs -->
+<!-- Dynamic Tooltip Element -->
+<div id="ttChartTooltip"></div>
+
+<!-- 2-Column Performance Breakdown: Top Chefs & Top Meals -->
+<div class="row g-4 mb-4">
+  <!-- Top Performing Kitchens -->
   <div class="col-lg-6">
     <div class="tt-card h-100">
-      <div class="tt-card-header">
-        <h5 class="tt-card-title d-flex align-items-center gap-2">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2 mb-0" style="font-size: 1rem;">
           <i class="bi bi-trophy-fill text-warning"></i> Highest Volume Home Chefs
         </h5>
+        <span class="badge bg-light text-muted border small">Top 6 Kitchens</span>
       </div>
       <div class="tt-card-body p-0">
         <div class="tt-table-responsive">
-          <table class="tt-table">
+          <table class="tt-table align-middle mb-0">
             <thead>
               <tr>
-                <th>Kitchen</th>
-                <th>Delivered Orders</th>
-                <th>Gross Volume</th>
+                <th style="width: 50px;">Rank</th>
+                <th>Chef Kitchen</th>
+                <th>Delivered</th>
+                <th class="text-end">Gross Sales</th>
               </tr>
             </thead>
             <tbody>
               {% for c in top_chefs %}
                 <tr>
                   <td>
-                    <strong>
-                      <a href="{% url 'adminpanel:chef_detail' c.id %}" class="text-dark text-decoration-none">
-                        <i class="bi bi-shop me-1 text-secondary"></i>{{ c.business_name }}
-                      </a>
-                    </strong>
-                    <div class="text-muted small">{{ c.cuisines|truncatechars:30 }}</div>
-                  </td>
-                  <td>
-                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1">
-                      <i class="bi bi-check2 me-1"></i>{{ c.orders_count }} orders
+                    <span class="tt-rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% else %}rank-n{% endif %}">
+                      {{ forloop.counter }}
                     </span>
                   </td>
                   <td>
-                    <strong class="text-success fs-6">₹{{ c.total_rev|floatformat:2|default:"0.00" }}</strong>
+                    <div class="d-flex align-items-center gap-2.5">
+                      {% if c.profile_image %}
+                        <img src="{{ c.profile_image.url }}" alt="{{ c.business_name }}" class="rounded-circle object-fit-cover shadow-xs border" style="width: 36px; height: 36px;">
+                      {% else %}
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs" style="width: 36px; height: 36px; background: #253746; font-size: 0.85rem;">
+                          {{ c.business_name|slice:":1"|default:"C" }}
+                        </div>
+                      {% endif %}
+                      <div>
+                        <a href="{% url 'adminpanel:chef_detail' c.id %}" class="fw-bold text-dark text-decoration-none d-block hover-gold" style="font-size: 0.88rem;">
+                          {{ c.business_name }}
+                        </a>
+                        <div class="text-muted small" style="font-size: 0.74rem;">{{ c.cuisines|default:"Homestyle Cuisine"|truncatechars:28 }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill">
+                      <i class="bi bi-check2 me-1"></i>{{ c.orders_count }} orders
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <strong class="text-dark font-monospace" style="font-size: 0.95rem;">₹{{ c.total_rev|floatformat:2|default:"0.00" }}</strong>
                   </td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="3" class="text-center py-4 text-muted small">No order volume recorded yet.</td>
+                  <td colspan="4" class="text-center py-4 text-muted small">No order volume recorded yet for this period.</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -162,39 +444,51 @@
   <!-- Top Popular Meals -->
   <div class="col-lg-6">
     <div class="tt-card h-100">
-      <div class="tt-card-header">
-        <h5 class="tt-card-title d-flex align-items-center gap-2">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2 mb-0" style="font-size: 1rem;">
           <i class="bi bi-fire text-danger"></i> Most Ordered Dishes
         </h5>
+        <span class="badge bg-light text-muted border small">Customer Favorites</span>
       </div>
       <div class="tt-card-body p-0">
         <div class="tt-table-responsive">
-          <table class="tt-table">
+          <table class="tt-table align-middle mb-0">
             <thead>
               <tr>
+                <th style="width: 50px;">Rank</th>
                 <th>Dish Name</th>
-                <th>Portions Ordered</th>
-                <th>Total Value</th>
+                <th>Portions</th>
+                <th class="text-end">Revenue</th>
               </tr>
             </thead>
             <tbody>
               {% for m in top_meals %}
                 <tr>
                   <td>
-                    <strong class="text-dark">{{ m.meal_name }}</strong>
-                  </td>
-                  <td>
-                    <span class="badge bg-light text-dark border px-2.5 py-1">
-                      {{ m.total_qty }} portions
+                    <span class="tt-rank-badge {% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% else %}rank-n{% endif %}">
+                      {{ forloop.counter }}
                     </span>
                   </td>
                   <td>
-                    <strong class="text-success fs-6">₹{{ m.total_val|floatformat:2|default:"0.00" }}</strong>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="rounded-3 bg-light d-flex align-items-center justify-content-center text-muted" style="width: 32px; height: 32px;">
+                        <i class="bi bi-egg-fried"></i>
+                      </div>
+                      <strong class="text-dark" style="font-size: 0.88rem;">{{ m.meal_name }}</strong>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark border px-2.5 py-1 rounded-pill fw-semibold">
+                      {{ m.total_qty }} portions
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <strong class="text-success font-monospace" style="font-size: 0.95rem;">₹{{ m.total_val|floatformat:2|default:"0.00" }}</strong>
                   </td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="3" class="text-center py-4 text-muted small">No meal orders in period.</td>
+                  <td colspan="4" class="text-center py-4 text-muted small">No meal orders recorded in this period.</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -204,4 +498,261 @@
     </div>
   </div>
 </div>
+
+<!-- Bottom Section: Subscription Plan Popularity & Fulfillment Telemetry -->
+<div class="row g-4">
+  <!-- Subscription Plan Adoption -->
+  <div class="col-lg-7">
+    <div class="tt-card h-100">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="tt-card-title d-flex align-items-center gap-2 mb-0" style="font-size: 1rem;">
+            <i class="bi bi-calendar2-check-fill text-primary"></i> Subscription Plan Adoption
+          </h5>
+          <span class="text-muted small">Most popular recurring meal plans chosen by active diners</span>
+        </div>
+        <a href="{% url 'adminpanel:plans' %}" class="btn btn-sm btn-outline-secondary">Manage Plans</a>
+      </div>
+      <div class="tt-card-body p-0">
+        <div class="tt-table-responsive">
+          <table class="tt-table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Plan Name</th>
+                <th>Type</th>
+                <th>Plan Price</th>
+                <th class="text-end">Subscribers</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for plan in plan_popularity %}
+                <tr>
+                  <td>
+                    <div class="fw-bold text-dark">{{ plan.name }}</div>
+                    <div class="text-muted small">{{ plan.chef.business_name|default:"Platform Official Plan" }}</div>
+                  </td>
+                  <td>
+                    <span class="badge rounded-pill text-uppercase font-monospace px-2.5 py-1" style="background: rgba(37, 55, 70, 0.08); color: #253746; font-size: 0.72rem; font-weight: 700;">
+                      {{ plan.get_plan_type_display|default:plan.plan_type }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="fw-semibold text-dark font-monospace">₹{{ plan.price|floatformat:2 }}</span>
+                  </td>
+                  <td class="text-end">
+                    <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="background: rgba(230, 173, 69, 0.18); color: #B45309; border: 1px solid rgba(230, 173, 69, 0.4);">
+                      <i class="bi bi-people-fill me-1"></i>{{ plan.subs_count }} active
+                    </span>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center py-4 text-muted small">No subscription plan records available.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Operational Health & Conversion Summary -->
+  <div class="col-lg-5">
+    <div class="tt-card h-100">
+      <div class="tt-card-header">
+        <h5 class="tt-card-title d-flex align-items-center gap-2 mb-0" style="font-size: 1rem;">
+          <i class="bi bi-shield-check text-success"></i> Operational Fulfillment Health
+        </h5>
+        <span class="text-muted small">Fulfillment telemetry for this timeframe</span>
+      </div>
+      <div class="tt-card-body">
+        <!-- Fulfillment Metric -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-1.5 small">
+            <span class="fw-semibold text-dark">Order Delivery Completion</span>
+            <span class="fw-bold text-success" id="fulfillmentPercentLabel">
+              {% if total_orders_period > 0 %}
+                {% widthratio delivered_period total_orders_period 100 %}%
+              {% else %}
+                100%
+              {% endif %}
+            </span>
+          </div>
+          <div class="progress rounded-pill" style="height: 10px; background-color: #F1F5F9;">
+            <div class="progress-bar rounded-pill" 
+                 role="progressbar" 
+                 style="width: {% if total_orders_period > 0 %}{% widthratio delivered_period total_orders_period 100 %}%{% else %}100%{% endif %}; background: linear-gradient(90deg, #16A34A, #22C55E);" 
+                 aria-valuenow="{% if total_orders_period > 0 %}{% widthratio delivered_period total_orders_period 100 %}{% else %}100{% endif %}" 
+                 aria-valuemin="0" 
+                 aria-valuemax="100"></div>
+          </div>
+          <div class="d-flex justify-content-between text-muted small mt-1" style="font-size: 0.74rem;">
+            <span>{{ delivered_period }} successfully delivered</span>
+            <span>Total: {{ total_orders_period }} orders</span>
+          </div>
+        </div>
+
+        <!-- Ecosystem Metrics List -->
+        <div class="list-group list-group-flush border-top">
+          <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold text-dark small">New Diner Registrations</div>
+              <div class="text-muted small" style="font-size: 0.74rem;">Growth in customer accounts</div>
+            </div>
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold font-monospace">+{{ customers_growth }}</span>
+          </div>
+
+          <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold text-dark small">New Chef Enrollments</div>
+              <div class="text-muted small" style="font-size: 0.74rem;">Registered kitchens in window</div>
+            </div>
+            <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold font-monospace">+{{ chefs_growth }}</span>
+          </div>
+
+          <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold text-dark small">Data Window Coverage</div>
+              <div class="text-muted small" style="font-size: 0.74rem;">Selected operational telemetry</div>
+            </div>
+            <span class="badge text-white px-2.5 py-1.5 fw-bold" style="background: #253746;">{{ days_span }} Days</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dynamic Client-Side Chart Telemetry Script (100% Offline, Vanilla JS) -->
+<script>
+  let currentMode = 'revenue'; // 'revenue' or 'orders'
+
+  // Extract trend data embedded from Django
+  const barElements = document.querySelectorAll('.tt-bar-col');
+  const trendData = [];
+  barElements.forEach((el, idx) => {
+    trendData.push({
+      index: idx,
+      date: el.getAttribute('data-date') || '',
+      orders: parseInt(el.getAttribute('data-orders') || '0', 10),
+      revenue: parseFloat(el.getAttribute('data-revenue') || '0.0')
+    });
+  });
+
+  function renderChart() {
+    if (!trendData.length) return;
+
+    let totalSum = 0;
+    let peakVal = 0;
+    let peakDate = '—';
+
+    // Calculate maximum values for relative scaling
+    const maxRevenue = Math.max(...trendData.map(d => d.revenue), 100);
+    const maxOrders = Math.max(...trendData.map(d => d.orders), 5);
+    const maxHeightPx = 160; // Max bar height in pixels
+
+    trendData.forEach(d => {
+      const fillEl = document.getElementById(`fill-${d.index}`);
+      const badgeEl = document.getElementById(`badge-${d.index}`);
+      if (!fillEl || !badgeEl) return;
+
+      if (currentMode === 'revenue') {
+        totalSum += d.revenue;
+        if (d.revenue >= peakVal) {
+          peakVal = d.revenue;
+          peakDate = `${d.date} (₹${d.revenue.toFixed(2)})`;
+        }
+        const scaledH = Math.max(Math.round((d.revenue / maxRevenue) * maxHeightPx), 6);
+        fillEl.style.height = `${scaledH}px`;
+        fillEl.style.background = 'linear-gradient(180deg, #E6AD45 0%, #D49A33 100%)';
+        badgeEl.textContent = `₹${Math.round(d.revenue)}`;
+      } else {
+        totalSum += d.orders;
+        if (d.orders >= peakVal) {
+          peakVal = d.orders;
+          peakDate = `${d.date} (${d.orders} orders)`;
+        }
+        const scaledH = Math.max(Math.round((d.orders / maxOrders) * maxHeightPx), 6);
+        fillEl.style.height = `${scaledH}px`;
+        fillEl.style.background = 'linear-gradient(180deg, #253746 0%, #162430 100%)';
+        badgeEl.textContent = `${d.orders}`;
+      }
+    });
+
+    // Update Summary Strip
+    const summaryTotalEl = document.getElementById('chartTotalSummary');
+    const summaryPeakEl = document.getElementById('chartPeakSummary');
+    const gridMidLabel = document.getElementById('gridMidLabel');
+    const gridTopLabel = document.getElementById('gridTopLabel');
+
+    if (summaryTotalEl) {
+      summaryTotalEl.textContent = currentMode === 'revenue' 
+        ? `₹${totalSum.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+        : `${totalSum} Orders`;
+    }
+    if (summaryPeakEl) {
+      summaryPeakEl.textContent = peakDate;
+    }
+    if (gridTopLabel && gridMidLabel) {
+      if (currentMode === 'revenue') {
+        gridTopLabel.textContent = `₹${Math.round(maxRevenue)}`;
+        gridMidLabel.textContent = `₹${Math.round(maxRevenue / 2)}`;
+      } else {
+        gridTopLabel.textContent = `${maxOrders} orders`;
+        gridMidLabel.textContent = `${Math.round(maxOrders / 2)} orders`;
+      }
+    }
+  }
+
+  function setChartMode(mode) {
+    currentMode = mode;
+    const btnRev = document.getElementById('btnModeRevenue');
+    const btnOrd = document.getElementById('btnModeOrders');
+
+    if (mode === 'revenue') {
+      btnRev.classList.add('active', 'btn-light');
+      btnRev.classList.remove('btn-white');
+      btnOrd.classList.remove('active');
+    } else {
+      btnOrd.classList.add('active', 'btn-light');
+      btnOrd.classList.remove('btn-white');
+      btnRev.classList.remove('active');
+    }
+    renderChart();
+  }
+
+  // Tooltip Interaction
+  const tooltip = document.getElementById('ttChartTooltip');
+
+  function showChartTooltip(e, el) {
+    if (!tooltip) return;
+    const date = el.getAttribute('data-date');
+    const orders = el.getAttribute('data-orders');
+    const rev = parseFloat(el.getAttribute('data-revenue') || '0').toFixed(2);
+
+    tooltip.innerHTML = `
+      <div style="font-weight: 700; color: #E6AD45; margin-bottom: 2px;">${date}</div>
+      <div>Revenue: <strong>₹${rev}</strong></div>
+      <div>Orders: <strong>${orders} placed</strong></div>
+    `;
+
+    const rect = el.getBoundingClientRect();
+    const parentRect = document.getElementById('chartViewport').getBoundingClientRect();
+    tooltip.style.display = 'block';
+    tooltip.style.left = `${rect.left - parentRect.left + (rect.width / 2) - 50}px`;
+    tooltip.style.top = `${rect.top - parentRect.top - 55}px`;
+  }
+
+  function hideChartTooltip() {
+    if (tooltip) {
+      tooltip.style.display = 'none';
+    }
+  }
+
+  // Initialize on load
+  document.addEventListener('DOMContentLoaded', function () {
+    renderChart();
+  });
+</script>
 {% endblock %}

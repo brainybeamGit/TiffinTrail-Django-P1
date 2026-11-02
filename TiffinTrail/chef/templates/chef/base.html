@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/animations.css' %}">
-  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=8.0">
+  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=8.1">
   {% block extra_css %}{% endblock %}
 </head>
 <body class="tt-chef-body">
@@ -25,26 +25,6 @@
       </div>
     </a>
 
-    <!-- Chef Info Snippet -->
-    {% if current_chef %}
-    <div class="tt-chef-card">
-      {% if current_chef.profile_image %}
-        <img src="{{ current_chef.profile_image.url }}" alt="{{ current_chef.business_name }}" class="tt-chef-avatar">
-      {% else %}
-        <div class="tt-chef-avatar">{{ current_chef.business_name|slice:":1"|default:"C" }}</div>
-      {% endif %}
-      <div class="tt-chef-details">
-        <div class="tt-chef-biz" title="{{ current_chef.business_name }}">{{ current_chef.business_name }}</div>
-        <div class="tt-chef-badge">
-          {% if current_chef.is_accepting_orders %}
-            <span class="tt-status-dot"></span> Accepting Orders
-          {% else %}
-            <span class="tt-status-dot inactive"></span> Kitchen Paused
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    {% endif %}
 
     <!-- Navigation Module 1: OVERVIEW -->
     <div class="tt-nav-label">OVERVIEW</div>

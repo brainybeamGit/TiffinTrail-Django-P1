@@ -205,12 +205,35 @@ body.tt-chef-body {
 
 /* Nav Section Group Labels */
 .tt-nav-label {
-  font-size: 0.68rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-  color: #94A3B8;
-  padding: 16px 20px 6px;
+  letter-spacing: 0.12em;
+  color: var(--tt-gold, #E6AD45);
+  padding: 14px 20px 6px;
+  white-space: nowrap;
+  user-select: none;
+  opacity: 0.95;
+}
+
+.tt-nav-label::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--tt-gold, #E6AD45);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.tt-nav + .tt-nav-label {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 10px;
+  padding-top: 16px;
 }
 
 /* Nav Menu */
