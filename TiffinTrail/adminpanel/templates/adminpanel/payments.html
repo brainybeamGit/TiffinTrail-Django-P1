@@ -6,6 +6,13 @@
 {% block page_heading %}Payment Transactions Ledger{% endblock %}
 
 {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="text-muted small">Monitor, reconcile, record offline transactions, and update settlement status.</div>
+  <a href="{% url 'adminpanel:payment_add' %}" class="btn btn-primary d-inline-flex align-items-center gap-1.5 shadow-sm px-3 py-2 fw-semibold">
+    <i class="bi bi-plus-lg"></i> Record Payment
+  </a>
+</div>
+
 <!-- Financial Summary KPIs -->
 <div class="row g-3 mb-4">
   <div class="col-sm-6 col-lg-4">
@@ -145,9 +152,15 @@
               </td>
               <td class="text-end tt-actions-cell">
                 <div class="tt-actions-group">
-                  <a href="{% url 'adminpanel:payment_detail' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="View Transaction Audit">
+                  <a href="{% url 'adminpanel:payment_edit' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Payment">
+                    <i class="bi bi-pencil-fill"></i> Edit
+                  </a>
+                  <a href="{% url 'adminpanel:payment_detail' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-secondary" title="View Transaction Audit">
                     <i class="bi bi-receipt"></i> Details
                   </a>
+                  <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deletePaymentModal{{ order.id }}" title="Void / Refund Payment">
+                    <i class="bi bi-arrow-counterclockwise"></i> Refund / Void
+                  </button>
                 </div>
               </td>
             </tr>
@@ -188,4 +201,42 @@
     {% endif %}
   </div>
 </div>
+{% endblock %}
+
+{% block modals %}
+{% for order in page_obj %}
+<!-- Refund/Void Modal -->
+<div class="modal fade" id="deletePaymentModal{{ order.id }}" tabindex="-1" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 440px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-arrow-counterclockwise fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5">Refund / Void Payment</h5>
+            <div class="text-muted small">Order #{{ order.order_number }}</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-0">
+          Are you sure you want to mark payment of <strong class="text-success">₹{{ order.final_amount|floatformat:2 }}</strong> for order <strong class="text-dark">#{{ order.order_number }}</strong> as <strong class="text-danger">Refunded / Voided</strong>?
+        </p>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'adminpanel:payment_delete' order.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+            <i class="bi bi-arrow-counterclockwise"></i> Confirm Refund / Void
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

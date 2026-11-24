@@ -117,17 +117,18 @@
               </td>
               <td class="text-end tt-actions-cell">
                 <div class="tt-actions-group">
-                  <form action="{% url 'adminpanel:review_toggle_hide' rev.id %}" method="post" class="d-inline m-0">
+                  <a href="{% url 'adminpanel:review_edit' rev.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Review">
+                    <i class="bi bi-pencil-fill"></i> Edit
+                  </a>
+                  <form action="{% url 'adminpanel:review_toggle_hide' rev.id %}" method="post" class="d-inline m-0" title="{% if rev.is_hidden %}Click to make visible{% else %}Click to hide review{% endif %}">
                     {% csrf_token %}
-                    <label class="tt-toggle-switch tt-toggle-sm tt-toggle-danger m-0" for="reviewToggle{{ rev.id }}"
-                      title="{% if rev.is_hidden %}Restore to public view{% else %}Hide this review from public{% endif %}">
+                    <label class="tt-toggle-switch tt-toggle-sm m-0" for="reviewToggle{{ rev.id }}">
                       <input type="checkbox" id="reviewToggle{{ rev.id }}" {% if not rev.is_hidden %}checked{% endif %} onchange="this.form.submit()">
                       <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
-                      <span class="tt-toggle-label" style="font-size:0.78rem;">{% if rev.is_hidden %}Hidden{% else %}Visible{% endif %}</span>
                     </label>
                   </form>
                   <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteReviewModal{{ rev.id }}" title="Delete Review">
-                    <i class="bi bi-trash3-fill"></i> Delete
+                    <i class="bi bi-trash-fill"></i> Delete
                   </button>
                 </div>
               </td>
@@ -169,12 +170,14 @@
     {% endif %}
   </div>
 </div>
+{% endblock %}
 
+{% block modals %}
 {% for rev in page_obj %}
 <!-- Delete Review Modal for {{ rev.id }} -->
-<div class="modal fade" id="deleteReviewModal{{ rev.id }}" tabindex="-1" aria-labelledby="deleteReviewModalLabel{{ rev.id }}" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+<div class="modal fade" id="deleteReviewModal{{ rev.id }}" tabindex="-1" aria-labelledby="deleteReviewModalLabel{{ rev.id }}" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
       <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">

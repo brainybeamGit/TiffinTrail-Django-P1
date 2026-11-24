@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from .models import ChefProfile, Meal, MealPlan, MenuCategory, DailyMenu
+from customer.models import Order, Subscription
 
 
 import re
@@ -282,4 +283,27 @@ class MenuCategoryForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Category description'}),
             'icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 🍛, 🥗, 🍲'}),
             'display_order': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+        }
+
+
+class ChefOrderEditForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status', 'delivery_notes', 'cancellation_reason']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'delivery_notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Kitchen delivery instructions or dispatch notes'}),
+            'cancellation_reason': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Reason if declining or cancelling order'}),
+        }
+
+
+class ChefSubscriptionEditForm(forms.ModelForm):
+    class Meta:
+        model = Subscription
+        fields = ['status', 'delivery_slot', 'dietary_preference', 'notes']
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'delivery_slot': forms.Select(attrs={'class': 'form-select'}),
+            'dietary_preference': forms.Select(attrs={'class': 'form-select'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Kitchen preparation & dietary notes'}),
         }

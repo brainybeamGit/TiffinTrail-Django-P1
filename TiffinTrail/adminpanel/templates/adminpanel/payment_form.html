@@ -1,0 +1,120 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}FINANCIAL AUDIT & PAYMENTS{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-credit-card-2-front text-warning"></i>
+          {% if is_edit %}Modify Payment Settlement{% else %}Record Manual / Offline Payment{% endif %}
+        </h5>
+        <a href="{% url 'adminpanel:payments' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Payments
+        </a>
+      </div>
+
+      <div class="tt-card-body">
+        {% if is_edit and order %}
+          <div class="p-3 rounded-3 border mb-4" style="background-color: var(--tt-surface-muted);">
+            <div class="row g-2 small">
+              <div class="col-sm-6">
+                <span class="text-secondary">Order Ref:</span>
+                <strong class="text-dark">#{{ order.order_number }}</strong>
+              </div>
+              <div class="col-sm-6">
+                <span class="text-secondary">Customer:</span>
+                <strong class="text-dark">{{ order.recipient_name }} ({{ order.recipient_phone }})</strong>
+              </div>
+              <div class="col-sm-6">
+                <span class="text-secondary">Chef Kitchen:</span>
+                <strong class="text-dark">{{ order.chef.business_name }}</strong>
+              </div>
+              <div class="col-sm-6">
+                <span class="text-secondary">Order Date:</span>
+                <span class="text-dark">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger mb-4">
+              {% for error in form.non_field_errors %}
+                <p class="mb-0">{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="row g-3 mb-4">
+            {% if form.order %}
+              <div class="col-12">
+                <label class="tt-form-label">Associated Order *</label>
+                {{ form.order }}
+                {% if form.order.errors %}<div class="text-danger small mt-1">{{ form.order.errors.0 }}</div>{% endif %}
+                <div class="form-text small">Select the order for which payment is being settled or recorded.</div>
+              </div>
+            {% endif %}
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Payment Method / Mode *</label>
+              {{ form.payment_method }}
+              {% if form.payment_method.errors %}<div class="text-danger small mt-1">{{ form.payment_method.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Settlement Status *</label>
+              {{ form.payment_status }}
+              {% if form.payment_status.errors %}<div class="text-danger small mt-1">{{ form.payment_status.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Transaction Reference / UTR / Receipt ID</label>
+              {{ form.payment_transaction_id }}
+              {% if form.payment_transaction_id.errors %}<div class="text-danger small mt-1">{{ form.payment_transaction_id.errors.0 }}</div>{% endif %}
+              <div class="form-text small">E.g., UPI ref, Bank UTR, Cash Memo ref.</div>
+            </div>
+
+            <div class="col-md-6">
+              {% if form.final_amount %}
+                <label class="tt-form-label">Final Amount (₹) *</label>
+                {{ form.final_amount }}
+                {% if form.final_amount.errors %}<div class="text-danger small mt-1">{{ form.final_amount.errors.0 }}</div>{% endif %}
+              {% elif form.amount %}
+                <label class="tt-form-label">Amount Collected (₹)</label>
+                {{ form.amount }}
+                {% if form.amount.errors %}<div class="text-danger small mt-1">{{ form.amount.errors.0 }}</div>{% endif %}
+                <div class="form-text small">Leave blank to keep existing order final amount.</div>
+              {% endif %}
+            </div>
+
+            {% if form.notes %}
+              <div class="col-12">
+                <label class="tt-form-label">Settlement Remarks / Notes</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}<div class="text-danger small mt-1">{{ form.notes.errors.0 }}</div>{% endif %}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+            <a href="{% url 'adminpanel:payments' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+              <i class="bi bi-check-circle"></i>
+              {% if is_edit %}Update Payment Record{% else %}Save Payment Record{% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -113,7 +113,10 @@
               </td>
               <td class="pe-3 text-end tt-actions-cell">
                 <div class="tt-actions-group">
-                  <a href="{% url 'adminpanel:order_detail' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
+                  <a href="{% url 'adminpanel:order_edit' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Order">
+                    <i class="bi bi-pencil-fill"></i> Edit
+                  </a>
+                  <a href="{% url 'adminpanel:order_detail' order.id %}" class="btn btn-sm tt-btn-action tt-btn-action-secondary">
                     <i class="bi bi-gear-fill"></i> Manage
                   </a>
                   <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteOrderModal{{ order.id }}" title="Delete Order">
@@ -151,12 +154,14 @@
     {% endif %}
   </div>
 </div>
+{% endblock %}
 
+{% block modals %}
 {% for order in page_obj %}
 <!-- Delete Order Modal for {{ order.id }} -->
-<div class="modal fade" id="deleteOrderModal{{ order.id }}" tabindex="-1" aria-labelledby="deleteOrderModalLabel{{ order.id }}" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+<div class="modal fade" id="deleteOrderModal{{ order.id }}" tabindex="-1" aria-labelledby="deleteOrderModalLabel{{ order.id }}" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
       <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">

@@ -69,13 +69,19 @@
                   </a>
                 {% endif %}
                 {% if not notif.is_read %}
-                  <form action="{% url 'chef:notification_mark_read' notif.id %}" method="post">
+                  <form action="{% url 'chef:notification_mark_read' notif.id %}" method="post" class="d-inline m-0">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-sm btn-outline-secondary" title="Mark as read">
                       <i class="bi bi-check-lg"></i>
                     </button>
                   </form>
                 {% endif %}
+                <form action="{% url 'chef:notification_delete' notif.id %}" method="post" class="d-inline m-0">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete notification" onclick="return confirm('Delete this notification?')">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </form>
               </div>
             </div>
           {% empty %}

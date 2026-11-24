@@ -74,37 +74,12 @@
         </div>
 
         <div class="tt-card-footer p-3 border-top bg-light d-flex justify-content-between align-items-center">
-          <button type="button" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#deletePlanModal{{ plan.id }}">
-            <i class="bi bi-trash3"></i> Delete Plan
-          </button>
-          <a href="{% url 'chef:plan_edit' plan.id %}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">
-            <i class="bi bi-pencil"></i> Edit Plan
+          <a href="{% url 'chef:plan_edit' plan.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Plan">
+            <i class="bi bi-pencil-fill"></i> Edit
           </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delete Plan Modal -->
-    <div class="modal fade" id="deletePlanModal{{ plan.id }}" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <form action="{% url 'chef:plan_delete' plan.id %}" method="post">
-            {% csrf_token %}
-            <div class="modal-header">
-              <h5 class="modal-title fs-6 fw-bold text-danger d-flex align-items-center gap-2">
-                <i class="bi bi-exclamation-triangle-fill"></i> Confirm Plan Deletion
-              </h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-start">
-              <p class="mb-1 text-dark">Are you sure you want to delete meal plan <strong>"{{ plan.name }}"</strong>?</p>
-              <p class="text-muted small mb-0 mt-2 p-2 bg-light rounded border">If there are active subscriptions on this plan, it will be safely deactivated.</p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-sm btn-danger fw-semibold">Delete Plan</button>
-            </div>
-          </form>
+          <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deletePlanModal{{ plan.id }}" title="Delete Plan">
+            <i class="bi bi-trash-fill"></i> Delete
+          </button>
         </div>
       </div>
     </div>
@@ -121,4 +96,48 @@
     </div>
   {% endfor %}
 </div>
+{% endblock %}
+
+{% block modals %}
+{% for plan in plans %}
+<!-- Delete Plan Modal for {{ plan.id }} -->
+<div class="modal fade" id="deletePlanModal{{ plan.id }}" tabindex="-1" aria-labelledby="deletePlanModalLabel{{ plan.id }}" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deletePlanModalLabel{{ plan.id }}">Delete Meal Plan</h5>
+            <div class="text-muted small">Subscription Plan Removal</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-2">
+          Are you sure you want to delete meal plan <strong class="text-dark">"{{ plan.name }}"</strong>?
+        </p>
+        <div class="alert alert-warning border-0 bg-warning-subtle text-dark small rounded-3 mb-0 p-3 d-flex gap-2">
+          <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0 mt-0.5"></i>
+          <div>
+            <strong>Notice:</strong> If there are active subscribers enrolled on this plan, it will be safely deactivated to protect active deliveries.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
+        <form action="{% url 'chef:plan_delete' plan.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
+            <i class="bi bi-trash3-fill"></i> Permanently Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

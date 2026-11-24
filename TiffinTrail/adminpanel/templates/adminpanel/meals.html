@@ -52,11 +52,15 @@
 <!-- Meals Table -->
 <div class="tt-card tt-stagger-2">
   <div class="tt-card-header d-flex justify-content-between align-items-center">
-    <h5 class="tt-card-title">
+    <h5 class="tt-card-title mb-0">
       <i class="bi bi-egg-fried text-primary"></i>
       Homestyle Dishes Catalog
     </h5>
-    <span class="text-muted small">Menu Offerings</span>
+    <div class="d-flex align-items-center gap-2">
+      <a href="{% url 'adminpanel:meal_add' %}" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 shadow-sm">
+        <i class="bi bi-plus-circle-fill"></i> Add New Dish
+      </a>
+    </div>
   </div>
   <div class="tt-card-body p-0">
     <div class="tt-table-responsive">
@@ -130,7 +134,10 @@
 
               <td class="pe-3 text-end tt-actions-cell">
                 <div class="tt-actions-group">
-                  <a href="{% url 'adminpanel:meal_detail' meal.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
+                  <a href="{% url 'adminpanel:meal_edit' meal.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Dish Details">
+                    <i class="bi bi-pencil-fill"></i> Edit
+                  </a>
+                  <a href="{% url 'adminpanel:meal_detail' meal.id %}" class="btn btn-sm tt-btn-action tt-btn-action-secondary">
                     <i class="bi bi-gear-fill"></i> Manage
                   </a>
                   <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteMealModal{{ meal.id }}" title="Delete Dish">
@@ -168,12 +175,14 @@
     {% endif %}
   </div>
 </div>
+{% endblock %}
 
+{% block modals %}
 {% for meal in page_obj %}
 <!-- Delete Meal Modal for {{ meal.id }} -->
-<div class="modal fade" id="deleteMealModal{{ meal.id }}" tabindex="-1" aria-labelledby="deleteMealModalLabel{{ meal.id }}" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+<div class="modal fade" id="deleteMealModal{{ meal.id }}" tabindex="-1" aria-labelledby="deleteMealModalLabel{{ meal.id }}" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
       <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">

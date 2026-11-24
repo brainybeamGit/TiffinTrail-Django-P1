@@ -162,13 +162,16 @@
             </div>
 
             <div class="col-12">
-              <div class="form-check form-switch p-3 bg-light rounded border">
+              <label class="tt-checkbox-card tt-card-success" for="{{ form.is_accepting_orders.id_for_label }}">
                 {{ form.is_accepting_orders }}
-                <label class="form-check-label fw-bold ms-2 text-dark" for="{{ form.is_accepting_orders.id_for_label }}">
-                  Accepting Orders Currently
-                </label>
-                <div class="text-muted small ms-4">When turned off, diners will see your kitchen as temporarily paused.</div>
-              </div>
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Accepting Customer Orders Currently</div>
+                  <div class="tt-checkbox-card-desc">When turned off, diners will see your kitchen status as temporarily closed/paused</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-success">
+                  <i class="bi bi-shop-window"></i>
+                </div>
+              </label>
             </div>
           </div>
 

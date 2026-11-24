@@ -89,8 +89,11 @@
               <td class="text-end tt-actions-cell">
                 <div class="tt-actions-group">
                   <a href="{% url 'adminpanel:coupon_edit' cpn.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Coupon">
-                    <i class="bi bi-pencil-square"></i> Edit
+                    <i class="bi bi-pencil-fill"></i> Edit
                   </a>
+                  <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteCouponModal{{ cpn.id }}" title="Delete Coupon">
+                    <i class="bi bi-trash-fill"></i> Delete
+                  </button>
                 </div>
               </td>
             </tr>
@@ -107,4 +110,42 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block modals %}
+{% for cpn in coupons %}
+<!-- Delete Coupon Modal -->
+<div class="modal fade" id="deleteCouponModal{{ cpn.id }}" tabindex="-1" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 440px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5">Delete Coupon</h5>
+            <div class="text-muted small">Code: {{ cpn.code }}</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-0">
+          Are you sure you want to permanently delete coupon <strong class="text-dark">{{ cpn.code }}</strong>? This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form action="{% url 'adminpanel:coupon_delete' cpn.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+            <i class="bi bi-trash3-fill"></i> Delete Coupon
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

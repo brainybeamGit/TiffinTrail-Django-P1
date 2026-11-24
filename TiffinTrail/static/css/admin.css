@@ -143,8 +143,6 @@ a:hover {
 .tt-content {
   flex: 1;
   padding: 24px 28px;
-  animation: ttPageEntrance 0.38s var(--tt-ease-smooth) forwards;
-  will-change: opacity, transform;
 }
 
 @media (max-width: 768px) {
@@ -1405,55 +1403,76 @@ body.tt-collapsed-sidebar .tt-sidebar-link-btn {
 /* Custom Toggle Switch */
 .tt-toggle-switch {
   position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
   cursor: pointer;
+  user-select: none;
   margin-bottom: 0;
+  vertical-align: middle;
+  width: auto !important;
+  height: auto !important;
 }
 .tt-toggle-switch input {
+  position: absolute;
   opacity: 0;
   width: 0;
   height: 0;
+  margin: 0;
+  pointer-events: none;
 }
 .tt-toggle-track {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative !important;
+  display: inline-block !important;
+  width: 40px !important;
+  height: 22px !important;
   background-color: #cbd5e1;
-  border-radius: var(--tt-radius-pill);
-  transition: background-color 0.2s ease;
+  border-radius: 999px !important;
+  transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+  flex-shrink: 0;
 }
 .tt-toggle-thumb {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  background-color: #FFFFFF;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s var(--tt-ease-bounce);
+  position: absolute !important;
+  top: 2px !important;
+  left: 2px !important;
+  width: 18px !important;
+  height: 18px !important;
+  background-color: #FFFFFF !important;
+  border-radius: 50% !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 .tt-toggle-switch input:checked + .tt-toggle-track {
-  background-color: var(--tt-success);
+  background-color: #16a34a !important;
 }
 .tt-toggle-switch input:checked + .tt-toggle-track .tt-toggle-thumb {
-  transform: translateX(20px);
+  transform: translateX(18px) !important;
 }
 
-.tt-toggle-sm {
-  width: 36px;
-  height: 20px;
+.tt-toggle-switch.tt-toggle-sm .tt-toggle-track,
+.tt-toggle-sm .tt-toggle-track {
+  width: 36px !important;
+  height: 20px !important;
 }
+.tt-toggle-switch.tt-toggle-sm .tt-toggle-thumb,
 .tt-toggle-sm .tt-toggle-thumb {
-  width: 14px;
-  height: 14px;
+  width: 16px !important;
+  height: 16px !important;
+  top: 2px !important;
+  left: 2px !important;
 }
+.tt-toggle-switch.tt-toggle-sm input:checked + .tt-toggle-track .tt-toggle-thumb,
 .tt-toggle-sm input:checked + .tt-toggle-track .tt-toggle-thumb {
-  transform: translateX(16px);
+  transform: translateX(16px) !important;
+}
+
+.tt-toggle-label {
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  color: #475569 !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  user-select: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -1520,7 +1539,12 @@ body.tt-collapsed-sidebar .tt-sidebar-link-btn {
 /* --------------------------------------------------------------------------
    13. Modals & Alerts
    -------------------------------------------------------------------------- */
+.modal {
+  z-index: 1060 !important;
+}
+
 .modal-backdrop {
+  z-index: 1050 !important;
   background-color: var(--tt-charcoal-deep) !important;
 }
 .modal-backdrop.show {
@@ -1700,3 +1724,162 @@ body.tt-collapsed-sidebar .tt-sidebar-link-btn {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   TT CHECKBOX / TOGGLE SELECTION CARD COMPONENT
+   Clean, modern, properly aligned card for boolean options & checkboxes
+   ========================================================================== */
+.tt-checkbox-card {
+  position: relative;
+  display: flex !important;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 16px !important;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  min-height: 62px;
+  width: 100%;
+  margin: 0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.tt-checkbox-card:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tt-checkbox-card:has(input:checked),
+.tt-checkbox-card.is-checked {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+}
+
+.tt-checkbox-card.tt-card-veg:has(input:checked),
+.tt-checkbox-card.tt-card-veg.is-checked,
+.tt-checkbox-card.tt-card-success:has(input:checked),
+.tt-checkbox-card.tt-card-success.is-checked {
+  background-color: #ecfdf5;
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+}
+
+.tt-checkbox-card.tt-card-warning:has(input:checked),
+.tt-checkbox-card.tt-card-warning.is-checked,
+.tt-checkbox-card.tt-card-featured:has(input:checked),
+.tt-checkbox-card.tt-card-featured.is-checked {
+  background-color: #fffbeb;
+  border-color: #f59e0b;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);
+}
+
+.tt-checkbox-card.tt-card-danger:has(input:checked),
+.tt-checkbox-card.tt-card-danger.is-checked {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12);
+}
+
+.tt-checkbox-card input[type="checkbox"],
+.tt-checkbox-card .form-check-input {
+  float: none !important;
+  margin: 3px 0 0 0 !important;
+  position: static !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  border-radius: 6px !important;
+  border: 1.5px solid #94a3b8 !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  background-color: #ffffff;
+  transition: all 0.15s ease;
+}
+
+.tt-checkbox-card input[type="checkbox"]:focus,
+.tt-checkbox-card .form-check-input:focus {
+  outline: none;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+.tt-checkbox-card input[type="checkbox"]:checked,
+.tt-checkbox-card .form-check-input:checked {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+.tt-checkbox-card.tt-card-veg input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-veg .form-check-input:checked,
+.tt-checkbox-card.tt-card-success input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-success .form-check-input:checked {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+}
+
+.tt-checkbox-card.tt-card-warning input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-warning .form-check-input:checked,
+.tt-checkbox-card.tt-card-featured input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-featured .form-check-input:checked {
+  background-color: #f59e0b !important;
+  border-color: #f59e0b !important;
+}
+
+.tt-checkbox-card.tt-card-danger input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-danger .form-check-input:checked {
+  background-color: #ef4444 !important;
+  border-color: #ef4444 !important;
+}
+
+.tt-checkbox-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.tt-checkbox-card-title {
+  font-weight: 600;
+  font-size: 0.90rem;
+  color: #1e293b;
+  line-height: 1.35;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.tt-checkbox-card:has(input:checked) .tt-checkbox-card-title,
+.tt-checkbox-card.is-checked .tt-checkbox-card-title {
+  color: #0f172a;
+}
+
+.tt-checkbox-card-desc {
+  font-size: 0.76rem;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+.tt-checkbox-card:has(input:checked) .tt-checkbox-card-desc,
+.tt-checkbox-card.is-checked .tt-checkbox-card-desc {
+  color: #475569;
+}
+
+.tt-checkbox-card-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0.75;
+}
+

@@ -15,6 +15,9 @@
     <span class="tt-badge {% if sub.status == 'active' %}tt-badge-active{% elif sub.status == 'paused' %}tt-badge-warning{% elif sub.status == 'completed' %}tt-badge-delivered{% else %}tt-badge-cancelled{% endif %} fs-6 px-3 py-1">
       {{ sub.get_status_display }}
     </span>
+    <a href="{% url 'adminpanel:subscription_edit' sub.id %}" class="btn btn-sm btn-outline-primary ms-2 d-inline-flex align-items-center gap-1 shadow-sm">
+      <i class="bi bi-pencil-square"></i> Edit Subscription
+    </a>
   </div>
 </div>
 
@@ -144,11 +147,13 @@
     </div>
   </div>
 </div>
+{% endblock %}
 
+{% block modals %}
 <!-- Delete Subscription Modal -->
-<div class="modal fade" id="deleteSubModal" tabindex="-1" aria-labelledby="deleteSubModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+<div class="modal fade" id="deleteSubModal" tabindex="-1" aria-labelledby="deleteSubModalLabel" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
       <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
@@ -159,7 +164,7 @@
             <div class="text-muted small">Permanent Record Removal</div>
           </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
       </div>
       <div class="modal-body py-3 px-4">
         <p class="text-secondary mb-2">
@@ -172,11 +177,11 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
         <form action="{% url 'adminpanel:subscription_delete' sub.id %}" method="post" class="m-0">
           {% csrf_token %}
-          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
             <i class="bi bi-trash3-fill"></i> Permanently Delete
           </button>
         </form>

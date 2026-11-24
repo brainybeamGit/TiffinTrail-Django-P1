@@ -6,8 +6,8 @@
 {% block page_heading %}Complaints & Support Tickets{% endblock %}
 
 {% block content %}
-<!-- Status Filter Nav Tabs -->
-<div class="mb-4">
+<!-- Status Filter Nav Tabs & Open Ticket CTA -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
   <div class="tt-filter-nav">
     <a href="{% url 'adminpanel:complaints' %}" class="tt-filter-btn {% if not status_filter %}active{% endif %}">
       All Tickets <span class="badge bg-light text-dark ms-1">{{ counts.all }}</span>
@@ -25,6 +25,9 @@
       <i class="bi bi-archive text-secondary me-1"></i> Closed <span class="badge bg-secondary ms-1">{{ counts.closed }}</span>
     </a>
   </div>
+  <a href="{% url 'adminpanel:complaint_add' %}" class="btn btn-primary d-inline-flex align-items-center gap-1.5 shadow-sm px-3 py-2 fw-semibold">
+    <i class="bi bi-plus-lg"></i> Open Support Ticket
+  </a>
 </div>
 
 <!-- Search & Priority Filter Bar -->
@@ -127,9 +130,15 @@
               </td>
               <td class="text-end tt-actions-cell">
                 <div class="tt-actions-group">
-                  <a href="{% url 'adminpanel:complaint_detail' cmp.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
+                  <a href="{% url 'adminpanel:complaint_edit' cmp.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Ticket">
+                    <i class="bi bi-pencil-fill"></i> Edit
+                  </a>
+                  <a href="{% url 'adminpanel:complaint_detail' cmp.id %}" class="btn btn-sm tt-btn-action tt-btn-action-secondary">
                     Manage <i class="bi bi-arrow-right"></i>
                   </a>
+                  <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteComplaintModal{{ cmp.id }}" title="Delete Ticket">
+                    <i class="bi bi-trash-fill"></i> Delete
+                  </button>
                 </div>
               </td>
             </tr>
@@ -170,4 +179,42 @@
     {% endif %}
   </div>
 </div>
+{% endblock %}
+
+{% block modals %}
+{% for cmp in page_obj %}
+<!-- Delete Complaint Modal -->
+<div class="modal fade" id="deleteComplaintModal{{ cmp.id }}" tabindex="-1" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 440px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5">Delete Ticket</h5>
+            <div class="text-muted small">Ticket #{{ cmp.ticket_number }}</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-0">
+          Are you sure you want to permanently delete support ticket <strong class="text-dark">#{{ cmp.ticket_number }}</strong>? This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
+        <form action="{% url 'adminpanel:complaint_delete' cmp.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
+            <i class="bi bi-trash3-fill"></i> Delete Ticket
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

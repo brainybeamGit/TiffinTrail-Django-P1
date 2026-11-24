@@ -20,6 +20,9 @@
       <i class="bi {% if order.payment_status == 'paid' %}bi-check-circle-fill{% elif order.payment_status == 'pending' %}bi-clock{% else %}bi-exclamation-circle{% endif %} me-1"></i>
       {{ order.get_payment_status_display }}
     </span>
+    <a href="{% url 'adminpanel:order_edit' order.id %}" class="btn btn-sm btn-outline-primary px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow-sm ms-2">
+      <i class="bi bi-pencil-square"></i> Edit Order
+    </a>
     <button type="button" class="btn btn-sm btn-outline-danger px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#deleteOrderModal">
       <i class="bi bi-trash3"></i> Delete Order
     </button>
@@ -224,11 +227,13 @@
     </div>
   </div>
 </div>
+{% endblock %}
 
+{% block modals %}
 <!-- Delete Order Confirmation Modal -->
-<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-labelledby="deleteOrderModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-labelledby="deleteOrderModalLabel" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
       <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
@@ -239,7 +244,7 @@
             <div class="text-muted small">Permanent Order Removal</div>
           </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
       </div>
       <div class="modal-body py-3 px-4">
         <p class="text-secondary mb-2">
@@ -252,11 +257,11 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
         <form action="{% url 'adminpanel:order_delete' order.id %}" method="post" class="m-0">
           {% csrf_token %}
-          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
             <i class="bi bi-trash3-fill"></i> Permanently Delete
           </button>
         </form>
@@ -267,9 +272,9 @@
 
 {% if order.has_review and order.customer_review %}
 <!-- Delete Review Modal for Order -->
-<div class="modal fade" id="deleteOrderReviewModal" tabindex="-1" aria-labelledby="deleteOrderReviewModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+<div class="modal fade" id="deleteOrderReviewModal" tabindex="-1" aria-labelledby="deleteOrderReviewModalLabel" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
       <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
@@ -280,7 +285,7 @@
             <div class="text-muted small">Permanent Review Removal</div>
           </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
       </div>
       <div class="modal-body py-3 px-4">
         <p class="text-secondary mb-2">
@@ -301,12 +306,12 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
         <form action="{% url 'adminpanel:review_delete' order.customer_review.id %}" method="post" class="m-0">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.path }}">
-          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
             <i class="bi bi-trash3-fill"></i> Permanently Delete
           </button>
         </form>

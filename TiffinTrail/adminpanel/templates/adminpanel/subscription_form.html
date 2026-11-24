@@ -1,0 +1,117 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}SUBSCRIPTION OVERSIGHT{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center tt-stagger-1">
+  <div class="col-lg-8">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-calendar3-range text-primary"></i>
+          Edit Subscription #{{ sub.subscription_number }}
+        </h5>
+        <a href="{% url 'adminpanel:subscription_detail' sub.id %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> View Subscription
+        </a>
+      </div>
+
+      <div class="tt-card-body p-4">
+        {% if form.errors %}
+        <div class="alert alert-danger mb-4 rounded-3">
+          <strong class="d-block mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i>Please correct the errors below:</strong>
+          <ul class="mb-0 small ps-3">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3 mb-4">
+            <div class="col-12 border-bottom pb-2">
+              <h6 class="fw-bold mb-0 text-dark">1. Plan Schedule & Delivery Slot</h6>
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Subscription Status <span class="text-danger">*</span></label>
+              {{ form.status }}
+              {% if form.status.errors %}<div class="text-danger small mt-1">{{ form.status.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Delivery Slot <span class="text-danger">*</span></label>
+              {{ form.delivery_slot }}
+              {% if form.delivery_slot.errors %}<div class="text-danger small mt-1">{{ form.delivery_slot.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Dietary Preference <span class="text-danger">*</span></label>
+              {{ form.dietary_preference }}
+              {% if form.dietary_preference.errors %}<div class="text-danger small mt-1">{{ form.dietary_preference.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Start Date <span class="text-danger">*</span></label>
+              {{ form.start_date }}
+              {% if form.start_date.errors %}<div class="text-danger small mt-1">{{ form.start_date.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">End Date <span class="text-danger">*</span></label>
+              {{ form.end_date }}
+              {% if form.end_date.errors %}<div class="text-danger small mt-1">{{ form.end_date.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 border-bottom pb-2 mt-4">
+              <h6 class="fw-bold mb-0 text-dark">2. Recipient & Delivery Details</h6>
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Recipient Name <span class="text-danger">*</span></label>
+              {{ form.recipient_name }}
+              {% if form.recipient_name.errors %}<div class="text-danger small mt-1">{{ form.recipient_name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Recipient Phone Number <span class="text-danger">*</span></label>
+              {{ form.recipient_phone }}
+              {% if form.recipient_phone.errors %}<div class="text-danger small mt-1">{{ form.recipient_phone.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Delivery Address Text <span class="text-danger">*</span></label>
+              {{ form.delivery_address_text }}
+              {% if form.delivery_address_text.errors %}<div class="text-danger small mt-1">{{ form.delivery_address_text.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Customer Dietary / Delivery Notes</label>
+              {{ form.notes }}
+              {% if form.notes.errors %}<div class="text-danger small mt-1">{{ form.notes.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{% url 'adminpanel:subscription_detail' sub.id %}" class="btn btn-outline-secondary px-4">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold d-inline-flex align-items-center gap-2">
+              <i class="bi bi-check2-circle"></i> Save Subscription Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -97,23 +97,29 @@
             </div>
 
             <div class="col-md-6">
-              <div class="form-check p-3 rounded-3 border" style="background-color: var(--tt-surface-muted);">
+              <label class="tt-checkbox-card tt-card-veg" for="{{ form.is_veg.id_for_label }}">
                 {{ form.is_veg }}
-                <label class="form-check-label fw-bold ms-2" for="{{ form.is_veg.id_for_label }}">
-                  Pure Vegetarian Meal Plan
-                </label>
-                <div class="small text-muted ms-2 mt-1">Check if all meals in this plan are vegetarian.</div>
-              </div>
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Pure Vegetarian Meal Plan</div>
+                  <div class="tt-checkbox-card-desc">Check if all meals in this plan are 100% vegetarian</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-success">
+                  <i class="bi bi-patch-check-fill"></i>
+                </div>
+              </label>
             </div>
 
             <div class="col-md-6">
-              <div class="form-check p-3 rounded-3 border" style="background-color: var(--tt-surface-muted);">
+              <label class="tt-checkbox-card tt-card-success" for="{{ form.is_active.id_for_label }}">
                 {{ form.is_active }}
-                <label class="form-check-label fw-bold ms-2 text-success" for="{{ form.is_active.id_for_label }}">
-                  Active (Published for Customers)
-                </label>
-                <div class="small text-muted ms-2 mt-1">When checked, customers can subscribe to this plan.</div>
-              </div>
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Active (Published for Customers)</div>
+                  <div class="tt-checkbox-card-desc">When enabled, customers can discover and subscribe to this plan</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-primary">
+                  <i class="bi bi-calendar-check-fill"></i>
+                </div>
+              </label>
             </div>
 
             <!-- 3. Details & Conditions -->

@@ -201,4 +201,35 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
+
+  // 9. Checkbox Card Active State Synchronization
+  document.querySelectorAll('.tt-checkbox-card input[type="checkbox"]').forEach(chk => {
+    const updateCard = () => {
+      const card = chk.closest('.tt-checkbox-card');
+      if (card) {
+        if (chk.checked) {
+          card.classList.add('is-checked');
+        } else {
+          card.classList.remove('is-checked');
+        }
+      }
+    };
+    chk.addEventListener('change', updateCard);
+    updateCard();
+  });
+
+  // 10. Auto-relocate modals to document.body so they never get trapped behind backdrops
+  function relocateModals() {
+    document.querySelectorAll('.modal').forEach(function (modalEl) {
+      if (modalEl.parentElement !== document.body) {
+        document.body.appendChild(modalEl);
+      }
+    });
+  }
+  relocateModals();
+  document.addEventListener('show.bs.modal', function (e) {
+    if (e.target && e.target.parentElement !== document.body) {
+      document.body.appendChild(e.target);
+    }
+  });
 });

@@ -1,0 +1,183 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}DISH & MENU CATALOG{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center tt-stagger-1">
+  <div class="col-lg-9">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-egg-fried text-primary"></i>
+          {% if is_edit %}Edit Dish Details{% else %}Add New Meal to Menu{% endif %}
+        </h5>
+        <a href="{% url 'adminpanel:meals' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Meals
+        </a>
+      </div>
+
+      <div class="tt-card-body p-4">
+        {% if form.errors %}
+        <div class="alert alert-danger mb-4 rounded-3">
+          <strong class="d-block mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i>Please correct the errors below:</strong>
+          <ul class="mb-0 small ps-3">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3 mb-4">
+            <div class="col-12 border-bottom pb-2">
+              <h6 class="fw-bold mb-0 text-dark">1. Basic Dish Details</h6>
+            </div>
+
+            <div class="col-md-8">
+              <label class="tt-form-label">Dish Name <span class="text-danger">*</span></label>
+              {{ form.name }}
+              {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Home Chef <span class="text-danger">*</span></label>
+              {{ form.chef }}
+              {% if form.chef.errors %}<div class="text-danger small mt-1">{{ form.chef.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Category</label>
+              {{ form.category }}
+              {% if form.category.errors %}<div class="text-danger small mt-1">{{ form.category.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Meal Slot</label>
+              {{ form.meal_type }}
+              {% if form.meal_type.errors %}<div class="text-danger small mt-1">{{ form.meal_type.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Cuisine Style</label>
+              {{ form.cuisine }}
+              {% if form.cuisine.errors %}<div class="text-danger small mt-1">{{ form.cuisine.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Price per Portion (₹) <span class="text-danger">*</span></label>
+              {{ form.price }}
+              {% if form.price.errors %}<div class="text-danger small mt-1">{{ form.price.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-form-label">Daily Available Portions</label>
+              {{ form.available_quantity }}
+              {% if form.available_quantity.errors %}<div class="text-danger small mt-1">{{ form.available_quantity.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-2">
+              <label class="tt-form-label">Calories (kcal)</label>
+              {{ form.calories }}
+              {% if form.calories.errors %}<div class="text-danger small mt-1">{{ form.calories.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-2">
+              <label class="tt-form-label">Prep Time (min)</label>
+              {{ form.preparation_time }}
+              {% if form.preparation_time.errors %}<div class="text-danger small mt-1">{{ form.preparation_time.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 border-bottom pb-2 mt-4">
+              <h6 class="fw-bold mb-0 text-dark">2. Description & Image</h6>
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Detailed Description</label>
+              {{ form.description }}
+              {% if form.description.errors %}<div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-8">
+              <label class="tt-form-label">Dish Photo</label>
+              {{ form.image }}
+              <div class="tt-help-text">Upload clean, attractive food photo (JPEG/PNG/WEBP).</div>
+              {% if form.image.errors %}<div class="text-danger small mt-1">{{ form.image.errors.0 }}</div>{% endif %}
+            </div>
+
+            {% if meal.image %}
+            <div class="col-md-4 d-flex align-items-center">
+              <div class="p-2 border rounded bg-light text-center w-100">
+                <img src="{{ meal.image.url }}" alt="{{ meal.name }}" class="rounded img-fluid" style="max-height: 80px; object-fit: cover;">
+                <span class="d-block small text-muted mt-1">Current Dish Image</span>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="col-12 border-bottom pb-2 mt-4">
+              <h6 class="fw-bold mb-0 text-dark">3. Attributes & Visibility</h6>
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-checkbox-card tt-card-veg" for="{{ form.is_veg.id_for_label }}">
+                {{ form.is_veg }}
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Pure Vegetarian</div>
+                  <div class="tt-checkbox-card-desc">100% vegetarian green indicator</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-success">
+                  <i class="bi bi-patch-check-fill"></i>
+                </div>
+              </label>
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-checkbox-card tt-card-success" for="{{ form.is_available.id_for_label }}">
+                {{ form.is_available }}
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Available for Customer Orders</div>
+                  <div class="tt-checkbox-card-desc">Visible and orderable in customer menu</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-primary">
+                  <i class="bi bi-bag-check-fill"></i>
+                </div>
+              </label>
+            </div>
+
+            <div class="col-md-4">
+              <label class="tt-checkbox-card tt-card-warning" for="{{ form.is_featured.id_for_label }}">
+                {{ form.is_featured }}
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Featured Special on Home</div>
+                  <div class="tt-checkbox-card-desc">Showcase badge on customer home</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-warning">
+                  <i class="bi bi-star-fill"></i>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{% url 'adminpanel:meals' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold d-inline-flex align-items-center gap-2">
+              <i class="bi bi-check2-circle"></i>
+              <span>{% if is_edit %}Save Changes{% else %}Add Meal to Menu{% endif %}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

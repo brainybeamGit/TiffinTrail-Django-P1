@@ -17,7 +17,10 @@
     {% else %}
       <span class="tt-badge tt-badge-cancelled px-3 py-1">Deactivated Account</span>
     {% endif %}
-    <button type="button" class="btn btn-sm btn-outline-danger ms-2 d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#deleteCustomerModal">
+    <a href="{% url 'adminpanel:customer_edit' customer.id %}" class="btn btn-sm btn-outline-primary ms-2 d-inline-flex align-items-center gap-1 shadow-sm">
+      <i class="bi bi-pencil-square"></i> Edit Customer
+    </a>
+    <button type="button" class="btn btn-sm btn-outline-danger ms-1 d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#deleteCustomerModal">
       <i class="bi bi-trash3"></i> Delete Customer
     </button>
   </div>
@@ -226,11 +229,13 @@
     </div>
   </div>
 </div>
+{% endblock %}
 
+{% block modals %}
 <!-- Delete Customer Confirmation Modal -->
-<div class="modal fade" id="deleteCustomerModal" tabindex="-1" aria-labelledby="deleteCustomerModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+<div class="modal fade" id="deleteCustomerModal" tabindex="-1" aria-labelledby="deleteCustomerModalLabel" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
       <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
@@ -254,8 +259,16 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2 flex-wrap">
         <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+        {% if customer.is_active %}
+        <form action="{% url 'adminpanel:customer_toggle_status' customer.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-warning rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5" title="Deactivate/Hide account without deleting data">
+            <i class="bi bi-eye-slash-fill"></i> Deactivate / Hide
+          </button>
+        </form>
+        {% endif %}
         <form action="{% url 'adminpanel:customer_delete' customer.id %}" method="post" class="m-0">
           {% csrf_token %}
           <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">

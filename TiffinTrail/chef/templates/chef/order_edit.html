@@ -1,0 +1,73 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}ORDER FULFILLMENT & SUPERVISION{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-pencil-square text-warning"></i> Kitchen Order Management
+        </h5>
+        <a href="{% url 'chef:order_detail' order.id %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Order
+        </a>
+      </div>
+      <div class="tt-card-body">
+        <div class="p-3 rounded-3 border mb-4" style="background-color: var(--tt-surface-muted, #f8fafc);">
+          <div class="row g-2 small">
+            <div class="col-sm-6">
+              <span class="text-secondary">Order Ref:</span>
+              <strong class="text-dark">#{{ order.order_number }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary">Customer:</span>
+              <strong class="text-dark">{{ order.recipient_name }} ({{ order.recipient_phone }})</strong>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary">Order Amount:</span>
+              <strong class="text-success fs-6">₹{{ order.final_amount|floatformat:2 }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary">Delivery Address:</span>
+              <span class="text-dark">{{ order.delivery_address_text|truncatechars:45 }}</span>
+            </div>
+          </div>
+        </div>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="tt-form-label">Order Fulfillment Status *</label>
+            {{ form.status }}
+            {% if form.status.errors %}<div class="text-danger small mt-1">{{ form.status.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Kitchen Delivery Notes & Dispatch Instructions</label>
+            {{ form.delivery_notes }}
+            {% if form.delivery_notes.errors %}<div class="text-danger small mt-1">{{ form.delivery_notes.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-4">
+            <label class="tt-form-label">Cancellation Reason (if declining/cancelled)</label>
+            {{ form.cancellation_reason }}
+            {% if form.cancellation_reason.errors %}<div class="text-danger small mt-1">{{ form.cancellation_reason.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{% url 'chef:order_detail' order.id %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+              <i class="bi bi-check2-circle"></i> Update Order
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

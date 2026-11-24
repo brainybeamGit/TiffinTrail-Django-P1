@@ -75,15 +75,16 @@
             </div>
 
             <div class="col-12">
-              <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between" style="background-color: var(--tt-surface-muted);">
-                <div>
-                  <div class="fw-bold small text-dark">Coupon Status</div>
-                  <div class="text-muted small">Enable to allow customers to apply this code during checkout</div>
+              <label class="tt-checkbox-card tt-card-success" for="{{ form.is_active.id_for_label }}">
+                {{ form.is_active }}
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Active Coupon Code</div>
+                  <div class="tt-checkbox-card-desc">Enable to allow customers to apply this promo code during checkout</div>
                 </div>
-                <div class="form-check form-switch m-0">
-                  {{ form.is_active }}
+                <div class="tt-checkbox-card-icon text-success">
+                  <i class="bi bi-tag-fill"></i>
                 </div>
-              </div>
+              </label>
             </div>
           </div>
 

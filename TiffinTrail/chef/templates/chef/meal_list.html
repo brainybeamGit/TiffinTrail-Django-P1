@@ -147,11 +147,11 @@
               <td class="text-end tt-actions-cell">
                 <div class="tt-actions-group">
                   <a href="{% url 'chef:meal_edit' meal.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Dish">
-                    <i class="bi bi-pencil-square"></i> Edit
+                    <i class="bi bi-pencil-fill"></i> Edit
                   </a>
-                  <a href="{% url 'chef:meal_delete' meal.id %}" class="btn btn-sm tt-btn-action tt-btn-action-danger" title="Delete Dish">
-                    <i class="bi bi-trash3-fill"></i> Delete
-                  </a>
+                  <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteChefMealModal{{ meal.id }}" title="Delete Dish">
+                    <i class="bi bi-trash-fill"></i> Delete
+                  </button>
                 </div>
               </td>
             </tr>
@@ -172,4 +172,48 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block modals %}
+{% for meal in meals %}
+<!-- Delete Meal Modal for {{ meal.id }} -->
+<div class="modal fade" id="deleteChefMealModal{{ meal.id }}" tabindex="-1" aria-labelledby="deleteChefMealModalLabel{{ meal.id }}" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deleteChefMealModalLabel{{ meal.id }}">Delete Dish</h5>
+            <div class="text-muted small">Catalog Removal Confirmation</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-2">
+          Are you sure you want to permanently delete dish <strong class="text-dark">"{{ meal.name }}"</strong>?
+        </p>
+        <div class="alert alert-warning border-0 bg-warning-subtle text-dark small rounded-3 mb-0 p-3 d-flex gap-2">
+          <i class="bi bi-exclamation-triangle-fill text-warning flex-shrink-0 mt-0.5"></i>
+          <div>
+            <strong>Notice:</strong> This dish will be removed from your active kitchen menu. Completed order history will safely retain historical details.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
+        <form action="{% url 'chef:meal_delete' meal.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
+            <i class="bi bi-trash3-fill"></i> Permanently Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

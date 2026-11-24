@@ -14,7 +14,10 @@ from django.utils import timezone
 
 from customer.models import Order, OrderItem, Subscription, Review, CustomerProfile
 from .models import ChefProfile, Meal, MealPlan, MenuCategory, DailyMenu, ChefNotification
-from .forms import ChefRegistrationForm, ChefProfileForm, MealForm, MealPlanForm, DailyMenuForm, MenuCategoryForm
+from .forms import (
+    ChefRegistrationForm, ChefProfileForm, MealForm, MealPlanForm, DailyMenuForm, MenuCategoryForm,
+    ChefOrderEditForm, ChefSubscriptionEditForm
+)
 
 
 def chef_required(view_func):
@@ -385,6 +388,40 @@ def category_list(request):
 
 
 @chef_required
+def category_edit(request, cat_id):
+    chef = request.user.chef_profile
+    category = get_object_or_404(MenuCategory, id=cat_id)
+    if request.method == 'POST':
+        form = MenuCategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            cat = form.save()
+            messages.success(request, f"Category '{cat.name}' updated successfully.")
+            return redirect('chef:categories')
+        else:
+            messages.error(request, "Failed to update category. Please check form values.")
+    else:
+        form = MenuCategoryForm(instance=category)
+    return render(request, 'chef/category_form.html', {
+        'chef': chef,
+        'category': category,
+        'form': form,
+        'title': f"Edit Category: {category.name}",
+    })
+
+
+@chef_required
+def category_delete(request, cat_id):
+    chef = request.user.chef_profile
+    category = get_object_or_404(MenuCategory, id=cat_id)
+    if request.method == 'POST':
+        name = category.name
+        category.meals.filter(chef=chef).update(category=None)
+        category.delete()
+        messages.success(request, f"Category '{name}' deleted successfully.")
+    return redirect('chef:categories')
+
+
+@chef_required
 def daily_menu_view(request):
     chef = request.user.chef_profile
     today = timezone.now().date()
@@ -480,6 +517,28 @@ def daily_menu_toggle(request, menu_id):
     status_str = "Available" if menu.is_available else "Sold Out / Unavailable"
     messages.success(request, f"Menu item '{menu.meal.name}' marked as {status_str}.")
     return redirect(f"{reverse('chef:daily_menu')}?date={menu.date.strftime('%Y-%m-%d')}")
+
+
+@chef_required
+def daily_menu_edit(request, menu_id):
+    chef = request.user.chef_profile
+    menu = get_object_or_404(DailyMenu, id=menu_id, chef=chef)
+    if request.method == 'POST':
+        form = DailyMenuForm(chef, request.POST, instance=menu)
+        if form.is_valid():
+            updated_menu = form.save()
+            messages.success(request, f"Daily menu for '{updated_menu.meal.name}' on {updated_menu.date} updated.")
+            return redirect(f"{reverse('chef:daily_menu')}?date={updated_menu.date}")
+        else:
+            messages.error(request, "Failed to update menu item. Please check form inputs.")
+    else:
+        form = DailyMenuForm(chef, instance=menu)
+    return render(request, 'chef/daily_menu_edit.html', {
+        'chef': chef,
+        'menu': menu,
+        'form': form,
+        'title': f"Edit Schedule: {menu.meal.name}",
+    })
 
 
 @chef_required
@@ -614,6 +673,37 @@ def order_status_update(request, order_id):
 
 
 @chef_required
+def order_edit(request, order_id):
+    chef = request.user.chef_profile
+    order = get_object_or_404(Order, id=order_id, chef=chef)
+    if request.method == 'POST':
+        form = ChefOrderEditForm(request.POST, instance=order)
+        if form.is_valid():
+            ord_obj = form.save()
+            messages.success(request, f"Order #{ord_obj.order_number} details updated successfully.")
+            return redirect('chef:order_detail', order_id=ord_obj.id)
+    else:
+        form = ChefOrderEditForm(instance=order)
+    return render(request, 'chef/order_edit.html', {
+        'chef': chef,
+        'order': order,
+        'form': form,
+        'title': f"Edit Order #{order.order_number}",
+    })
+
+
+@chef_required
+def order_delete(request, order_id):
+    chef = request.user.chef_profile
+    order = get_object_or_404(Order, id=order_id, chef=chef)
+    if request.method == 'POST':
+        order_num = order.order_number
+        order.delete()
+        messages.success(request, f"Order #{order_num} has been deleted.")
+    return redirect('chef:orders')
+
+
+@chef_required
 def subscription_list(request):
     chef = request.user.chef_profile
     subs_qs = Subscription.objects.filter(chef=chef).select_related('user', 'plan')
@@ -685,6 +775,26 @@ def subscription_delete(request, subscription_id):
         subscription.delete()
         messages.success(request, f"Subscription #{sub_num} has been deleted successfully.")
     return redirect('chef:subscriptions')
+
+
+@chef_required
+def subscription_edit(request, subscription_id):
+    chef = request.user.chef_profile
+    subscription = get_object_or_404(Subscription, id=subscription_id, chef=chef)
+    if request.method == 'POST':
+        form = ChefSubscriptionEditForm(request.POST, instance=subscription)
+        if form.is_valid():
+            sub = form.save()
+            messages.success(request, f"Subscription #{sub.subscription_number} details updated.")
+            return redirect('chef:subscription_detail', subscription_id=sub.id)
+    else:
+        form = ChefSubscriptionEditForm(instance=subscription)
+    return render(request, 'chef/subscription_edit.html', {
+        'chef': chef,
+        'subscription': subscription,
+        'form': form,
+        'title': f"Edit Subscription #{subscription.subscription_number}",
+    })
 
 
 @chef_required
@@ -917,6 +1027,16 @@ def notifications_mark_all_read(request):
     chef = request.user.chef_profile
     ChefNotification.objects.filter(chef=chef, is_read=False).update(is_read=True)
     messages.success(request, "All notifications marked as read.")
+    return redirect('chef:notifications')
+
+
+@chef_required
+def notification_delete(request, notif_id):
+    chef = request.user.chef_profile
+    notif = get_object_or_404(ChefNotification, id=notif_id, chef=chef)
+    if request.method == 'POST':
+        notif.delete()
+        messages.success(request, "Notification deleted.")
     return redirect('chef:notifications')
 
 

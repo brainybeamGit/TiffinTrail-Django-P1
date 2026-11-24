@@ -15,6 +15,12 @@
     <span class="tt-badge tt-badge-{{ complaint.status }} fs-6 px-3 py-1.5">
       {{ complaint.get_status_display }}
     </span>
+    <a href="{% url 'adminpanel:complaint_edit' complaint.id %}" class="btn btn-sm btn-outline-primary px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow-sm ms-2">
+      <i class="bi bi-pencil-square"></i> Edit Ticket
+    </a>
+    <button type="button" class="btn btn-sm btn-outline-danger px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#deleteComplaintModal">
+      <i class="bi bi-trash3"></i> Delete Ticket
+    </button>
   </div>
 </div>
 
@@ -193,6 +199,42 @@
         </div>
       </div>
     {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Delete Complaint Modal -->
+<div class="modal fade" id="deleteComplaintModal" tabindex="-1" aria-labelledby="deleteComplaintModalLabel" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deleteComplaintModalLabel">Delete Support Ticket</h5>
+            <div class="text-muted small">Ticket #{{ complaint.ticket_number }}</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-0">
+          Are you sure you want to permanently delete support ticket <strong class="text-dark">#{{ complaint.ticket_number }}</strong>? This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
+        <form action="{% url 'adminpanel:complaint_delete' complaint.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
+            <i class="bi bi-trash3-fill"></i> Delete Ticket
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

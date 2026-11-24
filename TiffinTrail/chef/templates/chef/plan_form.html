@@ -69,21 +69,29 @@
             </div>
 
             <div class="col-md-6">
-              <div class="form-check p-3 bg-light rounded border">
+              <label class="tt-checkbox-card tt-card-veg" for="{{ form.is_veg.id_for_label }}">
                 {{ form.is_veg }}
-                <label class="form-check-label fw-bold ms-2" for="{{ form.is_veg.id_for_label }}">
-                  Pure Vegetarian Plan
-                </label>
-              </div>
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Pure Vegetarian Plan</div>
+                  <div class="tt-checkbox-card-desc">All meals included in this plan are 100% vegetarian</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-success">
+                  <i class="bi bi-patch-check-fill"></i>
+                </div>
+              </label>
             </div>
 
             <div class="col-md-6">
-              <div class="form-check form-switch p-3 bg-light rounded border">
+              <label class="tt-checkbox-card tt-card-success" for="{{ form.is_active.id_for_label }}">
                 {{ form.is_active }}
-                <label class="form-check-label fw-bold ms-2" for="{{ form.is_active.id_for_label }}">
-                  Active for Customer Subscriptions
-                </label>
-              </div>
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Active for Subscriptions</div>
+                  <div class="tt-checkbox-card-desc">Publish this plan so diners can subscribe</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-primary">
+                  <i class="bi bi-calendar-check-fill"></i>
+                </div>
+              </label>
             </div>
 
             <div class="col-12">

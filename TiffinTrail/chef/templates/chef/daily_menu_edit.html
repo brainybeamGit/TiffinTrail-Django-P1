@@ -1,0 +1,77 @@
+{% extends 'chef/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | TiffinTrail Chef Studio{% endblock %}
+{% block eyebrow %}DAILY MENU SCHEDULE{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-calendar3 text-warning"></i> Edit Scheduled Dish
+        </h5>
+        <a href="{% url 'chef:daily_menu' %}?date={{ menu.date|date:'Y-m-d' }}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Schedule
+        </a>
+      </div>
+      <div class="tt-card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="tt-form-label">Scheduled Date *</label>
+            {{ form.date }}
+            {% if form.date.errors %}<div class="text-danger small mt-1">{{ form.date.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Selected Dish *</label>
+            {{ form.meal }}
+            {% if form.meal.errors %}<div class="text-danger small mt-1">{{ form.meal.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Delivery Slot *</label>
+            {{ form.slot }}
+            {% if form.slot.errors %}<div class="text-danger small mt-1">{{ form.slot.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-form-label">Available Portions Quantity *</label>
+            {{ form.available_quantity }}
+            {% if form.available_quantity.errors %}<div class="text-danger small mt-1">{{ form.available_quantity.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="tt-checkbox-card tt-card-success" for="{{ form.is_available.id_for_label }}">
+              {{ form.is_available }}
+              <div class="tt-checkbox-card-body">
+                <div class="tt-checkbox-card-title">Available for Customer Orders</div>
+                <div class="tt-checkbox-card-desc">Keep checked to allow diners to order; uncheck if sold out</div>
+              </div>
+              <div class="tt-checkbox-card-icon text-success">
+                <i class="bi bi-calendar-check-fill"></i>
+              </div>
+            </label>
+          </div>
+
+          <div class="mb-4">
+            <label class="tt-form-label">Special Notes / Chef Remarks</label>
+            {{ form.special_notes }}
+            {% if form.special_notes.errors %}<div class="text-danger small mt-1">{{ form.special_notes.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{% url 'chef:daily_menu' %}?date={{ menu.date|date:'Y-m-d' }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+              <i class="bi bi-check2-circle"></i> Update Menu Schedule
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

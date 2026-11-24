@@ -1,0 +1,124 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}CUSTOMER DIRECTORY{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center tt-stagger-1">
+  <div class="col-lg-8">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-person-fill text-primary"></i>
+          {% if is_edit %}Edit Customer Profile{% else %}Create Diner Account{% endif %}
+        </h5>
+        <a href="{% url 'adminpanel:customers' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Diners
+        </a>
+      </div>
+
+      <div class="tt-card-body p-4">
+        {% if form.errors %}
+        <div class="alert alert-danger mb-4 rounded-3">
+          <strong class="d-block mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i>Please correct the errors below:</strong>
+          <ul class="mb-0 small ps-3">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3 mb-4">
+            <div class="col-12 border-bottom pb-2">
+              <h6 class="fw-bold mb-0 text-dark">1. Personal Information</h6>
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">First Name <span class="text-danger">*</span></label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Last Name <span class="text-danger">*</span></label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 border-bottom pb-2 mt-4">
+              <h6 class="fw-bold mb-0 text-dark">2. Login & Contact Credentials</h6>
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Username <span class="text-danger">*</span></label>
+              {{ form.username }}
+              {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Email Address <span class="text-danger">*</span></label>
+              {{ form.email }}
+              {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Phone Number (10 Digits)</label>
+              {{ form.phone }}
+              {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="tt-form-label">Password {% if not is_edit %}<span class="text-danger">*</span>{% endif %}</label>
+              {{ form.password }}
+              <div class="tt-help-text">{{ form.password.help_text }}</div>
+              {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 border-bottom pb-2 mt-4">
+              <h6 class="fw-bold mb-0 text-dark">3. Profile & Account Status</h6>
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Notes & Dietary Preferences</label>
+              {{ form.bio }}
+              {% if form.bio.errors %}<div class="text-danger small mt-1">{{ form.bio.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-checkbox-card tt-card-success" for="{{ form.is_active.id_for_label }}">
+                {{ form.is_active }}
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Active Customer Account</div>
+                  <div class="tt-checkbox-card-desc">Customer can log in, place tiffin orders and manage meal subscriptions</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-success">
+                  <i class="bi bi-person-check-fill"></i>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{% url 'adminpanel:customers' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold d-inline-flex align-items-center gap-2">
+              <i class="bi bi-check2-circle"></i>
+              <span>{% if is_edit %}Save Changes{% else %}Create Customer{% endif %}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

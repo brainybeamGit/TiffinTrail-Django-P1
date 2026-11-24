@@ -78,27 +78,27 @@
                     <strong class="text-dark">{{ menu.available_quantity }}</strong> <span class="text-muted small">portions</span>
                   </td>
                   <td>
-                    <form action="{% url 'chef:daily_menu_toggle' menu.id %}" method="post" class="d-inline">
+                    <form action="{% url 'chef:daily_menu_toggle' menu.id %}" method="post" class="d-inline m-0">
                       {% csrf_token %}
-                      <button type="submit" class="btn btn-sm {% if menu.is_available %}btn-outline-success{% else %}btn-outline-secondary{% endif %} py-1 px-2 d-inline-flex align-items-center gap-1">
-                        {% if menu.is_available %}
-                          <span class="tt-status-dot"></span> Available
-                        {% else %}
-                          <span class="tt-status-dot inactive"></span> Sold Out
-                        {% endif %}
-                      </button>
+                      <label class="tt-toggle-switch tt-toggle-sm m-0" for="dailyMenuToggle{{ menu.id }}" title="{% if menu.is_available %}Mark as Sold Out{% else %}Mark as Available{% endif %}">
+                        <input type="checkbox" id="dailyMenuToggle{{ menu.id }}" {% if menu.is_available %}checked{% endif %} onchange="this.form.submit()">
+                        <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
+                        <span class="tt-toggle-label">{% if menu.is_available %}Available{% else %}Sold Out{% endif %}</span>
+                      </label>
                     </form>
                   </td>
                   <td class="text-muted small">
                     {{ menu.special_notes|default:"—" }}
                   </td>
-                  <td class="text-end">
-                    <form action="{% url 'chef:daily_menu_delete' menu.id %}" method="post" class="d-inline">
-                      {% csrf_token %}
-                      <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2" title="Remove from schedule" onclick="return confirm('Remove this dish from {{ menu.date }} menu?')">
-                        <i class="bi bi-trash3"></i>
+                  <td class="text-end tt-actions-cell">
+                    <div class="tt-actions-group">
+                      <a href="{% url 'chef:daily_menu_edit' menu.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Scheduled Dish">
+                        <i class="bi bi-pencil-fill"></i> Edit
+                      </a>
+                      <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteMenuModal{{ menu.id }}" title="Remove from schedule">
+                        <i class="bi bi-trash-fill"></i> Delete
                       </button>
-                    </form>
+                    </div>
                   </td>
                 </tr>
               {% empty %}
@@ -163,12 +163,16 @@
           </div>
 
           <div class="mb-4">
-            <div class="form-check form-switch p-2 bg-light rounded border">
+            <label class="tt-checkbox-card tt-card-success" for="{{ form.is_available.id_for_label }}">
               {{ form.is_available }}
-              <label class="form-check-label fw-semibold ms-2" for="{{ form.is_available.id_for_label }}">
-                Mark as Available
-              </label>
-            </div>
+              <div class="tt-checkbox-card-body">
+                <div class="tt-checkbox-card-title">Available for Customer Orders</div>
+                <div class="tt-checkbox-card-desc">Scheduled meal will be active and orderable for this date</div>
+              </div>
+              <div class="tt-checkbox-card-icon text-success">
+                <i class="bi bi-calendar-check-fill"></i>
+              </div>
+            </label>
           </div>
 
           <button type="submit" class="btn btn-warning w-100 fw-bold tt-btn-gold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
@@ -179,4 +183,42 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block modals %}
+{% for menu in scheduled_menus %}
+<!-- Delete Menu Schedule Modal for {{ menu.id }} -->
+<div class="modal fade" id="deleteMenuModal{{ menu.id }}" tabindex="-1" aria-labelledby="deleteMenuModalLabel{{ menu.id }}" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-trash3-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deleteMenuModalLabel{{ menu.id }}">Remove from Schedule</h5>
+            <div class="text-muted small">Daily Menu Schedule Removal</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-2">
+          Are you sure you want to remove <strong class="text-dark">"{{ menu.meal.name }}"</strong> from the schedule for <strong>{{ menu.date|date:"d M Y" }}</strong> ({{ menu.get_slot_display }})?
+        </p>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
+        <form action="{% url 'chef:daily_menu_delete' menu.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
+            <i class="bi bi-trash3-fill"></i> Remove Schedule
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

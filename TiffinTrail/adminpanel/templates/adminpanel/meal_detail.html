@@ -32,7 +32,7 @@
       </div>
 
       <div class="tt-card-body">
-        <form method="post" novalidate>
+        <form method="post" enctype="multipart/form-data" novalidate>
           {% csrf_token %}
 
           <div class="row g-3 mb-4">
@@ -72,30 +72,42 @@
             </div>
 
             <div class="col-md-4">
-              <div class="form-check p-3 rounded border mt-4" style="background-color: var(--tt-surface-muted);">
+              <label class="tt-checkbox-card tt-card-veg" for="{{ form.is_veg.id_for_label }}">
                 {{ form.is_veg }}
-                <label class="form-check-label fw-semibold ms-2" for="{{ form.is_veg.id_for_label }}">
-                  Pure Vegetarian
-                </label>
-              </div>
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Pure Vegetarian</div>
+                  <div class="tt-checkbox-card-desc">100% vegetarian green indicator</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-success">
+                  <i class="bi bi-patch-check-fill"></i>
+                </div>
+              </label>
             </div>
 
-            <div class="col-md-6">
-              <div class="form-check form-switch p-3 rounded border" style="background-color: var(--tt-surface-muted);">
+            <div class="col-md-4">
+              <label class="tt-checkbox-card tt-card-success" for="{{ form.is_available.id_for_label }}">
                 {{ form.is_available }}
-                <label class="form-check-label fw-bold ms-2" for="{{ form.is_available.id_for_label }}">
-                  Available on Customer Website
-                </label>
-              </div>
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Available on Website</div>
+                  <div class="tt-checkbox-card-desc">Orderable by customers</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-primary">
+                  <i class="bi bi-bag-check-fill"></i>
+                </div>
+              </label>
             </div>
 
-            <div class="col-md-6">
-              <div class="form-check form-switch p-3 rounded border" style="background-color: var(--tt-surface-muted);">
+            <div class="col-md-4">
+              <label class="tt-checkbox-card tt-card-warning" for="{{ form.is_featured.id_for_label }}">
                 {{ form.is_featured }}
-                <label class="form-check-label fw-bold ms-2" for="{{ form.is_featured.id_for_label }}">
-                  Featured Dish
-                </label>
-              </div>
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title">Featured Dish</div>
+                  <div class="tt-checkbox-card-desc">Highlight on home feed</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-warning">
+                  <i class="bi bi-star-fill"></i>
+                </div>
+              </label>
             </div>
 
             <div class="col-12">
@@ -120,11 +132,13 @@
     </div>
   </div>
 </div>
+{% endblock %}
 
+{% block modals %}
 <!-- Delete Meal Modal -->
-<div class="modal fade" id="deleteMealModal" tabindex="-1" aria-labelledby="deleteMealModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+<div class="modal fade" id="deleteMealModal" tabindex="-1" aria-labelledby="deleteMealModalLabel" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 480px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
       <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
@@ -135,7 +149,7 @@
             <div class="text-muted small">Menu Item Deletion</div>
           </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
       </div>
       <div class="modal-body py-3 px-4">
         <p class="text-secondary mb-2">
@@ -148,11 +162,11 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
         <form action="{% url 'adminpanel:meal_delete' meal.id %}" method="post" class="m-0">
           {% csrf_token %}
-          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
             <i class="bi bi-trash3-fill"></i> Permanently Delete
           </button>
         </form>

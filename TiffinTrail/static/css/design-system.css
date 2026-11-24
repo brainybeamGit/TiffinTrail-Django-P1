@@ -532,3 +532,161 @@ h1, h2, h3, h4, h5, h6,
   color: #a06c05;
 }
 
+/* ==========================================================================
+   TT CHECKBOX / TOGGLE SELECTION CARD COMPONENT
+   ========================================================================== */
+.tt-checkbox-card {
+  position: relative;
+  display: flex !important;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 16px !important;
+  background-color: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  min-height: 62px;
+  width: 100%;
+  margin: 0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.tt-checkbox-card:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tt-checkbox-card:has(input:checked),
+.tt-checkbox-card.is-checked {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+}
+
+.tt-checkbox-card.tt-card-veg:has(input:checked),
+.tt-checkbox-card.tt-card-veg.is-checked,
+.tt-checkbox-card.tt-card-success:has(input:checked),
+.tt-checkbox-card.tt-card-success.is-checked {
+  background-color: #ecfdf5;
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+}
+
+.tt-checkbox-card.tt-card-warning:has(input:checked),
+.tt-checkbox-card.tt-card-warning.is-checked,
+.tt-checkbox-card.tt-card-featured:has(input:checked),
+.tt-checkbox-card.tt-card-featured.is-checked {
+  background-color: #fffbeb;
+  border-color: #f59e0b;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);
+}
+
+.tt-checkbox-card.tt-card-danger:has(input:checked),
+.tt-checkbox-card.tt-card-danger.is-checked {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12);
+}
+
+.tt-checkbox-card input[type="checkbox"],
+.tt-checkbox-card .form-check-input {
+  float: none !important;
+  margin: 3px 0 0 0 !important;
+  position: static !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  border-radius: 6px !important;
+  border: 1.5px solid #94a3b8 !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  background-color: #ffffff;
+  transition: all 0.15s ease;
+}
+
+.tt-checkbox-card input[type="checkbox"]:focus,
+.tt-checkbox-card .form-check-input:focus {
+  outline: none;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+.tt-checkbox-card input[type="checkbox"]:checked,
+.tt-checkbox-card .form-check-input:checked {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+.tt-checkbox-card.tt-card-veg input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-veg .form-check-input:checked,
+.tt-checkbox-card.tt-card-success input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-success .form-check-input:checked {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+}
+
+.tt-checkbox-card.tt-card-warning input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-warning .form-check-input:checked,
+.tt-checkbox-card.tt-card-featured input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-featured .form-check-input:checked {
+  background-color: #f59e0b !important;
+  border-color: #f59e0b !important;
+}
+
+.tt-checkbox-card.tt-card-danger input[type="checkbox"]:checked,
+.tt-checkbox-card.tt-card-danger .form-check-input:checked {
+  background-color: #ef4444 !important;
+  border-color: #ef4444 !important;
+}
+
+.tt-checkbox-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.tt-checkbox-card-title {
+  font-weight: 600;
+  font-size: 0.90rem;
+  color: #1e293b;
+  line-height: 1.35;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.tt-checkbox-card:has(input:checked) .tt-checkbox-card-title,
+.tt-checkbox-card.is-checked .tt-checkbox-card-title {
+  color: #0f172a;
+}
+
+.tt-checkbox-card-desc {
+  font-size: 0.76rem;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+.tt-checkbox-card:has(input:checked) .tt-checkbox-card-desc,
+.tt-checkbox-card.is-checked .tt-checkbox-card-desc {
+  color: #475569;
+}
+
+.tt-checkbox-card-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: 0.75;
+}
+
+

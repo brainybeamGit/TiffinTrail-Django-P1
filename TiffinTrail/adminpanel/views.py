@@ -19,7 +19,9 @@ from customer.models import Order, OrderItem, Subscription, Review, Coupon, Cust
 from .models import Complaint, AdminNotification, ChefVerificationLog, AdminActivityLog
 from .forms import (
     ChefVerificationForm, ComplaintUpdateForm, ComplaintCreateForm,
-    AdminCouponForm, AdminMealPlanForm, AdminMealForm, AdminProfileForm
+    AdminCouponForm, AdminMealPlanForm, AdminMealForm, AdminProfileForm,
+    AdminCustomerForm, AdminChefForm, AdminOrderEditForm, AdminSubscriptionEditForm,
+    AdminPaymentRecordForm, AdminPaymentEditForm, AdminComplaintEditForm, AdminReviewEditForm
 )
 
 
@@ -154,7 +156,9 @@ def dashboard(request):
 
 @admin_required
 def customer_list(request):
-    customers = User.objects.filter(is_staff=False, chef_profile__isnull=True).order_by('-date_joined')
+    customers = User.objects.filter(is_staff=False).filter(
+        Q(customer_profile__isnull=False) | Q(chef_profile__isnull=True)
+    ).distinct().order_by('-date_joined')
 
     # Search
     search_q = request.GET.get('q', '').strip()
@@ -204,7 +208,7 @@ def customer_list(request):
 
 @admin_required
 def customer_detail(request, user_id):
-    customer = get_object_or_404(User, id=user_id, is_staff=False, chef_profile__isnull=True)
+    customer = get_object_or_404(User, id=user_id)
     orders = Order.objects.filter(user=customer).select_related('chef').order_by('-created_at')
     subscriptions = Subscription.objects.filter(user=customer).select_related('chef', 'plan').order_by('-created_at')
     complaints = Complaint.objects.filter(customer=customer).order_by('-created_at')
@@ -225,7 +229,7 @@ def customer_detail(request, user_id):
 
 @admin_required
 def customer_toggle_status(request, user_id):
-    customer = get_object_or_404(User, id=user_id, is_staff=False, chef_profile__isnull=True)
+    customer = get_object_or_404(User, id=user_id)
     if request.method == 'POST':
         customer.is_active = not customer.is_active
         customer.save()
@@ -238,24 +242,36 @@ def customer_toggle_status(request, user_id):
             details=f"Customer account {customer.username} set to {status_str}."
         )
         messages.success(request, f"Customer account {customer.username} has been {status_str}.")
-    return redirect('adminpanel:customer_detail', user_id=customer.id)
+    next_url = request.POST.get('next') or request.META.get('HTTP_REFERER')
+    if next_url and next_url != request.build_absolute_uri():
+        return redirect(next_url)
+    return redirect('adminpanel:customers')
 
 
 @admin_required
 def customer_delete(request, user_id):
     """Permanently delete a customer account and record audit log."""
-    customer = get_object_or_404(User, id=user_id, is_staff=False, chef_profile__isnull=True)
+    customer = get_object_or_404(User, id=user_id)
     if request.method == 'POST':
         cust_username = customer.username
         cust_email = customer.email
         cust_name = customer.get_full_name() or cust_username
 
-        if customer.is_staff or customer.is_superuser or hasattr(customer, 'chef_profile'):
-            messages.error(request, "Staff and Chef accounts cannot be deleted from the customer section.")
+        if customer == request.user:
+            messages.error(request, "You cannot delete your own logged-in administrator account.")
+            return redirect('adminpanel:customers')
+
+        if customer.is_superuser:
+            messages.error(request, "Root superuser accounts cannot be deleted from the customer section.")
             return redirect('adminpanel:customers')
 
         with transaction.atomic():
-            chef_ids = list(customer.reviews.values_list('chef_id', flat=True))
+            chef_ids = []
+            if hasattr(customer, 'reviews'):
+                try:
+                    chef_ids = list(customer.reviews.values_list('chef_id', flat=True))
+                except Exception:
+                    chef_ids = []
 
             AdminActivityLog.objects.create(
                 admin=request.user,
@@ -275,7 +291,89 @@ def customer_delete(request, user_id):
         messages.success(request, f"Customer account '{cust_name}' (@{cust_username}) has been permanently deleted.")
         return redirect('adminpanel:customers')
 
-    return redirect('adminpanel:customer_detail', user_id=customer.id)
+    return redirect('adminpanel:customers')
+
+
+@admin_required
+def customer_add(request):
+    """Admin view to create a new diner account and profile."""
+    if request.method == 'POST':
+        form = AdminCustomerForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                user = User.objects.create_user(
+                    username=form.cleaned_data['username'],
+                    email=form.cleaned_data['email'],
+                    password=form.cleaned_data['password'],
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    is_active=form.cleaned_data['is_active']
+                )
+                CustomerProfile.objects.create(
+                    user=user,
+                    phone=form.cleaned_data['phone'],
+                    bio=form.cleaned_data['bio']
+                )
+                AdminActivityLog.objects.create(
+                    admin=request.user,
+                    action="Customer Created",
+                    target_model='User',
+                    target_id=str(user.id),
+                    details=f"Customer @{user.username} created by admin {request.user.username}."
+                )
+            messages.success(request, f"Customer account @{user.username} created successfully.")
+            return redirect('adminpanel:customers')
+    else:
+        form = AdminCustomerForm()
+
+    return render(request, 'adminpanel/customer_form.html', {
+        'form': form,
+        'title': 'Add New Customer',
+        'is_edit': False,
+    })
+
+
+@admin_required
+def customer_edit(request, user_id):
+    """Admin view to edit an existing diner account and profile."""
+    customer = get_object_or_404(User, id=user_id)
+    profile, _ = CustomerProfile.objects.get_or_create(user=customer)
+
+    if request.method == 'POST':
+        form = AdminCustomerForm(request.POST, user_instance=customer)
+        if form.is_valid():
+            with transaction.atomic():
+                customer.first_name = form.cleaned_data['first_name']
+                customer.last_name = form.cleaned_data['last_name']
+                customer.username = form.cleaned_data['username']
+                customer.email = form.cleaned_data['email']
+                customer.is_active = form.cleaned_data['is_active']
+                if form.cleaned_data.get('password'):
+                    customer.set_password(form.cleaned_data['password'])
+                customer.save()
+
+                profile.phone = form.cleaned_data['phone']
+                profile.bio = form.cleaned_data['bio']
+                profile.save()
+
+                AdminActivityLog.objects.create(
+                    admin=request.user,
+                    action="Customer Updated",
+                    target_model='User',
+                    target_id=str(customer.id),
+                    details=f"Customer @{customer.username} details updated by admin {request.user.username}."
+                )
+            messages.success(request, f"Customer @{customer.username} updated successfully.")
+            return redirect('adminpanel:customer_detail', user_id=customer.id)
+    else:
+        form = AdminCustomerForm(user_instance=customer)
+
+    return render(request, 'adminpanel/customer_form.html', {
+        'form': form,
+        'customer': customer,
+        'title': f"Edit Customer: {customer.get_full_name() or customer.username}",
+        'is_edit': True,
+    })
 
 
 # ==============================================================================
@@ -518,6 +616,104 @@ def chef_update_images(request, chef_id):
     return redirect('adminpanel:chef_detail', chef_id=chef.id)
 
 
+@admin_required
+def chef_add(request):
+    """Admin view to register a new partner home chef."""
+    if request.method == 'POST':
+        form = AdminChefForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                user = User.objects.create_user(
+                    username=form.cleaned_data['username'],
+                    email=form.cleaned_data['email'],
+                    password=form.cleaned_data['password'],
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name']
+                )
+                chef = ChefProfile.objects.create(
+                    user=user,
+                    business_name=form.cleaned_data['business_name'],
+                    phone=form.cleaned_data['phone'],
+                    specialties=form.cleaned_data['specialties'],
+                    cuisines=form.cleaned_data['cuisines'],
+                    service_areas=form.cleaned_data['service_areas'],
+                    starting_price=form.cleaned_data['starting_price'],
+                    commission_rate=form.cleaned_data['commission_rate'],
+                    kitchen_address=form.cleaned_data['kitchen_address'],
+                    bio=form.cleaned_data['bio'],
+                    verification_status=form.cleaned_data['verification_status'],
+                    is_approved=form.cleaned_data['is_approved'],
+                    is_active=form.cleaned_data['is_active']
+                )
+                AdminActivityLog.objects.create(
+                    admin=request.user,
+                    action="Chef Created",
+                    target_model='ChefProfile',
+                    target_id=str(chef.id),
+                    details=f"Chef kitchen '{chef.business_name}' registered by admin {request.user.username}."
+                )
+            messages.success(request, f"Chef kitchen '{chef.business_name}' registered successfully.")
+            return redirect('adminpanel:chefs')
+    else:
+        form = AdminChefForm()
+
+    return render(request, 'adminpanel/chef_form.html', {
+        'form': form,
+        'title': 'Add New Partner Chef',
+        'is_edit': False,
+    })
+
+
+@admin_required
+def chef_edit(request, chef_id):
+    """Admin view to edit chef details."""
+    chef = get_object_or_404(ChefProfile, id=chef_id)
+
+    if request.method == 'POST':
+        form = AdminChefForm(request.POST, chef_instance=chef)
+        if form.is_valid():
+            with transaction.atomic():
+                user = chef.user
+                user.first_name = form.cleaned_data['first_name']
+                user.last_name = form.cleaned_data['last_name']
+                user.username = form.cleaned_data['username']
+                user.email = form.cleaned_data['email']
+                if form.cleaned_data.get('password'):
+                    user.set_password(form.cleaned_data['password'])
+                user.save()
+
+                chef.business_name = form.cleaned_data['business_name']
+                chef.phone = form.cleaned_data['phone']
+                chef.specialties = form.cleaned_data['specialties']
+                chef.cuisines = form.cleaned_data['cuisines']
+                chef.service_areas = form.cleaned_data['service_areas']
+                chef.starting_price = form.cleaned_data['starting_price']
+                chef.commission_rate = form.cleaned_data['commission_rate']
+                chef.kitchen_address = form.cleaned_data['kitchen_address']
+                chef.bio = form.cleaned_data['bio']
+                chef.verification_status = form.cleaned_data['verification_status']
+                chef.is_approved = form.cleaned_data['is_approved']
+                chef.is_active = form.cleaned_data['is_active']
+                chef.save()
+
+                AdminActivityLog.objects.create(
+                    admin=request.user,
+                    action="Chef Updated",
+                    target_model='ChefProfile',
+                    target_id=str(chef.id),
+                    details=f"Chef '{chef.business_name}' details updated by admin {request.user.username}."
+                )
+            messages.success(request, f"Chef '{chef.business_name}' updated successfully.")
+            return redirect('adminpanel:chef_detail', chef_id=chef.id)
+    else:
+        form = AdminChefForm(chef_instance=chef)
+
+    return render(request, 'adminpanel/chef_form.html', {
+        'form': form,
+        'chef': chef,
+        'title': f"Edit Chef: {chef.business_name}",
+        'is_edit': True,
+    })
 
 
 # ==============================================================================
@@ -575,7 +771,7 @@ def meal_detail(request, meal_id):
     orders_count = OrderItem.objects.filter(meal=meal).count()
 
     if request.method == 'POST':
-        form = AdminMealForm(request.POST, instance=meal)
+        form = AdminMealForm(request.POST, request.FILES, instance=meal)
         if form.is_valid():
             form.save()
             messages.success(request, f"Meal '{meal.name}' updated successfully.")
@@ -617,6 +813,60 @@ def meal_delete(request, meal_id):
         )
         messages.success(request, f"Meal '{name}' was permanently deleted.")
     return redirect('adminpanel:meals')
+
+
+@admin_required
+def meal_add(request):
+    """Admin view to create a new homestyle dish/meal."""
+    if request.method == 'POST':
+        form = AdminMealForm(request.POST, request.FILES)
+        if form.is_valid():
+            meal = form.save()
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Meal Created",
+                target_model='Meal',
+                target_id=str(meal.id),
+                details=f"Dish '{meal.name}' created by admin for kitchen {meal.chef.business_name}."
+            )
+            messages.success(request, f"Dish '{meal.name}' added successfully.")
+            return redirect('adminpanel:meals')
+    else:
+        form = AdminMealForm()
+
+    return render(request, 'adminpanel/meal_form.html', {
+        'form': form,
+        'title': 'Add New Dish / Meal',
+        'is_edit': False,
+    })
+
+
+@admin_required
+def meal_edit(request, meal_id):
+    """Admin view to edit a dish/meal."""
+    meal = get_object_or_404(Meal, id=meal_id)
+    if request.method == 'POST':
+        form = AdminMealForm(request.POST, request.FILES, instance=meal)
+        if form.is_valid():
+            meal = form.save()
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Meal Updated",
+                target_model='Meal',
+                target_id=str(meal.id),
+                details=f"Dish '{meal.name}' modified by admin {request.user.username}."
+            )
+            messages.success(request, f"Dish '{meal.name}' updated successfully.")
+            return redirect('adminpanel:meal_detail', meal_id=meal.id)
+    else:
+        form = AdminMealForm(instance=meal)
+
+    return render(request, 'adminpanel/meal_form.html', {
+        'form': form,
+        'meal': meal,
+        'title': f"Edit Dish: {meal.name}",
+        'is_edit': True,
+    })
 
 
 # ==============================================================================
@@ -866,6 +1116,34 @@ def subscription_delete(request, sub_id):
     return redirect('adminpanel:subscriptions')
 
 
+@admin_required
+def subscription_edit(request, sub_id):
+    """Admin view to edit subscription terms, recipient info, and delivery details."""
+    sub = get_object_or_404(Subscription, id=sub_id)
+    if request.method == 'POST':
+        form = AdminSubscriptionEditForm(request.POST, instance=sub)
+        if form.is_valid():
+            sub = form.save()
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Subscription Updated",
+                target_model='Subscription',
+                target_id=str(sub.id),
+                details=f"Subscription #{sub.subscription_number} updated by admin {request.user.username}."
+            )
+            messages.success(request, f"Subscription #{sub.subscription_number} updated successfully.")
+            return redirect('adminpanel:subscription_detail', sub_id=sub.id)
+    else:
+        form = AdminSubscriptionEditForm(instance=sub)
+
+    return render(request, 'adminpanel/subscription_form.html', {
+        'form': form,
+        'sub': sub,
+        'title': f"Edit Subscription #{sub.subscription_number}",
+        'is_edit': True,
+    })
+
+
 # ==============================================================================
 # Order Management
 # ==============================================================================
@@ -961,6 +1239,34 @@ def order_delete(request, order_id):
     return redirect('adminpanel:order_detail', order_id=order.id)
 
 
+@admin_required
+def order_edit(request, order_id):
+    """Admin view to edit order details (fulfillment status, payment, recipient, and delivery address)."""
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        form = AdminOrderEditForm(request.POST, instance=order)
+        if form.is_valid():
+            order = form.save()
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Order Updated",
+                target_model='Order',
+                target_id=str(order.id),
+                details=f"Order #{order.order_number} modified by admin {request.user.username}."
+            )
+            messages.success(request, f"Order #{order.order_number} updated successfully.")
+            return redirect('adminpanel:order_detail', order_id=order.id)
+    else:
+        form = AdminOrderEditForm(instance=order)
+
+    return render(request, 'adminpanel/order_form.html', {
+        'form': form,
+        'order': order,
+        'title': f"Edit Order #{order.order_number}",
+        'is_edit': True,
+    })
+
+
 # ==============================================================================
 # Payment Management
 # ==============================================================================
@@ -1004,6 +1310,101 @@ def payment_list(request):
 def payment_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, 'adminpanel/payment_detail.html', {'order': order})
+
+
+@admin_required
+def payment_add(request):
+    """Admin view to record an offline or manual payment transaction."""
+    if request.method == 'POST':
+        form = AdminPaymentRecordForm(request.POST)
+        if form.is_valid():
+            order = form.cleaned_data['order']
+            payment_status = form.cleaned_data['payment_status']
+            payment_method = form.cleaned_data['payment_method']
+            txn_id = form.cleaned_data['payment_transaction_id']
+            amount = form.cleaned_data['amount']
+            notes = form.cleaned_data['notes']
+
+            order.payment_status = payment_status
+            order.payment_method = payment_method
+            if txn_id:
+                order.payment_transaction_id = txn_id
+            if amount is not None:
+                order.final_amount = amount
+            order.save()
+
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Payment Recorded",
+                target_model='Order',
+                target_id=str(order.id),
+                details=f"Payment for order #{order.order_number} recorded as {payment_status.upper()} ({payment_method}) by {request.user.username}. Notes: {notes}"
+            )
+            messages.success(request, f"Payment for order #{order.order_number} recorded successfully.")
+            return redirect('adminpanel:payment_detail', order_id=order.id)
+    else:
+        initial = {}
+        order_id = request.GET.get('order_id')
+        if order_id:
+            try:
+                order_inst = Order.objects.get(id=order_id)
+                initial['order'] = order_inst.id
+                initial['amount'] = order_inst.final_amount
+            except Order.DoesNotExist:
+                pass
+        form = AdminPaymentRecordForm(initial=initial)
+
+    return render(request, 'adminpanel/payment_form.html', {
+        'form': form,
+        'title': 'Record New Payment',
+        'is_edit': False,
+    })
+
+
+@admin_required
+def payment_edit(request, order_id):
+    """Admin view to update payment settlement details for an order."""
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        form = AdminPaymentEditForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Payment Updated",
+                target_model='Order',
+                target_id=str(order.id),
+                details=f"Payment details for order #{order.order_number} updated to {order.payment_status} ({order.payment_method}) by {request.user.username}."
+            )
+            messages.success(request, f"Payment details for order #{order.order_number} updated successfully.")
+            return redirect('adminpanel:payment_detail', order_id=order.id)
+    else:
+        form = AdminPaymentEditForm(instance=order)
+
+    return render(request, 'adminpanel/payment_form.html', {
+        'form': form,
+        'order': order,
+        'title': f'Edit Payment: #{order.order_number}',
+        'is_edit': True,
+    })
+
+
+@admin_required
+def payment_delete(request, order_id):
+    """Admin view to refund or void a payment transaction."""
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        order.payment_status = 'refunded'
+        order.save(update_fields=['payment_status', 'updated_at'])
+        AdminActivityLog.objects.create(
+            admin=request.user,
+            action="Payment Refunded / Voided",
+            target_model='Order',
+            target_id=str(order.id),
+            details=f"Payment for order #{order.order_number} marked as refunded/voided by {request.user.username}."
+        )
+        messages.success(request, f"Payment for order #{order.order_number} marked as Refunded / Voided.")
+    return redirect('adminpanel:payments')
 
 
 # ==============================================================================
@@ -1097,7 +1498,53 @@ def complaint_add(request):
     else:
         form = ComplaintCreateForm()
 
-    return render(request, 'adminpanel/complaint_form.html', {'form': form})
+    return render(request, 'adminpanel/complaint_form.html', {'form': form, 'title': 'Open Support Ticket', 'is_edit': False})
+
+
+@admin_required
+def complaint_edit(request, complaint_id):
+    """Admin view to edit a customer support ticket/complaint."""
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    if request.method == 'POST':
+        form = AdminComplaintEditForm(request.POST, instance=complaint)
+        if form.is_valid():
+            cmp = form.save()
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Complaint Updated",
+                target_model='Complaint',
+                target_id=str(cmp.id),
+                details=f"Support ticket #{cmp.ticket_number} updated by {request.user.username}."
+            )
+            messages.success(request, f"Support ticket #{cmp.ticket_number} updated successfully.")
+            return redirect('adminpanel:complaint_detail', complaint_id=cmp.id)
+    else:
+        form = AdminComplaintEditForm(instance=complaint)
+
+    return render(request, 'adminpanel/complaint_form.html', {
+        'form': form,
+        'complaint': complaint,
+        'is_edit': True,
+        'title': f'Edit Ticket: #{complaint.ticket_number}',
+    })
+
+
+@admin_required
+def complaint_delete(request, complaint_id):
+    """Admin view to delete a support ticket/complaint."""
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    if request.method == 'POST':
+        ticket = complaint.ticket_number
+        complaint.delete()
+        AdminActivityLog.objects.create(
+            admin=request.user,
+            action="Complaint Deleted",
+            target_model='Complaint',
+            target_id=str(complaint_id),
+            details=f"Support ticket #{ticket} deleted by admin {request.user.username}."
+        )
+        messages.success(request, f"Support ticket #{ticket} deleted successfully.")
+    return redirect('adminpanel:complaints')
 
 
 # ==============================================================================
@@ -1164,6 +1611,24 @@ def coupon_toggle(request, coupon_id):
         coupon.save()
         status_str = "Active" if coupon.is_active else "Inactive"
         messages.success(request, f"Coupon '{coupon.code}' is now {status_str}.")
+    return redirect('adminpanel:coupons')
+
+
+@admin_required
+def coupon_delete(request, coupon_id):
+    """Admin view to delete a promotion coupon."""
+    coupon = get_object_or_404(Coupon, id=coupon_id)
+    if request.method == 'POST':
+        code = coupon.code
+        coupon.delete()
+        AdminActivityLog.objects.create(
+            admin=request.user,
+            action="Coupon Deleted",
+            target_model='Coupon',
+            target_id=str(coupon_id),
+            details=f"Coupon '{code}' deleted by admin {request.user.username}."
+        )
+        messages.success(request, f"Coupon '{code}' deleted successfully.")
     return redirect('adminpanel:coupons')
 
 
@@ -1245,6 +1710,34 @@ def review_delete(request, review_id):
             return redirect(next_url)
         return redirect('adminpanel:reviews')
     return redirect('adminpanel:reviews')
+
+
+@admin_required
+def review_edit(request, review_id):
+    """Admin view to edit a customer review and moderation details."""
+    review = get_object_or_404(Review, id=review_id)
+    if request.method == 'POST':
+        form = AdminReviewEditForm(request.POST, instance=review)
+        if form.is_valid():
+            rev = form.save()
+            rev.chef.update_rating()
+            AdminActivityLog.objects.create(
+                admin=request.user,
+                action="Review Edited",
+                target_model='Review',
+                target_id=str(rev.id),
+                details=f"Review #{rev.id} edited by admin {request.user.username}."
+            )
+            messages.success(request, f"Review #{rev.id} updated successfully.")
+            return redirect('adminpanel:reviews')
+    else:
+        form = AdminReviewEditForm(instance=review)
+
+    return render(request, 'adminpanel/review_form.html', {
+        'form': form,
+        'review': review,
+        'title': f'Edit Review #{review.id}',
+    })
 
 
 

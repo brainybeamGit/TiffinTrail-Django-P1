@@ -1,0 +1,101 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | TiffinTrail Admin Console{% endblock %}
+{% block eyebrow %}CONTENT MODERATION & QUALITY{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="tt-card">
+      <div class="tt-card-header d-flex justify-content-between align-items-center">
+        <h5 class="tt-card-title d-flex align-items-center gap-2">
+          <i class="bi bi-star-half text-warning"></i> Edit Diner Review & Moderation Notes
+        </h5>
+        <a href="{% url 'adminpanel:reviews' %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+          <i class="bi bi-arrow-left"></i> Back to Reviews
+        </a>
+      </div>
+
+      <div class="tt-card-body">
+        <div class="p-3 rounded-3 border mb-4" style="background-color: var(--tt-surface-muted);">
+          <div class="row g-2 small">
+            <div class="col-sm-6">
+              <span class="text-secondary">Diner:</span>
+              <strong class="text-dark">{{ review.user.get_full_name|default:review.user.username }}</strong>
+            </div>
+            <div class="col-sm-6">
+              <span class="text-secondary">Chef Kitchen:</span>
+              <strong class="text-dark">{{ review.chef.business_name }}</strong>
+            </div>
+            {% if review.meal %}
+              <div class="col-sm-6">
+                <span class="text-secondary">Reviewed Dish:</span>
+                <strong class="text-dark">{{ review.meal.name }}</strong>
+              </div>
+            {% endif %}
+            <div class="col-sm-6">
+              <span class="text-secondary">Posted On:</span>
+              <span class="text-dark">{{ review.created_at|date:"d M Y, h:i A" }}</span>
+            </div>
+          </div>
+        </div>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger mb-4">
+              {% for error in form.non_field_errors %}
+                <p class="mb-0">{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="tt-form-label">Rating *</label>
+              {{ form.rating }}
+              {% if form.rating.errors %}<div class="text-danger small mt-1">{{ form.rating.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6 d-flex align-items-end">
+              <label class="tt-checkbox-card tt-card-danger" for="{{ form.is_hidden.id_for_label }}">
+                {{ form.is_hidden }}
+                <div class="tt-checkbox-card-body">
+                  <div class="tt-checkbox-card-title text-danger">Hide from Public Display</div>
+                  <div class="tt-checkbox-card-desc">When checked, hide this review from customer profile</div>
+                </div>
+                <div class="tt-checkbox-card-icon text-danger">
+                  <i class="bi bi-eye-slash-fill"></i>
+                </div>
+              </label>
+              {% if form.is_hidden.errors %}<div class="text-danger small mt-1">{{ form.is_hidden.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Review Comment *</label>
+              {{ form.comment }}
+              {% if form.comment.errors %}<div class="text-danger small mt-1">{{ form.comment.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label class="tt-form-label">Moderation Remarks / Reason</label>
+              {{ form.moderation_notes }}
+              {% if form.moderation_notes.errors %}<div class="text-danger small mt-1">{{ form.moderation_notes.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+            <a href="{% url 'adminpanel:reviews' %}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+              <i class="bi bi-check-circle"></i> Update Review
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

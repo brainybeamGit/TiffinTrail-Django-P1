@@ -11,14 +11,18 @@ urlpatterns = [
 
     # Customers
     path('customers/', views.customer_list, name='customers'),
+    path('customers/add/', views.customer_add, name='customer_add'),
     path('customers/<int:user_id>/', views.customer_detail, name='customer_detail'),
+    path('customers/<int:user_id>/edit/', views.customer_edit, name='customer_edit'),
     path('customers/<int:user_id>/toggle/', views.customer_toggle_status, name='customer_toggle_status'),
     path('customers/<int:user_id>/delete/', views.customer_delete, name='customer_delete'),
 
     # Chefs & Verification
     path('chefs/', views.chef_list, name='chefs'),
+    path('chefs/add/', views.chef_add, name='chef_add'),
     path('chefs/approvals/', views.chef_list, name='chef_list'),  # Alias
     path('chefs/<int:chef_id>/', views.chef_detail, name='chef_detail'),
+    path('chefs/<int:chef_id>/edit/', views.chef_edit, name='chef_edit'),
     path('chefs/<int:chef_id>/verify/', views.chef_verify_action, name='chef_verify_action'),
     path('chefs/<int:chef_id>/toggle/', views.chef_toggle_status, name='chef_toggle_status'),
     path('chefs/<int:chef_id>/delete/', views.chef_delete, name='chef_delete'),
@@ -26,7 +30,9 @@ urlpatterns = [
 
     # Meals
     path('meals/', views.meal_list, name='meals'),
+    path('meals/add/', views.meal_add, name='meal_add'),
     path('meals/<int:meal_id>/', views.meal_detail, name='meal_detail'),
+    path('meals/<int:meal_id>/edit/', views.meal_edit, name='meal_edit'),
     path('meals/<int:meal_id>/toggle/', views.meal_toggle_status, name='meal_toggle_status'),
     path('meals/<int:meal_id>/delete/', views.meal_delete, name='meal_delete'),
 
@@ -40,30 +46,39 @@ urlpatterns = [
     # Subscriptions
     path('subscriptions/', views.subscription_list, name='subscriptions'),
     path('subscriptions/<int:sub_id>/', views.subscription_detail, name='subscription_detail'),
+    path('subscriptions/<int:sub_id>/edit/', views.subscription_edit, name='subscription_edit'),
     path('subscriptions/<int:sub_id>/delete/', views.subscription_delete, name='subscription_delete'),
 
     # Orders
     path('orders/', views.order_list, name='orders'),
     path('orders/<int:order_id>/', views.order_detail, name='order_detail'),
+    path('orders/<int:order_id>/edit/', views.order_edit, name='order_edit'),
     path('orders/<int:order_id>/delete/', views.order_delete, name='order_delete'),
 
     # Payments
     path('payments/', views.payment_list, name='payments'),
+    path('payments/add/', views.payment_add, name='payment_add'),
     path('payments/<int:order_id>/', views.payment_detail, name='payment_detail'),
+    path('payments/<int:order_id>/edit/', views.payment_edit, name='payment_edit'),
+    path('payments/<int:order_id>/delete/', views.payment_delete, name='payment_delete'),
 
     # Complaints & Support
     path('complaints/', views.complaint_list, name='complaints'),
     path('complaints/add/', views.complaint_add, name='complaint_add'),
     path('complaints/<int:complaint_id>/', views.complaint_detail, name='complaint_detail'),
+    path('complaints/<int:complaint_id>/edit/', views.complaint_edit, name='complaint_edit'),
+    path('complaints/<int:complaint_id>/delete/', views.complaint_delete, name='complaint_delete'),
 
     # Coupons
     path('coupons/', views.coupon_list, name='coupons'),
     path('coupons/add/', views.coupon_add, name='coupon_add'),
     path('coupons/<int:coupon_id>/edit/', views.coupon_edit, name='coupon_edit'),
     path('coupons/<int:coupon_id>/toggle/', views.coupon_toggle, name='coupon_toggle'),
+    path('coupons/<int:coupon_id>/delete/', views.coupon_delete, name='coupon_delete'),
 
     # Reviews Moderation
     path('reviews/', views.review_list, name='reviews'),
+    path('reviews/<int:review_id>/edit/', views.review_edit, name='review_edit'),
     path('reviews/<int:review_id>/toggle/', views.review_toggle_hide, name='review_toggle_hide'),
     path('reviews/<int:review_id>/delete/', views.review_delete, name='review_delete'),
 

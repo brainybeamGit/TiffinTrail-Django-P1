@@ -16,6 +16,12 @@
       <i class="bi {% if order.payment_status == 'paid' %}bi-check-circle-fill{% elif order.payment_status == 'pending' %}bi-clock{% else %}bi-exclamation-circle{% endif %} me-1"></i>
       {{ order.get_payment_status_display }}
     </span>
+    <a href="{% url 'adminpanel:payment_edit' order.id %}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1.5 shadow-sm ms-2">
+      <i class="bi bi-pencil-square"></i> Edit Payment
+    </a>
+    <button type="button" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1.5 shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#deletePaymentModal">
+      <i class="bi bi-arrow-counterclockwise"></i> Void / Refund
+    </button>
   </div>
 </div>
 
@@ -107,6 +113,42 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Refund/Void Modal -->
+<div class="modal fade" id="deletePaymentModal" tabindex="-1" aria-labelledby="deletePaymentModalLabel" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 440px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important;">
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-arrow-counterclockwise fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title fw-bold text-dark mb-0 fs-5" id="deletePaymentModalLabel">Refund / Void Payment</h5>
+            <div class="text-muted small">Order #{{ order.order_number }}</div>
+          </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <p class="text-secondary mb-0">
+          Are you sure you want to mark payment of <strong class="text-success">₹{{ order.final_amount|floatformat:2 }}</strong> for order <strong class="text-dark">#{{ order.order_number }}</strong> as <strong class="text-danger">Refunded / Voided</strong>?
+        </p>
+      </div>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
+        <form action="{% url 'adminpanel:payment_delete' order.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
+            <i class="bi bi-arrow-counterclockwise"></i> Confirm Refund / Void
+          </button>
+        </form>
       </div>
     </div>
   </div>

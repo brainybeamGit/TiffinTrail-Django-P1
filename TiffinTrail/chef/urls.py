@@ -23,6 +23,7 @@ urlpatterns = [
     # Daily Menu & Scheduling
     path('menu/', views.daily_menu_view, name='daily_menu'),
     path('menu/add/', views.daily_menu_add, name='daily_menu_add'),
+    path('menu/<int:menu_id>/edit/', views.daily_menu_edit, name='daily_menu_edit'),
     path('menu/<int:menu_id>/delete/', views.daily_menu_delete, name='daily_menu_delete'),
     path('menu/<int:menu_id>/toggle/', views.daily_menu_toggle, name='daily_menu_toggle'),
 
@@ -35,16 +36,21 @@ urlpatterns = [
 
     # Categories
     path('categories/', views.category_list, name='categories'),
+    path('categories/<int:cat_id>/edit/', views.category_edit, name='category_edit'),
+    path('categories/<int:cat_id>/delete/', views.category_delete, name='category_delete'),
 
     # Orders Management
     path('orders/', views.order_list, name='orders'),
     path('orders/<int:order_id>/', views.order_detail, name='order_detail'),
+    path('orders/<int:order_id>/edit/', views.order_edit, name='order_edit'),
+    path('orders/<int:order_id>/delete/', views.order_delete, name='order_delete'),
     path('orders/<int:order_id>/status/', views.order_status_update, name='order_status_update'),
     path('deliveries/', views.order_list, name='deliveries'),
 
     # Subscription Customers & Plans
     path('subscriptions/', views.subscription_list, name='subscriptions'),
     path('subscriptions/<int:subscription_id>/', views.subscription_detail, name='subscription_detail'),
+    path('subscriptions/<int:subscription_id>/edit/', views.subscription_edit, name='subscription_edit'),
     path('subscriptions/<int:subscription_id>/delete/', views.subscription_delete, name='subscription_delete'),
     path('plans/', views.plan_list, name='plans'),
     path('plans/add/', views.plan_add, name='plan_add'),
@@ -60,6 +66,7 @@ urlpatterns = [
     # Notifications & Settings
     path('notifications/', views.notifications_view, name='notifications'),
     path('notifications/<int:notif_id>/read/', views.notification_mark_read, name='notification_mark_read'),
+    path('notifications/<int:notif_id>/delete/', views.notification_delete, name='notification_delete'),
     path('notifications/read-all/', views.notifications_mark_all_read, name='notifications_mark_all_read'),
     path('settings/', views.chef_settings, name='settings'),
 ]

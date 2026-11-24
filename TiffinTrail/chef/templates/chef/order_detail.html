@@ -16,6 +16,12 @@
     <span class="tt-badge tt-badge-{{ order.status }} fs-6 px-3 py-1">
       {{ order.get_status_display }}
     </span>
+    <a href="{% url 'chef:order_edit' order.id %}" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 ms-2">
+      <i class="bi bi-pencil-square"></i> Edit Order
+    </a>
+    <button type="button" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1 ms-1" data-bs-toggle="modal" data-bs-target="#deleteOrderModal">
+      <i class="bi bi-trash3"></i> Delete
+    </button>
   </div>
 </div>
 
@@ -305,6 +311,32 @@
           </div>
         {% endif %}
       </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Delete Order Modal -->
+<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered text-start" style="z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content" style="background-color: #ffffff !important; pointer-events: auto !important;">
+      <form action="{% url 'chef:order_delete' order.id %}" method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title fs-6 fw-bold text-danger d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-triangle-fill"></i> Delete Order Record
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" style="pointer-events: auto !important;"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to permanently delete order <strong>#{{ order.order_number }}</strong>?
+        </div>
+        <div class="modal-footer" style="pointer-events: auto !important;">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
+          <button type="submit" class="btn btn-danger" style="pointer-events: auto !important;">Delete Order</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

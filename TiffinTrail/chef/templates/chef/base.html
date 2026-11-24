@@ -9,7 +9,30 @@
   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/animations.css' %}">
-  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=8.1">
+  <link rel="stylesheet" href="{% static 'css/chef.css' %}?v=10.0">
+  <style>
+    /* Absolute guarantee: modals are always above backdrop and fully clickable */
+    .modal {
+      z-index: 1060 !important;
+      pointer-events: auto !important;
+    }
+    .modal-dialog {
+      z-index: 1065 !important;
+      pointer-events: auto !important;
+    }
+    .modal-content {
+      pointer-events: auto !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.45) !important;
+    }
+    .modal-backdrop {
+      z-index: 1050 !important;
+      background-color: #0f172a !important;
+    }
+    .modal-backdrop.show {
+      opacity: 0.65 !important;
+    }
+  </style>
   {% block extra_css %}{% endblock %}
 </head>
 <body class="tt-chef-body">
@@ -191,10 +214,28 @@
   </main>
 </div>
 
+<!-- Modals Block outside all layout wrappers, directly under body -->
+{% block modals %}{% endblock %}
+
 <!-- Scripts -->
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/animations.js' %}"></script>
-<script src="{% static 'js/chef.js' %}?v=8.0"></script>
+<script src="{% static 'js/chef.js' %}?v=10.0"></script>
+<script>
+  // Inline fail-safe to guarantee modals are outside all stacking contexts
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.modal').forEach(function (m) {
+      if (m.parentElement !== document.body) {
+        document.body.appendChild(m);
+      }
+    });
+  });
+  document.addEventListener('show.bs.modal', function (e) {
+    if (e.target && e.target.parentElement !== document.body) {
+      document.body.appendChild(e.target);
+    }
+  });
+</script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

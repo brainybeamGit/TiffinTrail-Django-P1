@@ -42,11 +42,15 @@
 <!-- Customers Table -->
 <div class="tt-card tt-stagger-2">
   <div class="tt-card-header d-flex justify-content-between align-items-center">
-    <h5 class="tt-card-title">
+    <h5 class="tt-card-title mb-0">
       <i class="bi bi-people-fill text-primary"></i>
       Registered Diners ({{ total_count }})
     </h5>
-    <span class="text-muted small">Platform customer registry</span>
+    <div class="d-flex align-items-center gap-2">
+      <a href="{% url 'adminpanel:customer_add' %}" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 shadow-sm">
+        <i class="bi bi-person-plus-fill"></i> Add New Customer
+      </a>
+    </div>
   </div>
   <div class="tt-card-body p-0">
     <div class="tt-table-responsive">
@@ -102,8 +106,18 @@
               </td>
               <td class="pe-3 text-end tt-actions-cell">
                 <div class="tt-actions-group">
-                  <a href="{% url 'adminpanel:customer_detail' row.user.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary">
-                    <i class="bi bi-person-lines-fill"></i> Profile & History
+                  <a href="{% url 'adminpanel:customer_edit' row.user.id %}" class="btn btn-sm tt-btn-action tt-btn-action-primary" title="Edit Customer">
+                    <i class="bi bi-pencil-fill"></i> Edit
+                  </a>
+                  <form action="{% url 'adminpanel:customer_toggle_status' row.user.id %}" method="post" class="d-inline m-0" title="{% if row.user.is_active %}Click to deactivate customer{% else %}Click to activate customer{% endif %}">
+                    {% csrf_token %}
+                    <label class="tt-toggle-switch tt-toggle-sm m-0" for="custToggle{{ row.user.id }}">
+                      <input type="checkbox" id="custToggle{{ row.user.id }}" {% if row.user.is_active %}checked{% endif %} onchange="this.form.submit()">
+                      <span class="tt-toggle-track"><span class="tt-toggle-thumb"></span></span>
+                    </label>
+                  </form>
+                  <a href="{% url 'adminpanel:customer_detail' row.user.id %}" class="btn btn-sm tt-btn-action tt-btn-action-secondary" title="Profile & History">
+                    <i class="bi bi-person-lines-fill"></i> Profile
                   </a>
                   <button type="button" class="btn btn-sm tt-btn-action tt-btn-action-danger" data-bs-toggle="modal" data-bs-target="#deleteCustModal{{ row.user.id }}" title="Delete Customer">
                     <i class="bi bi-trash-fill"></i> Delete
@@ -141,12 +155,14 @@
     {% endif %}
   </div>
 </div>
+{% endblock %}
 
+{% block modals %}
 {% for row in page_obj %}
 <!-- Delete Customer Modal for {{ row.user.id }} -->
-<div class="modal fade" id="deleteCustModal{{ row.user.id }}" tabindex="-1" aria-labelledby="deleteCustModalLabel{{ row.user.id }}" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+<div class="modal fade" id="deleteCustModal{{ row.user.id }}" tabindex="-1" aria-labelledby="deleteCustModalLabel{{ row.user.id }}" aria-hidden="true" style="position: fixed; z-index: 1060 !important; pointer-events: auto !important;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 460px; z-index: 1065 !important; pointer-events: auto !important;">
+    <div class="modal-content rounded-4 border-0 shadow-lg" style="background-color: #ffffff !important; pointer-events: auto !important; position: relative !important;">
       <div class="modal-header border-bottom-0 pb-0 pt-4 px-4 d-flex align-items-start justify-content-between">
         <div class="d-flex align-items-center gap-3">
           <div class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle" style="width: 44px; height: 44px; flex-shrink: 0;">
@@ -157,7 +173,7 @@
             <div class="text-muted small">Permanent Account Removal</div>
           </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="pointer-events: auto !important;"></button>
       </div>
       <div class="modal-body py-3 px-4">
         <p class="text-secondary mb-2">
@@ -170,11 +186,19 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal">Cancel</button>
+      <div class="modal-footer border-top-0 pt-2 pb-4 px-4 d-flex justify-content-end gap-2 flex-wrap" style="pointer-events: auto !important;">
+        <button type="button" class="btn btn-light rounded-3 px-3 py-2 fw-medium text-secondary" data-bs-dismiss="modal" style="pointer-events: auto !important;">Cancel</button>
+        {% if row.user.is_active %}
+        <form action="{% url 'adminpanel:customer_toggle_status' row.user.id %}" method="post" class="m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-warning rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5" title="Deactivate/Hide account without deleting data" style="pointer-events: auto !important;">
+            <i class="bi bi-eye-slash-fill"></i> Deactivate / Hide
+          </button>
+        </form>
+        {% endif %}
         <form action="{% url 'adminpanel:customer_delete' row.user.id %}" method="post" class="m-0">
           {% csrf_token %}
-          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm">
+          <button type="submit" class="btn btn-danger rounded-3 px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="pointer-events: auto !important;">
             <i class="bi bi-trash3-fill"></i> Permanently Delete
           </button>
         </form>
