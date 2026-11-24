@@ -112,6 +112,7 @@
             {% if form.first_name.errors %}
               <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
             {% endif %}
+            <div class="tt-help-text">Only letters allowed (no numbers).</div>
           </div>
           <div class="col-md-6">
             <label class="tt-form-label">Last Name <span class="text-danger">*</span></label>
@@ -119,6 +120,7 @@
             {% if form.last_name.errors %}
               <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
             {% endif %}
+            <div class="tt-help-text">Only letters allowed (no numbers).</div>
           </div>
         </div>
 
@@ -136,6 +138,7 @@
             {% if form.phone.errors %}
               <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
             {% endif %}
+            <div class="tt-help-text">Must be exactly 10 digits (e.g. 9876543210).</div>
           </div>
         </div>
 
@@ -158,6 +161,7 @@
             {% if form.password.errors %}
               <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
             {% endif %}
+            <div class="tt-help-text">Min 8 chars with at least 1 special character (e.g. @, #, $, %).</div>
           </div>
           <div class="col-md-6">
             <label class="tt-form-label">Confirm Password <span class="text-danger">*</span></label>

@@ -710,6 +710,12 @@ def cart(request):
 
 def cart_add(request, meal_id):
     """Adds a meal to the cart with server-side validation and quantity controls."""
+    if not request.user.is_authenticated:
+        messages.warning(request, "Please log in first to add meals to your cart.")
+        login_url = reverse('customer:login')
+        next_target = request.POST.get('next') or request.GET.get('next') or request.META.get('HTTP_REFERER') or reverse('customer:menu')
+        return redirect(f"{login_url}?next={next_target}")
+
     meal = get_object_or_404(Meal, pk=meal_id, is_available=True, chef__is_approved=True, chef__is_active=True)
     cart_obj = get_or_create_cart(request)
 

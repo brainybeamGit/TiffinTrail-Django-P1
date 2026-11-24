@@ -148,7 +148,20 @@ class CustomerWebsiteTests(TestCase):
         self.assertContains(response, "Special Punjabi Thali")
         self.assertContains(response, "₹150.00")
 
+    def test_cart_add_unauthenticated_redirects_to_login(self):
+        """Unauthenticated customer cannot add meal to cart and is redirected to login."""
+        self.client.logout()
+        add_url = reverse('customer:cart_add', kwargs={'meal_id': self.meal.pk})
+        res = self.client.post(add_url, {'quantity': 2})
+        self.assertEqual(res.status_code, 302)
+        self.assertIn(reverse('customer:login'), res.url)
+        # Verify no cart items were added
+        cart = Cart.objects.first()
+        if cart:
+            self.assertEqual(cart.items.count(), 0)
+
     def test_cart_operations(self):
+        self.client.login(username='testcustomer', password='testpassword123')
         # 1. Add to cart
         add_url = reverse('customer:cart_add', kwargs={'meal_id': self.meal.pk})
         res = self.client.post(add_url, {'quantity': 2}, follow=True)
@@ -292,8 +305,32 @@ class CustomerWebsiteTests(TestCase):
         self.assertEqual(self.chef.rating, Decimal('5.00'))
 
     def test_customer_auth_registration_and_login(self):
-        # Register new user
-        reg_data = {
+        # Test validation: digit in first name
+        bad_name_res = self.client.post(reverse('customer:register'), {
+            'username': 'newuser',
+            'first_name': 'New123',
+            'last_name': 'Person',
+            'email': 'newperson@example.com',
+            'phone': '9123456789',
+            'password': 'ComplexPassword123@',
+            'confirm_password': 'ComplexPassword123@'
+        })
+        self.assertContains(bad_name_res, "numbers are not allowed")
+
+        # Test validation: phone not 10 digits
+        bad_phone_res = self.client.post(reverse('customer:register'), {
+            'username': 'newuser',
+            'first_name': 'New',
+            'last_name': 'Person',
+            'email': 'newperson@example.com',
+            'phone': '91234',
+            'password': 'ComplexPassword123@',
+            'confirm_password': 'ComplexPassword123@'
+        })
+        self.assertContains(bad_phone_res, "exactly 10 digits")
+
+        # Test validation: password without special character
+        bad_pw_res = self.client.post(reverse('customer:register'), {
             'username': 'newuser',
             'first_name': 'New',
             'last_name': 'Person',
@@ -301,6 +338,18 @@ class CustomerWebsiteTests(TestCase):
             'phone': '9123456789',
             'password': 'ComplexPassword123',
             'confirm_password': 'ComplexPassword123'
+        })
+        self.assertContains(bad_pw_res, "special character")
+
+        # Register valid new user
+        reg_data = {
+            'username': 'newuser',
+            'first_name': 'New',
+            'last_name': 'Person',
+            'email': 'newperson@example.com',
+            'phone': '9123456789',
+            'password': 'ComplexPassword123@',
+            'confirm_password': 'ComplexPassword123@'
         }
         res = self.client.post(reverse('customer:register'), reg_data, follow=True)
         self.assertEqual(res.status_code, 200)

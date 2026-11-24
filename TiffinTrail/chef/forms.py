@@ -6,11 +6,43 @@ from django.utils import timezone
 from .models import ChefProfile, Meal, MealPlan, MenuCategory, DailyMenu
 
 
+import re
+
 class ChefRegistrationForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=50, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
-    last_name = forms.CharField(max_length=50, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    first_name = forms.CharField(
+        max_length=50,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'First Name',
+            'pattern': r"[A-Za-z\s.'-]+",
+            'title': 'Only letters allowed (no numbers)'
+        })
+    )
+    last_name = forms.CharField(
+        max_length=50,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Last Name',
+            'pattern': r"[A-Za-z\s.'-]+",
+            'title': 'Only letters allowed (no numbers)'
+        })
+    )
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'chef@example.com'}))
-    phone = forms.CharField(max_length=20, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '+91 98765 43210'}))
+    phone = forms.CharField(
+        max_length=10,
+        min_length=10,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '10-Digit Mobile Number (e.g. 9876543210)',
+            'maxlength': '10',
+            'pattern': '[0-9]{10}',
+            'inputmode': 'numeric',
+            'title': 'Must be exactly 10 digits'
+        })
+    )
     business_name = forms.CharField(max_length=150, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': "e.g. Amrita's Punjabi Rasoi"}))
     kitchen_address = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Kitchen location/address'}), required=True)
     cuisines = forms.CharField(max_length=255, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. North Indian, Punjabi, Mughlai'}))
@@ -19,7 +51,13 @@ class ChefRegistrationForm(forms.ModelForm):
     profile_image = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}))
     cover_image = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}))
     verification_document = forms.FileField(required=False, widget=forms.FileInput(attrs={'class': 'form-control'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Minimum 8 characters'}), min_length=8)
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Minimum 8 characters (1 special char required)'
+        }),
+        min_length=8
+    )
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm password'}))
 
     class Meta:
@@ -28,6 +66,22 @@ class ChefRegistrationForm(forms.ModelForm):
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Choose username (e.g. chef_amrita)'}),
         }
+
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name', '').strip()
+        if any(char.isdigit() for char in first_name):
+            raise ValidationError("First name must contain only letters, numbers are not allowed.")
+        if not re.match(r"^[A-Za-z\s.'-]+$", first_name):
+            raise ValidationError("First name must contain only letters, numbers are not allowed.")
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name', '').strip()
+        if any(char.isdigit() for char in last_name):
+            raise ValidationError("Last name must contain only letters, numbers are not allowed.")
+        if not re.match(r"^[A-Za-z\s.'-]+$", last_name):
+            raise ValidationError("Last name must contain only letters, numbers are not allowed.")
+        return last_name
 
     def clean_username(self):
         username = self.cleaned_data.get('username', '').strip()
@@ -40,6 +94,20 @@ class ChefRegistrationForm(forms.ModelForm):
         if User.objects.filter(email__iexact=email).exists():
             raise ValidationError("An account with this email address already exists.")
         return email
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone', '').strip().replace(' ', '').replace('-', '')
+        if not phone.isdigit() or len(phone) != 10:
+            raise ValidationError("Mobile number must be exactly 10 digits.")
+        return phone
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password', '')
+        if len(password) < 8:
+            raise ValidationError("Password must be at least 8 characters long.")
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>_+\-=\[\]\\;\'`~]', password):
+            raise ValidationError("Password must contain at least one special character (e.g. @, #, $, %, etc.).")
+        return password
 
     def clean(self):
         cleaned_data = super().clean()

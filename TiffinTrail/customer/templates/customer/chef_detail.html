@@ -9,8 +9,10 @@
   <div class="container">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-3 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'customer:chefs' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Chefs</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold"
+            style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:chefs' %}" class="text-decoration-none fw-semibold"
+            style="color: var(--tt-primary);">Chefs</a></li>
         <li class="breadcrumb-item active text-muted" aria-current="page">{{ chef.business_name }}</li>
       </ol>
     </nav>
@@ -18,9 +20,11 @@
     <div class="row align-items-center g-4">
       <div class="col-md-auto text-center text-md-start">
         {% if chef.profile_image %}
-        <img src="{{ chef.profile_image.url }}" class="rounded-circle shadow-sm border border-3 border-white" style="width: 110px; height: 110px; object-fit: cover;" alt="{{ chef.business_name }}">
+        <img src="{{ chef.profile_image.url }}" class="rounded-circle shadow-sm border border-3 border-white"
+          style="width: 110px; height: 110px; object-fit: cover;" alt="{{ chef.business_name }}">
         {% else %}
-        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 100px; height: 100px; font-size: 2.2rem; background: var(--tt-charcoal); color: var(--tt-gold); font-weight: 700; border: 3px solid #ffffff;">
+        <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+          style="width: 100px; height: 100px; font-size: 2.2rem; background: var(--tt-charcoal); color: var(--tt-gold); font-weight: 700; border: 3px solid #ffffff;">
           {{ chef.business_name|slice:":1"|upper }}
         </div>
         {% endif %}
@@ -30,7 +34,8 @@
         <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
           <h1 class="h2 fw-bold mb-0" style="color: var(--tt-charcoal);">{{ chef.business_name }}</h1>
           {% if chef.is_approved %}
-          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small d-inline-flex align-items-center gap-1">
+          <span
+            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small d-inline-flex align-items-center gap-1">
             <i class="bi bi-shield-fill-check"></i>
             FSSAI Verified Kitchen
           </span>
@@ -50,7 +55,8 @@
           <span class="text-dark fw-bold d-inline-flex align-items-center gap-1">
             <i class="bi bi-star-fill text-warning"></i>
             {{ chef.rating|floatformat:1 }}
-            <span class="text-muted fw-normal">({{ chef.review_count }} review{% if chef.review_count != 1 %}s{% endif %})</span>
+            <span class="text-muted fw-normal">({{ chef.review_count }} review{% if chef.review_count != 1 %}s{% endif
+              %})</span>
           </span>
         </div>
 
@@ -70,12 +76,15 @@
       </div>
 
       <div class="col-md-auto text-md-end">
-        <div class="p-3 rounded-4 border text-center shadow-xs" style="background-color: var(--tt-cream); border-color: var(--tt-border) !important; min-width: 170px;">
-          <small class="text-muted d-block text-uppercase fw-semibold" style="font-size: 0.72rem; letter-spacing: 0.05em;">Starting From</small>
+        <div class="p-3 rounded-4 border text-center shadow-xs"
+          style="background-color: var(--tt-cream); border-color: var(--tt-border) !important; min-width: 170px;">
+          <small class="text-muted d-block text-uppercase fw-semibold"
+            style="font-size: 0.72rem; letter-spacing: 0.05em;">Starting From</small>
           <div class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">
             ₹{{ chef.starting_price|floatformat:2 }}<small class="fs-6 text-muted fw-normal">/meal</small>
           </div>
-          <a href="#plansSection" class="btn btn-sm btn-tt-primary w-100 rounded-3 d-inline-flex align-items-center justify-content-center gap-1 fw-semibold">
+          <a href="#plansSection"
+            class="btn btn-sm btn-tt-primary w-100 rounded-3 d-inline-flex align-items-center justify-content-center gap-1 fw-semibold">
             <i class="bi bi-calendar2-check"></i> View Plans
           </a>
         </div>
@@ -88,19 +97,22 @@
   <!-- Nav Tabs: Daily Menu, Subscription Plans, Reviews -->
   <ul class="nav nav-pills mb-4 border-bottom pb-3 gap-2" id="chefDetailTabs" role="tablist">
     <li class="nav-item" role="presentation">
-      <button class="nav-link active fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" id="meals-tab" data-bs-toggle="tab" data-bs-target="#mealsTabPane" type="button" role="tab">
+      <button class="nav-link active fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2"
+        id="meals-tab" data-bs-toggle="tab" data-bs-target="#mealsTabPane" type="button" role="tab">
         <i class="bi bi-egg-fried"></i>
         Daily & Weekly Menu ({{ meals.count }})
       </button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" id="plans-tab" data-bs-toggle="tab" data-bs-target="#plansTabPane" type="button" role="tab">
+      <button class="nav-link fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" id="plans-tab"
+        data-bs-toggle="tab" data-bs-target="#plansTabPane" type="button" role="tab">
         <i class="bi bi-calendar3"></i>
         Subscription Plans ({{ meal_plans.count }})
       </button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviewsTabPane" type="button" role="tab">
+      <button class="nav-link fw-semibold rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2" id="reviews-tab"
+        data-bs-toggle="tab" data-bs-target="#reviewsTabPane" type="button" role="tab">
         <i class="bi bi-chat-quote"></i>
         Reviews & Ratings ({{ reviews.count }})
       </button>
@@ -119,10 +131,12 @@
         {% endfor %}
       </div>
       {% else %}
-      <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-xs" style="border-color: var(--tt-border) !important;">
+      <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-xs"
+        style="border-color: var(--tt-border) !important;">
         <i class="bi bi-basket3 text-muted fs-1 d-block mb-2"></i>
         <h5 class="fw-bold text-dark mb-1">No Single Meals Listed Today</h5>
-        <p class="text-muted small mb-0">This chef currently specializes in recurring meal subscription plans. Explore subscription packages below.</p>
+        <p class="text-muted small mb-0">This chef currently specializes in recurring meal subscription plans. Explore
+          subscription packages below.</p>
       </div>
       {% endif %}
     </div>
@@ -139,10 +153,12 @@
           {% endfor %}
         </div>
         {% else %}
-        <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-xs" style="border-color: var(--tt-border) !important;">
+        <div class="text-center py-5 bg-white rounded-4 border p-4 shadow-xs"
+          style="border-color: var(--tt-border) !important;">
           <i class="bi bi-calendar-x text-muted fs-1 d-block mb-2"></i>
           <h5 class="fw-bold text-dark mb-1">No Active Subscription Plans</h5>
-          <p class="text-muted small mb-0">This home chef does not have active subscription plans right now. Check back shortly or browse individual dishes.</p>
+          <p class="text-muted small mb-0">This home chef does not have active subscription plans right now. Check back
+            shortly or browse individual dishes.</p>
         </div>
         {% endif %}
       </div>
@@ -154,19 +170,22 @@
         <!-- Rating Summary & Add Review Form -->
         <div class="col-lg-4">
           <!-- Overall Rating Box -->
-          <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center mb-4"
+            style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
             <div class="display-4 fw-bold mb-1" style="color: var(--tt-charcoal);">{{ chef.rating|floatformat:1 }}</div>
             <div class="text-warning fs-5 mb-2 d-inline-flex gap-1 justify-content-center">
               {% for i in "12345" %}
-                <i class="bi bi-star-fill"></i>
+              <i class="bi bi-star-fill"></i>
               {% endfor %}
             </div>
-            <p class="text-muted small mb-0">Based on {{ chef.review_count }} authentic customer rating{% if chef.review_count != 1 %}s{% endif %}</p>
+            <p class="text-muted small mb-0">Based on {{ chef.review_count }} authentic customer rating{% if
+              chef.review_count != 1 %}s{% endif %}</p>
           </div>
 
           <!-- Add Review Form -->
           {% if request.user.is_authenticated %}
-          <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+          <div class="card border-0 shadow-sm rounded-4 p-4"
+            style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
             <h5 class="fw-bold fs-6 mb-3 text-dark d-flex align-items-center gap-2">
               <i class="bi bi-pencil-square text-warning"></i>
               {% if user_review %}Edit Your Review{% else %}Write a Review for {{ chef.business_name }}{% endif %}
@@ -178,7 +197,8 @@
 
               <div class="mb-3">
                 <label class="form-label small fw-semibold text-muted">Select Star Rating</label>
-                <div class="tt-star-picker d-flex gap-1 fs-4" style="cursor: pointer; color: #f59e0b;" id="starPickerContainer">
+                <div class="tt-star-picker d-flex gap-1 fs-4" style="cursor: pointer; color: #f59e0b;"
+                  id="starPickerContainer">
                   <i class="bi bi-star-fill star-item" data-value="1"></i>
                   <i class="bi bi-star-fill star-item" data-value="2"></i>
                   <i class="bi bi-star-fill star-item" data-value="3"></i>
@@ -190,21 +210,27 @@
 
               <div class="mb-3">
                 <label class="form-label small fw-semibold text-muted">Your Honest Experience</label>
-                <textarea name="comment" rows="3" class="form-control form-control-sm rounded-3" placeholder="Share your experience regarding food taste, portion size, warmth, packaging, and delivery..." required>{{ user_review.comment|default:'' }}</textarea>
+                <textarea name="comment" rows="3" class="form-control form-control-sm rounded-3"
+                  placeholder="Share your experience regarding food taste, portion size, warmth, packaging, and delivery..."
+                  required>{{ user_review.comment|default:'' }}</textarea>
               </div>
 
-              <button type="submit" class="btn btn-sm btn-tt-primary w-100 py-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 shadow-xs">
+              <button type="submit"
+                class="btn btn-sm btn-tt-primary w-100 py-2 rounded-3 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5 shadow-xs">
                 <i class="bi bi-send-check"></i>
                 {% if user_review %}Update Review{% else %}Submit Review{% endif %}
               </button>
             </form>
           </div>
           {% else %}
-          <div class="card border-0 shadow-sm rounded-4 p-4 text-center" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+          <div class="card border-0 shadow-sm rounded-4 p-4 text-center"
+            style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
             <i class="bi bi-lock-fill text-muted fs-3 mb-2 d-block"></i>
             <h6 class="fw-bold text-dark mb-1">Have you dined with {{ chef.business_name }}?</h6>
-            <p class="small text-muted mb-3">Sign in to share your rating and review with the TiffinTrail diner community.</p>
-            <a href="{% url 'customer:login' %}?next={{ request.get_full_path }}" class="btn btn-sm btn-tt-outline rounded-3 px-3 py-2 fw-semibold">
+            <p class="small text-muted mb-3">Sign in to share your rating and review with the TiffinTrail diner
+              community.</p>
+            <a href="{% url 'customer:login' %}?next={{ request.get_full_path }}"
+              class="btn btn-sm btn-tt-outline rounded-3 px-3 py-2 fw-semibold">
               <i class="bi bi-box-arrow-in-right"></i> Log in to Review
             </a>
           </div>
@@ -216,10 +242,12 @@
           {% if reviews %}
           <div class="d-grid gap-3">
             {% for rev in reviews %}
-            <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+            <div class="card border-0 shadow-sm rounded-4 p-4"
+              style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
               <div class="d-flex align-items-center justify-content-between mb-2">
                 <div class="d-flex align-items-center gap-2">
-                  <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 38px; height: 38px; font-size: 0.95rem; background-color: var(--tt-cream); color: var(--tt-charcoal); border: 1px solid var(--tt-border);">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                    style="width: 38px; height: 38px; font-size: 0.95rem; background-color: var(--tt-cream); color: var(--tt-charcoal); border: 1px solid var(--tt-border);">
                     {{ rev.user.first_name|default:rev.user.username|slice:":1"|upper }}
                   </div>
                   <div>
@@ -230,12 +258,11 @@
 
                 <div class="text-warning small d-inline-flex gap-0.5">
                   {% for i in "12345" %}
-                    {% if forloop.counter <= rev.rating %}
-                      <i class="bi bi-star-fill"></i>
+                  {% if forloop.counter <= rev.rating %} <i class="bi bi-star-fill"></i>
                     {% else %}
-                      <i class="bi bi-star text-muted"></i>
+                    <i class="bi bi-star text-muted"></i>
                     {% endif %}
-                  {% endfor %}
+                    {% endfor %}
                 </div>
               </div>
 
@@ -251,10 +278,12 @@
             {% endfor %}
           </div>
           {% else %}
-          <div class="p-5 text-center bg-white rounded-4 border shadow-xs" style="border-color: var(--tt-border) !important;">
+          <div class="p-5 text-center bg-white rounded-4 border shadow-xs"
+            style="border-color: var(--tt-border) !important;">
             <i class="bi bi-chat-heart text-muted fs-1 mb-2 d-block"></i>
             <h5 class="fw-bold text-dark mb-1">No Reviews Yet</h5>
-            <p class="text-muted small mb-0">Be the first diner to subscribe or order and share your honest feedback with the community!</p>
+            <p class="text-muted small mb-0">Be the first diner to subscribe or order and share your honest feedback
+              with the community!</p>
           </div>
           {% endif %}
         </div>

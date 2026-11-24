@@ -5,12 +5,50 @@ from django.utils import timezone
 from .models import CustomerProfile, DeliveryAddress, Review, Order, Subscription, MealPlan
 
 
+import re
+
 class CustomerRegistrationForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=50, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
-    last_name = forms.CharField(max_length=50, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+    first_name = forms.CharField(
+        max_length=50,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'First Name',
+            'pattern': r"[A-Za-z\s.'-]+",
+            'title': 'Only letters allowed (no numbers)'
+        })
+    )
+    last_name = forms.CharField(
+        max_length=50,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Last Name',
+            'pattern': r"[A-Za-z\s.'-]+",
+            'title': 'Only letters allowed (no numbers)'
+        })
+    )
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email Address'}))
-    phone = forms.CharField(max_length=20, required=True, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mobile Number'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password (min 8 chars)'}), min_length=8)
+    phone = forms.CharField(
+        max_length=10,
+        min_length=10,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '10-Digit Mobile Number (e.g. 9876543210)',
+            'maxlength': '10',
+            'pattern': '[0-9]{10}',
+            'inputmode': 'numeric',
+            'title': 'Must be exactly 10 digits'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Password (min 8 chars, 1 special char)'
+        }),
+        min_length=8
+    )
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}))
 
     class Meta:
@@ -20,11 +58,41 @@ class CustomerRegistrationForm(forms.ModelForm):
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
         }
 
+    def clean_first_name(self):
+        first_name = self.cleaned_data.get('first_name', '').strip()
+        if any(char.isdigit() for char in first_name):
+            raise ValidationError("First name must contain only letters, numbers are not allowed.")
+        if not re.match(r"^[A-Za-z\s.'-]+$", first_name):
+            raise ValidationError("First name must contain only letters, numbers are not allowed.")
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data.get('last_name', '').strip()
+        if any(char.isdigit() for char in last_name):
+            raise ValidationError("Last name must contain only letters, numbers are not allowed.")
+        if not re.match(r"^[A-Za-z\s.'-]+$", last_name):
+            raise ValidationError("Last name must contain only letters, numbers are not allowed.")
+        return last_name
+
     def clean_email(self):
         email = self.cleaned_data.get('email', '').lower()
         if User.objects.filter(email=email).exists():
             raise ValidationError("An account with this email address already exists.")
         return email
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone', '').strip().replace(' ', '').replace('-', '')
+        if not phone.isdigit() or len(phone) != 10:
+            raise ValidationError("Mobile number must be exactly 10 digits.")
+        return phone
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password', '')
+        if len(password) < 8:
+            raise ValidationError("Password must be at least 8 characters long.")
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>_+\-=\[\]\\;\'`~]', password):
+            raise ValidationError("Password must contain at least one special character (e.g. @, #, $, %, etc.).")
+        return password
 
     def clean(self):
         cleaned_data = super().clean()

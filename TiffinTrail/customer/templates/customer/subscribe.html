@@ -8,13 +8,16 @@
   <div class="container">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb mb-2 small">
-        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'customer:plans' %}" class="text-decoration-none fw-semibold" style="color: var(--tt-primary);">Meal Plans</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:home' %}" class="text-decoration-none fw-semibold"
+            style="color: var(--tt-primary);">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'customer:plans' %}" class="text-decoration-none fw-semibold"
+            style="color: var(--tt-primary);">Meal Plans</a></li>
         <li class="breadcrumb-item active text-muted" aria-current="page">Setup Subscription</li>
       </ol>
     </nav>
     <h1 class="h3 fw-bold mb-1" style="color: var(--tt-charcoal);">Configure Your Tiffin Subscription</h1>
-    <p class="text-muted small mb-0">Select your preferred home chef, delivery slot, and address to start receiving healthy homemade meals.</p>
+    <p class="text-muted small mb-0">Select your preferred home chef, delivery slot, and address to start receiving
+      healthy homemade meals.</p>
   </div>
 </div>
 
@@ -25,7 +28,8 @@
       <!-- Left Column: Configuration Form -->
       <div class="col-lg-7">
         <!-- 1. Chef & Plan -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4"
+          style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
             <i class="bi bi-person-badge text-warning"></i>
             1. Chef & Meal Plan Selection
@@ -36,12 +40,13 @@
             <label class="form-label small fw-semibold text-muted">Select Home Chef</label>
             <select name="chef_id" id="chefSelect" class="form-select rounded-3" required>
               {% for ch in available_chefs %}
-              <option value="{{ ch.id }}" {% if chef and chef.id == ch.id %}selected{% endif %}>
+              <option value="{{ ch.id }}" {% if chef and chef.id==ch.id %}selected{% endif %}>
                 {{ ch.business_name }} ({{ ch.cuisines }}) - {{ ch.rating|floatformat:1 }} Rating
               </option>
               {% endfor %}
             </select>
-            <div class="form-text small text-muted">Your meals will be freshly prepared by this verified neighborhood home chef.</div>
+            <div class="form-text small text-muted">Your meals will be freshly prepared by this verified neighborhood
+              home chef.</div>
           </div>
 
           <!-- Plan Choice -->
@@ -49,15 +54,10 @@
             <label class="form-label small fw-semibold text-muted">Select Subscription Package</label>
             <select name="plan_id" id="planSelect" class="form-select rounded-3" required>
               {% for pl in available_plans %}
-              <option value="{{ pl.id }}"
-                      data-name="{{ pl.name }}"
-                      data-price="{{ pl.price }}"
-                      data-duration="{{ pl.duration_days }}"
-                      data-meals="{{ pl.total_meals }}"
-                      data-type="{{ pl.get_plan_type_display }}"
-                      data-schedule="{{ pl.delivery_schedule }}"
-                      data-savings="{{ pl.savings|default:0 }}"
-                      {% if plan and plan.id == pl.id %}selected{% endif %}>
+              <option value="{{ pl.id }}" data-name="{{ pl.name }}" data-price="{{ pl.price }}"
+                data-duration="{{ pl.duration_days }}" data-meals="{{ pl.total_meals }}"
+                data-type="{{ pl.get_plan_type_display }}" data-schedule="{{ pl.delivery_schedule }}"
+                data-savings="{{ pl.savings|default:0 }}" {% if plan and plan.id==pl.id %}selected{% endif %}>
                 {{ pl.name }} ({{ pl.duration_days }} days · {{ pl.total_meals }} meals) - ₹{{ pl.price|floatformat:2 }}
               </option>
               {% endfor %}
@@ -66,7 +66,8 @@
         </div>
 
         <!-- 2. Schedule & Dietary -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4"
+          style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
             <i class="bi bi-clock-history text-primary"></i>
             2. Schedule & Dietary Preferences
@@ -93,7 +94,8 @@
             </div>
 
             <div class="col-12">
-              <label class="form-label small fw-semibold text-muted">Special Dietary / Allergy Instructions (Optional)</label>
+              <label class="form-label small fw-semibold text-muted">Special Dietary / Allergy Instructions
+                (Optional)</label>
               {{ form.notes }}
               <div class="form-text small text-muted">e.g. Mild spice, no peanuts, less oil in rotis.</div>
             </div>
@@ -101,7 +103,8 @@
         </div>
 
         <!-- 3. Delivery Address -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4"
+          style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
             <i class="bi bi-geo-alt-fill text-danger"></i>
             3. Delivery Address & Recipient
@@ -124,11 +127,13 @@
             <label class="form-label small fw-semibold text-muted d-block">Saved Addresses</label>
             {% for addr in user_addresses %}
             <div class="form-check p-3 border rounded-3 mb-2 bg-light">
-              <input class="form-check-input" type="radio" name="address_choice" id="addrRadio{{ addr.id }}" value="{{ addr.id }}" {% if addr.is_default %}checked{% endif %}>
+              <input class="form-check-input" type="radio" name="address_choice" id="addrRadio{{ addr.id }}"
+                value="{{ addr.id }}" {% if addr.is_default %}checked{% endif %}>
               <label class="form-check-label w-100" for="addrRadio{{ addr.id }}">
                 <div class="d-flex justify-content-between align-items-center">
                   <strong class="small text-dark">{{ addr.title }}</strong>
-                  {% if addr.is_default %}<span class="badge bg-success-subtle text-success small">Default</span>{% endif %}
+                  {% if addr.is_default %}<span class="badge bg-success-subtle text-success small">Default</span>{%
+                  endif %}
                 </div>
                 <div class="small text-muted">{{ addr.formatted }}</div>
               </label>
@@ -144,7 +149,7 @@
           </div>
           {% endif %}
 
-          <div id="ttNewAddressFields" {% if user_addresses %}style="display: none;"{% endif %}>
+          <div id="ttNewAddressFields" {% if user_addresses %}style="display: none;" {% endif %}>
             <div class="row g-2">
               <div class="col-12">
                 <label class="form-label small fw-semibold text-muted">Street Address / Flat / Building</label>
@@ -175,7 +180,8 @@
         </div>
 
         <!-- 4. Payment Mode -->
-        <div class="card border-0 shadow-sm rounded-4 p-4" style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <div class="card border-0 shadow-sm rounded-4 p-4"
+          style="border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <h5 class="fw-bold fs-6 mb-3 border-bottom pb-2 text-dark d-flex align-items-center gap-2">
             <i class="bi bi-credit-card text-success"></i>
             4. Payment Mode
@@ -193,7 +199,8 @@
                     Razorpay Secured
                   </span>
                 </div>
-                <small class="text-muted d-block mt-1">Instant online subscription payment authorization for rapid activation via Razorpay.</small>
+                <small class="text-muted d-block mt-1">Instant online subscription payment authorization for rapid
+                  activation via Razorpay.</small>
               </label>
             </div>
 
@@ -204,15 +211,18 @@
                   <i class="bi bi-cash-stack text-secondary"></i>
                   Pay at First Delivery (Cash or UPI)
                 </strong>
-                <small class="text-muted d-block mt-1">Hand payment over to the delivery partner during your first tiffin arrival.</small>
+                <small class="text-muted d-block mt-1">Hand payment over to the delivery partner during your first
+                  tiffin arrival.</small>
               </label>
             </div>
 
             <!-- Razorpay Test Mode Guidance Box -->
-            <div class="alert py-2.5 px-3 rounded-3 small mb-0 d-flex align-items-start gap-2 border-0" style="font-size: 0.8rem; background-color: #f0fdf4; color: #166534; border-left: 3px solid #16a34a !important;">
+            <div class="alert py-2.5 px-3 rounded-3 small mb-0 d-flex align-items-start gap-2 border-0"
+              style="font-size: 0.8rem; background-color: #f0fdf4; color: #166534; border-left: 3px solid #16a34a !important;">
               <i class="bi bi-info-circle-fill flex-shrink-0 mt-0.5 text-success"></i>
               <div>
-                <strong>Payment Information:</strong> For test mode, choose <strong>Netbanking</strong> in Razorpay and select <strong>"Success"</strong>, or use UPI ID <code>success@razorpay</code>.
+                <strong>Payment Information:</strong> For test mode, choose <strong>Netbanking</strong> in Razorpay and
+                select <strong>"Success"</strong>, or use UPI ID <code>success@razorpay</code>.
               </div>
             </div>
           </div>
@@ -221,7 +231,8 @@
 
       <!-- Right Column: Summary Card -->
       <div class="col-lg-5">
-        <div class="card border-0 shadow-sm rounded-4 p-4 position-sticky" style="top: 90px; border: 1px solid var(--tt-border) !important; background: #ffffff;">
+        <div class="card border-0 shadow-sm rounded-4 p-4 position-sticky"
+          style="top: 90px; border: 1px solid var(--tt-border) !important; background: #ffffff;">
           <h5 class="fw-bold fs-6 mb-3 pb-2 border-bottom text-dark d-flex align-items-center gap-2">
             <i class="bi bi-receipt text-warning"></i>
             Subscription Summary
@@ -245,7 +256,8 @@
                 <span class="text-muted small" id="summaryPlanDuration">7 Days · 7 Meals</span>
               </div>
               <h5 class="fw-bold mb-1 text-dark" id="summaryPlanName">Select a Meal Plan</h5>
-              <div class="small text-muted mb-2">Prepared by <strong class="text-dark" id="summaryChefName">Home Chef</strong></div>
+              <div class="small text-muted mb-2">Prepared by <strong class="text-dark" id="summaryChefName">Home
+                  Chef</strong></div>
               <div class="small text-muted" id="summarySchedule"><i class="bi bi-clock me-1"></i>Monday to Sunday</div>
             </div>
             {% endif %}
@@ -259,7 +271,7 @@
                 <span class="text-muted">Delivery & Thermal Packaging</span>
                 <span class="badge bg-success-subtle text-success px-2 py-0.5 rounded-pill">FREE</span>
               </div>
-              <div class="d-flex justify-content-between py-1 small" id="summarySavingsRow" {% if not plan.savings %}style="display: none;"{% endif %}>
+              <div class="d-flex justify-content-between py-1 small" id="summarySavingsRow" {% if not plan.savings %}style="display: none;" {% endif %}>
                 <span class="text-success">Package Discount Savings</span>
                 <span class="text-success fw-semibold" id="summarySavingsAmount">- ₹{{ plan.savings|default:0|floatformat:2 }}</span>
               </div>
@@ -270,7 +282,8 @@
             </div>
           </div>
 
-          <button type="submit" id="submitSubscriptionBtn" class="btn btn-tt-primary w-100 py-3 rounded-3 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-xs">
+          <button type="submit" id="submitSubscriptionBtn"
+            class="btn btn-tt-primary w-100 py-3 rounded-3 fw-bold d-inline-flex align-items-center justify-content-center gap-2 shadow-xs">
             <i class="bi bi-lock-fill"></i>
             <span id="submitBtnText">Pay via Razorpay</span>
           </button>
@@ -431,7 +444,7 @@
     updateSubmitBtnLabel();
   }
 
-  subscribeForm.addEventListener('submit', function(e) {
+  subscribeForm.addEventListener('submit', function (e) {
     const selectedMethod = document.querySelector('input[name="payment_method"]:checked')?.value || 'online';
     if (selectedMethod === 'online') {
       e.preventDefault();
@@ -439,7 +452,7 @@
     }
   });
 
-  submitBtn.addEventListener('click', function(e) {
+  submitBtn.addEventListener('click', function (e) {
     e.preventDefault();
 
     if (!validateSubscriptionDetails()) {
@@ -474,97 +487,97 @@
         'X-CSRFToken': csrfToken
       }
     })
-    .then(function(res) {
-      if (!res.ok) {
-        return res.json().then(function(errData) {
-          throw new Error(errData.message || 'Server error ' + res.status);
-        }).catch(function(e) {
-          throw new Error(e.message || 'Server returned error ' + res.status);
-        });
-      }
-      return res.json();
-    })
-    .then(function(data) {
-      if (data.status !== 'success') {
-        alert(data.message || 'Unable to initialize Razorpay payment. Please try again.');
-        resetBtn();
-        return;
-      }
-
-      const options = {
-        key: data.key_id,
-        amount: data.amount,
-        currency: data.currency || 'INR',
-        name: 'TiffinTrail',
-        description: 'Tiffin Subscription: ' + (data.plan_name || 'Meal Plan'),
-        order_id: data.razorpay_order_id,
-        prefill: {
-          name: data.customer_name || '',
-          email: data.customer_email || '',
-          contact: data.customer_phone || ''
-        },
-        theme: {
-          color: '#253746'
-        },
-        modal: {
-          ondismiss: function() {
-            resetBtn();
-          }
-        },
-        handler: function(response) {
-          setBtnLoading('Payment Received! Activating Subscription...');
-
-          const verifyData = new FormData(subscribeForm);
-          verifyData.append('razorpay_payment_id', response.razorpay_payment_id);
-          verifyData.append('razorpay_order_id', response.razorpay_order_id);
-          verifyData.append('razorpay_signature', response.razorpay_signature);
-
-          fetch("{% url 'customer:razorpay_subscription_verify' %}", {
-            method: 'POST',
-            body: verifyData,
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-              'X-CSRFToken': csrfToken
-            }
-          })
-          .then(function(vRes) {
-            if (!vRes.ok) {
-              return vRes.json().then(function(vErr) {
-                throw new Error(vErr.message || 'Verification error ' + vRes.status);
-              }).catch(function() {
-                throw new Error('Verification failed ' + vRes.status);
-              });
-            }
-            return vRes.json();
-          })
-          .then(function(vData) {
-            if (vData.status === 'success' && vData.redirect_url) {
-              window.location.href = vData.redirect_url;
-            } else {
-              alert(vData.message || 'Payment verification failed. Please contact support.');
-              resetBtn();
-            }
-          })
-          .catch(function(err) {
-            console.error('Verification error:', err);
-            alert('Payment verification error: ' + (err.message || 'Please contact support.'));
-            resetBtn();
+      .then(function (res) {
+        if (!res.ok) {
+          return res.json().then(function (errData) {
+            throw new Error(errData.message || 'Server error ' + res.status);
+          }).catch(function (e) {
+            throw new Error(e.message || 'Server returned error ' + res.status);
           });
         }
-      };
+        return res.json();
+      })
+      .then(function (data) {
+        if (data.status !== 'success') {
+          alert(data.message || 'Unable to initialize Razorpay payment. Please try again.');
+          resetBtn();
+          return;
+        }
 
-      const rzp = new Razorpay(options);
-      rzp.on('payment.failed', function(resp) {
-        alert('Payment Failed: ' + (resp.error ? resp.error.description : 'Transaction was not completed'));
+        const options = {
+          key: data.key_id,
+          amount: data.amount,
+          currency: data.currency || 'INR',
+          name: 'TiffinTrail',
+          description: 'Tiffin Subscription: ' + (data.plan_name || 'Meal Plan'),
+          order_id: data.razorpay_order_id,
+          prefill: {
+            name: data.customer_name || '',
+            email: data.customer_email || '',
+            contact: data.customer_phone || ''
+          },
+          theme: {
+            color: '#253746'
+          },
+          modal: {
+            ondismiss: function () {
+              resetBtn();
+            }
+          },
+          handler: function (response) {
+            setBtnLoading('Payment Received! Activating Subscription...');
+
+            const verifyData = new FormData(subscribeForm);
+            verifyData.append('razorpay_payment_id', response.razorpay_payment_id);
+            verifyData.append('razorpay_order_id', response.razorpay_order_id);
+            verifyData.append('razorpay_signature', response.razorpay_signature);
+
+            fetch("{% url 'customer:razorpay_subscription_verify' %}", {
+              method: 'POST',
+              body: verifyData,
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+              }
+            })
+              .then(function (vRes) {
+                if (!vRes.ok) {
+                  return vRes.json().then(function (vErr) {
+                    throw new Error(vErr.message || 'Verification error ' + vRes.status);
+                  }).catch(function () {
+                    throw new Error('Verification failed ' + vRes.status);
+                  });
+                }
+                return vRes.json();
+              })
+              .then(function (vData) {
+                if (vData.status === 'success' && vData.redirect_url) {
+                  window.location.href = vData.redirect_url;
+                } else {
+                  alert(vData.message || 'Payment verification failed. Please contact support.');
+                  resetBtn();
+                }
+              })
+              .catch(function (err) {
+                console.error('Verification error:', err);
+                alert('Payment verification error: ' + (err.message || 'Please contact support.'));
+                resetBtn();
+              });
+          }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function (resp) {
+          alert('Payment Failed: ' + (resp.error ? resp.error.description : 'Transaction was not completed'));
+          resetBtn();
+        });
+        rzp.open();
+      })
+      .catch(function (err) {
+        console.error('Subscription order creation error:', err);
+        alert('Subscription initiation error: ' + (err.message || 'Unable to connect to payment gateway'));
         resetBtn();
       });
-      rzp.open();
-    })
-    .catch(function(err) {
-      console.error('Subscription order creation error:', err);
-      alert('Subscription initiation error: ' + (err.message || 'Unable to connect to payment gateway'));
-      resetBtn();
-    });
   });
 </script>
 {% endblock %}

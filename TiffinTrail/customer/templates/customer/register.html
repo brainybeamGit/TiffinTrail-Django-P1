@@ -24,11 +24,13 @@
               <label class="form-label small fw-semibold text-muted">First Name</label>
               {{ form.first_name }}
               {% if form.first_name.errors %}<div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>{% endif %}
+              <div class="form-text small text-muted" style="font-size: 0.74rem;">Only letters allowed.</div>
             </div>
             <div class="col-md-6">
               <label class="form-label small fw-semibold text-muted">Last Name</label>
               {{ form.last_name }}
               {% if form.last_name.errors %}<div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>{% endif %}
+              <div class="form-text small text-muted" style="font-size: 0.74rem;">Only letters allowed.</div>
             </div>
           </div>
 
@@ -48,6 +50,7 @@
             <label class="form-label small fw-semibold text-muted">Mobile Phone Number</label>
             {{ form.phone }}
             {% if form.phone.errors %}<div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>{% endif %}
+            <div class="form-text small text-muted" style="font-size: 0.74rem;">Must be exactly 10 digits (e.g. 9876543210).</div>
           </div>
 
           <div class="row g-3 mb-4">
@@ -55,6 +58,7 @@
               <label class="form-label small fw-semibold text-muted">Password</label>
               {{ form.password }}
               {% if form.password.errors %}<div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>{% endif %}
+              <div class="form-text small text-muted" style="font-size: 0.74rem;">Min 8 chars, at least 1 special char (e.g. @, #, $, %).</div>
             </div>
             <div class="col-md-6">
               <label class="form-label small fw-semibold text-muted">Confirm Password</label>
